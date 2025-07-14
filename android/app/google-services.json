@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "385224848328",
+    "project_id": "elsafe-4fce1",
+    "storage_bucket": "elsafe-4fce1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385224848328:android:f3f889897c918a2aedc6fd",
+        "android_client_info": {
+          "package_name": "com.elsafe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaa7OiKxmQPpRyfVtD2qYTHgPJQL3YQL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
