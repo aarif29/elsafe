@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/services.dart';
-import '../Screen/splashscreen.dart';
+import 'Screen/splashscreen.dart';
 import 'profil/loginscreen.dart';
-import '../Screen/dashboard.dart';
+import 'Screen/dashboard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
