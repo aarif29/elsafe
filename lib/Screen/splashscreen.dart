@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:elsafe/Screen/loginscreen.dart';
+import 'package:elsafe/profil/loginscreen.dart';
 
 void main() {
   runApp(const ElsafeApp());
