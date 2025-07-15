@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/snackbar.dart';
-import '../Screen/loginscreen.dart';
+import '../profil/loginscreen.dart';
 
 class NewPasswordPage extends StatefulWidget {
   const NewPasswordPage({super.key});
