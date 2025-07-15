@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:elsafe/screen/loginscreen.dart';
+import '../profil/loginscreen.dart';
+import '../profil/profil.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -9,14 +10,12 @@ class DashboardScreen extends StatelessWidget {
     try {
       await Supabase.instance.client.auth.signOut();
       
-      // Navigasi kembali ke LoginScreen setelah logout
       if (context.mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       }
     } catch (e) {
-      // Handle error jika ada
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Logout Gagal: ${e.toString()}')),
@@ -31,13 +30,54 @@ class DashboardScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
-          // Tombol Logout
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => _handleLogout(context),
             tooltip: 'Logout',
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Container(
+              height: 80, 
+              decoration: const BoxDecoration(color: Colors.blue),
+              child: const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Menu',
+                    style: TextStyle(
+                      color: Colors.white, 
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.dashboard),
+              title: const Text('Dashboard'),
+              onTap: () {
+                Navigator.of(context).pop(); 
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profil'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const Profile()),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       body: const Center(
         child: Text(
