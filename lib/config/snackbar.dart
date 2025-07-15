@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 class SnackBarUtils {
   SnackBarUtils._();
 
+  /// Show a success snackbar with a green background and a check circle icon.
+  //
+  /// [title] is the title of the snackbar.
+  /// [message] is the message of the snackbar.
+  /// [duration] is the duration of the snackbar. Defaults to 2 seconds.
   static void showSuccess(
     BuildContext context, {
     required String title,
