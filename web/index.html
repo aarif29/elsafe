@@ -14,11 +14,16 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
+  
+  <!-- HAPUS Google Maps Script - GANTI dengan Leaflet -->
+  <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZZO_vtxfOT5Uofoqp46cj57CzPzEshik&libraries=geometry,places"></script> -->
+  
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="ElSafe - Sistem Keamanan dan Keselamatan">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -29,10 +34,73 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>elsafe</title>
+  <!-- TAMBAH: Leaflet CSS untuk OpenStreetMap -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+       crossorigin=""/>
+
+  <!-- TAMBAH: Leaflet JavaScript -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+         crossorigin=""></script>
+
+  <title>ElSafe - Dashboard</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- TAMBAH: Custom CSS untuk map container -->
+  <style>
+    /* Pastikan map container punya tinggi yang tepat */
+    .flutter-map-container {
+      height: 100%;
+      width: 100%;
+    }
+    
+    /* Fix untuk Flutter Web */
+    flt-glass-pane {
+      height: 100%;
+      width: 100%;
+    }
+    
+    /* Loading indicator styling */
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #1E1E1E;
+      color: white;
+    }
+  </style>
 </head>
 <body>
+  <!-- TAMBAH: Loading indicator sementara Flutter load -->
+  <div id="loading" class="loading-container">
+    <div>
+      <div style="text-align: center;">
+        <div style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 0 auto;"></div>
+        <p style="margin-top: 10px;">Loading ElSafe...</p>
+      </div>
+    </div>
+  </div>
+
   <script src="flutter_bootstrap.js" async></script>
+
+  <!-- TAMBAH: CSS Animation untuk loading -->
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
+  <!-- TAMBAH: Script untuk hide loading setelah Flutter ready -->
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      const loading = document.getElementById('loading');
+      if (loading) {
+        loading.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
