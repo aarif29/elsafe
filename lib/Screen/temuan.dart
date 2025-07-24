@@ -66,7 +66,6 @@ class _TemuanScreenState extends State<TemuanScreen> {
       }
     } catch (e) {
       if (mounted) {
-        // ← GANTI DENGAN SnackBarUtils
         SnackBarUtils.showError(
           context,
           title: 'Error!',
@@ -126,7 +125,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
         longitude: _currentLongitude,
       );
 
-      final result = await _temuanService.createTemuanSilent(temuan);
+      final result = await _temuanService.createTemuan(temuan);
 
       SnackBarUtils.hide(context);
 
@@ -136,6 +135,9 @@ class _TemuanScreenState extends State<TemuanScreen> {
           title: 'Berhasil!',
           message: 'Data temuan berhasil disimpan',
         );
+
+        _clearForm();
+
         Navigator.of(context).pop(true);
       } else {
         SnackBarUtils.showError(
@@ -146,17 +148,66 @@ class _TemuanScreenState extends State<TemuanScreen> {
       }
     } catch (e) {
       SnackBarUtils.hide(context);
-      
-      SnackBarUtils.showError(
-        context,
-        title: 'Error!',
-        message: e.toString(),
-      );
+
+      SnackBarUtils.showError(context, title: 'Error!', message: e.toString());
     } finally {
       setState(() {
         _isSubmitting = false;
       });
     }
+  }
+
+  void _clearForm() {
+    _lokasiController.clear();
+    _namaPemilikController.clear();
+    _deskripsiController.clear();
+    setState(() {
+      _selectedDate = null;
+      _currentLatitude = null;
+      _currentLongitude = null;
+      _showDateError = false;
+    });
+  }
+
+  Widget _buildUserInfo() {
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: _temuanService.getCurrentUserProfile(),
+      builder: (context, snapshot) {
+        String displayName = 'Unknown User';
+
+        if (snapshot.hasData && snapshot.data != null) {
+          final profile = snapshot.data!;
+          final fullName = profile['full_name'] as String?;
+          final nip = profile['nip'] as String?;
+
+          // Priority: Full Name > NIP > Email
+          if (fullName != null && fullName.isNotEmpty) {
+            displayName = fullName;
+          } else if (nip != null && nip.isNotEmpty) {
+            displayName = nip;
+          } else {
+            displayName = _temuanService.currentUserEmail ?? 'Unknown User';
+          }
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
+          displayName = 'Loading...';
+        } else {
+          // Fallback ke email
+          displayName = _temuanService.currentUserEmail ?? 'Unknown User';
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: 
+            Center(
+            child: Text(
+              'Dibuat oleh: $displayName',
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+            )
+        );
+      },
+    );
   }
 
   @override
@@ -169,6 +220,16 @@ class _TemuanScreenState extends State<TemuanScreen> {
         title: const Text('Form Temuan'),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
+        actions: [
+          TextButton.icon(
+            onPressed: _clearForm,
+            icon: const Icon(Icons.clear_all),
+            label: const Text('Clear'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -179,6 +240,8 @@ class _TemuanScreenState extends State<TemuanScreen> {
               key: _formKey,
               child: ListView(
                 children: [
+                  _buildUserInfo(),
+
                   const Text(
                     'Lokasi Temuan',
                     style: TextStyle(
@@ -226,17 +289,19 @@ class _TemuanScreenState extends State<TemuanScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: _isLoadingLocation ? null : _getCurrentLocation,
-                      icon: _isLoadingLocation
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Icon(Icons.my_location),
+                      onPressed:
+                          _isLoadingLocation ? null : _getCurrentLocation,
+                      icon:
+                          _isLoadingLocation
+                              ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                              : const Icon(Icons.my_location),
                       label: Text(
                         _isLoadingLocation
                             ? 'Mengambil Lokasi...'
@@ -314,9 +379,10 @@ class _TemuanScreenState extends State<TemuanScreen> {
                       decoration: BoxDecoration(
                         color: Colors.grey[800],
                         border: Border.all(
-                          color: _showDateError && _selectedDate == null
-                              ? Colors.red.withOpacity(0.5)
-                              : Colors.grey[600]!,
+                          color:
+                              _showDateError && _selectedDate == null
+                                  ? Colors.red.withOpacity(0.5)
+                                  : Colors.grey[600]!,
                         ),
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -398,35 +464,37 @@ class _TemuanScreenState extends State<TemuanScreen> {
                     child: ElevatedButton(
                       onPressed: _isSubmitting ? null : _submitForm,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _isSubmitting ? Colors.grey : Colors.blue,
+                        backgroundColor:
+                            _isSubmitting ? Colors.grey : Colors.blue,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: _isSubmitting
-                          ? const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
+                      child:
+                          _isSubmitting
+                              ? const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
                                   ),
+                                  SizedBox(width: 12),
+                                  Text('Menyimpan...'),
+                                ],
+                              )
+                              : const Text(
+                                'Simpan Temuan',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                SizedBox(width: 12),
-                                Text('Menyimpan...'),
-                              ],
-                            )
-                          : const Text(
-                              'Simpan Temuan',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
                               ),
-                            ),
                     ),
                   ),
                 ],
