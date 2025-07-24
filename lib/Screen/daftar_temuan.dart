@@ -138,7 +138,7 @@ class _DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
       
       print('📦 Result dari service: $result');
       
-      if (mounted) {
+      if (mounted) {  
         setState(() {
           if (result['success']) {
             _temuanList = result['data'] ?? [];
