@@ -19,25 +19,18 @@ class _DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
   String? _errorMessage;
   bool _hasLoadedOnce = false;
 
-  // Fungsi untuk membuka Google Maps
   Future<void> _openGoogleMaps(double latitude, double longitude, String lokasi) async {
     try {
-      // URL untuk Google Maps dengan koordinat
-      final String googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
-      
-      // URL alternatif dengan label lokasi
       final String googleMapsUrlWithLabel = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude&query_place_id=$lokasi';
       
-      final Uri uri = Uri.parse(googleMapsUrl);
+      final Uri uri = Uri.parse(googleMapsUrlWithLabel);
       
-      // Cek apakah bisa dibuka
       if (await canLaunchUrl(uri)) {
         await launchUrl(
           uri,
-          mode: LaunchMode.externalApplication, // Buka di app Google Maps jika ada
+          mode: LaunchMode.externalApplication, 
         );
         
-        // Show success message
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -425,7 +418,6 @@ class _DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
               onPressed: () => _deleteTemuan(temuan.id!),
             ),
             onTap: () {
-              // Detail view dengan opsi Google Maps
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
@@ -442,7 +434,6 @@ class _DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
                       Text('Tanggal: ${temuan.tanggalTemuan.day}/${temuan.tanggalTemuan.month}/${temuan.tanggalTemuan.year}', style: TextStyle(color: Colors.white)),
                       Text('Deskripsi: ${temuan.deskripsiTemuan}', style: TextStyle(color: Colors.white)),
                       
-                      // Koordinat dengan tombol aksi
                       if (temuan.latitude != null && temuan.longitude != null) ...[
                         const SizedBox(height: 12),
                         Container(
@@ -463,10 +454,9 @@ class _DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  // Tombol Google Maps
                                   ElevatedButton.icon(
                                     onPressed: () {
-                                      Navigator.pop(context); // Tutup dialog dulu
+                                      Navigator.pop(context);
                                       _openGoogleMaps(temuan.latitude!, temuan.longitude!, temuan.lokasi);
                                     },
                                     icon: Icon(Icons.map, size: 16, color: Colors.green),
@@ -477,10 +467,9 @@ class _DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
                                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                     ),
                                   ),
-                                  // Tombol Copy Koordinat
                                   ElevatedButton.icon(
                                     onPressed: () {
-                                      Navigator.pop(context); // Tutup dialog dulu
+                                      Navigator.pop(context); 
                                       _copyCoordinates(temuan.latitude!, temuan.longitude!);
                                     },
                                     icon: Icon(Icons.copy, size: 16),

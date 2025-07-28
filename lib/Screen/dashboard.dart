@@ -1,9 +1,6 @@
-// UPDATE UNTUK MapsViewWidget di dashboard.dart
-// Ganti method _showMarkerInfo dengan yang ini:
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';  // ✅ TAMBAHKAN INI untuk Copy
-import 'package:url_launcher/url_launcher.dart';  // ✅ TAMBAHKAN INI untuk Maps
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -45,11 +42,9 @@ class DashboardScreen extends StatelessWidget {
   }
 
   void _navigateToDaftarTemuan(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const DaftarTemuanScreen(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const DaftarTemuanScreen()));
   }
 
   @override
@@ -148,10 +143,7 @@ class DashboardScreen extends StatelessWidget {
       body: const Center(
         child: Text(
           'Selamat Datang di Halaman Utama!',
-          style: TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontSize: 20, color: Colors.white),
         ),
       ),
       floatingActionButton: Container(
@@ -215,7 +207,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   List<TemuanModel> _temuanList = [];
   List<Marker> _markers = [];
   bool _isLoading = true;
-  
+
   final LatLng _center = const LatLng(-7.9666, 112.6326);
 
   @override
@@ -227,22 +219,22 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   Future<void> _loadTemuanData() async {
     try {
       print('🗺️ Loading data untuk maps...');
-      
+
       final result = await _temuanService.getAllTemuanSilent();
-      
+
       if (result['success']) {
         setState(() {
           _temuanList = result['data'] ?? [];
           _createMarkers();
           _isLoading = false;
         });
-        
+
         print('✅ Berhasil load ${_temuanList.length} temuan untuk maps');
       } else {
         setState(() {
           _isLoading = false;
         });
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -257,13 +249,10 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
       setState(() {
         _isLoading = false;
       });
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ Error: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('❌ Error: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -271,48 +260,103 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
 
   void _createMarkers() {
     _markers.clear();
-    
+
     for (var temuan in _temuanList) {
       if (temuan.latitude != null && temuan.longitude != null) {
         try {
           _markers.add(
             Marker(
               point: LatLng(temuan.latitude!, temuan.longitude!),
-              width: 40,
-              height: 40,
+              width: 120, // ← Diperbesar untuk menampung label
+              height: 60, // ← Diperbesar untuk menampung label
               child: GestureDetector(
                 onTap: () => _showMarkerInfo(temuan),
-                child: const Icon(
-                  Icons.location_on,
-                  color: Colors.red,
-                  size: 40,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // ✅ LABEL NAMA TEMUAN
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.blueGrey[700],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white, width: 1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        temuan.namaPemilik.length > 15
+                            ? '${temuan.namaPemilik.substring(0, 15)}...'
+                            : temuan.namaPemilik,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    // ✅ ICON MARKER
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.location_on,
+                        color: Colors.red,
+                        size: 32,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           );
-          
-          print('📍 Marker ditambahkan: ${temuan.latitude}, ${temuan.longitude}');
+
+          print(
+            '📍 Marker dengan label ditambahkan: ${temuan.namaPemilik} (${temuan.latitude}, ${temuan.longitude})',
+          );
         } catch (e) {
           print('❌ Error parsing koordinat untuk temuan ${temuan.id}: $e');
         }
       }
     }
-    
-    print('🗺️ Total markers: ${_markers.length}');
+
+    print('🗺️ Total markers dengan label: ${_markers.length}');
   }
 
   // ✅ FUNGSI BARU: Open Google Maps (sama seperti di DaftarTemuanScreen)
-  Future<void> _openGoogleMaps(double latitude, double longitude, String lokasi) async {
+  Future<void> _openGoogleMaps(
+    double latitude,
+    double longitude,
+    String lokasi,
+  ) async {
     try {
-      final String googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+      final String googleMapsUrl =
+          'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
       final Uri uri = Uri.parse(googleMapsUrl);
-      
+
       if (await canLaunchUrl(uri)) {
-        await launchUrl(
-          uri,
-          mode: LaunchMode.externalApplication,
-        );
-        
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -332,7 +376,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
       }
     } catch (e) {
       print('❌ Error membuka Google Maps: $e');
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -355,7 +399,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
     try {
       final coordinates = '$latitude, $longitude';
       await Clipboard.setData(ClipboardData(text: coordinates));
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Center(
@@ -387,98 +431,122 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   void _showMarkerInfo(TemuanModel temuan) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[800],
-        title: Text(
-          temuan.namaPemilik,
-          style: const TextStyle(color: Colors.white),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Lokasi: ${temuan.lokasi}',
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: Colors.grey[800],
+            title: Text(
+              temuan.namaPemilik,
               style: const TextStyle(color: Colors.white),
             ),
-            const SizedBox(height: 4),
-            Text(
-              'Tanggal: ${temuan.tanggalTemuan.day}/${temuan.tanggalTemuan.month}/${temuan.tanggalTemuan.year}',
-              style: const TextStyle(color: Colors.white),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Deskripsi: ${temuan.deskripsiTemuan}',
-              style: const TextStyle(color: Colors.white),
-            ),
-            
-            // ✅ TAMBAHAN: Koordinat dengan tombol aksi (sama seperti di DaftarTemuanScreen)
-            if (temuan.latitude != null && temuan.longitude != null) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[700],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red, width: 2), // Border merah seperti screenshot
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Lokasi: ${temuan.lokasi}',
+                  style: const TextStyle(color: Colors.white),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Koordinat: ${temuan.latitude}, ${temuan.longitude}', 
-                      style: const TextStyle(
-                        color: Colors.white, 
-                        fontWeight: FontWeight.bold,
-                      ),
+                const SizedBox(height: 4),
+                Text(
+                  'Tanggal: ${temuan.tanggalTemuan.day}/${temuan.tanggalTemuan.month}/${temuan.tanggalTemuan.year}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Deskripsi: ${temuan.deskripsiTemuan}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+
+                // ✅ TAMBAHAN: Koordinat dengan tombol aksi (sama seperti di DaftarTemuanScreen)
+                if (temuan.latitude != null && temuan.longitude != null) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[700],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.red,
+                        width: 2,
+                      ), // Border merah seperti screenshot
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ✅ Tombol Google Maps
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context); // Tutup dialog dulu
-                            _openGoogleMaps(temuan.latitude!, temuan.longitude!, temuan.lokasi);
-                          },
-                          icon: const Icon(Icons.map, size: 16, color: Colors.green),
-                          label: const Text('Maps'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[800],
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        Text(
+                          'Koordinat: ${temuan.latitude}, ${temuan.longitude}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        // ✅ Tombol Copy Koordinat
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context); // Tutup dialog dulu
-                            _copyCoordinates(temuan.latitude!, temuan.longitude!);
-                          },
-                          icon: const Icon(Icons.copy, size: 16),
-                          label: const Text('Copy'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[800],
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            // ✅ Tombol Google Maps
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.pop(context); // Tutup dialog dulu
+                                _openGoogleMaps(
+                                  temuan.latitude!,
+                                  temuan.longitude!,
+                                  temuan.lokasi,
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.map,
+                                size: 16,
+                                color: Colors.green,
+                              ),
+                              label: const Text('Maps'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey[800],
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                              ),
+                            ),
+                            // ✅ Tombol Copy Koordinat
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.pop(context); // Tutup dialog dulu
+                                _copyCoordinates(
+                                  temuan.latitude!,
+                                  temuan.longitude!,
+                                );
+                              },
+                              icon: const Icon(Icons.copy, size: 16),
+                              label: const Text('Copy'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey[800],
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Tutup',
+                  style: TextStyle(color: Colors.blue),
                 ),
               ),
             ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup', style: TextStyle(color: Colors.blue)),
           ),
-        ],
-      ),
     );
   }
 
@@ -525,7 +593,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
               ],
             ),
           ),
-          
+
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             padding: const EdgeInsets.all(12),
@@ -547,61 +615,64 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(color: Colors.blue),
-                        SizedBox(height: 16),
-                        Text(
-                          'Memuat data peta...',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(
-                    margin: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[600]!),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: FlutterMap(
-                        options: MapOptions(
-                          initialCenter: _markers.isNotEmpty 
-                              ? _markers.first.point 
-                              : _center,
-                          initialZoom: _markers.isNotEmpty ? 15.0 : 13.0,
-                          interactionOptions: const InteractionOptions(
-                            flags: InteractiveFlag.all,
-                          ),
-                        ),
+            child:
+                _isLoading
+                    ? const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          TileLayer(
-                            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'com.example.elsafe',
-                            maxZoom: 19,
-                          ),
-                          MarkerLayer(markers: _markers),
-                          RichAttributionWidget(
-                            attributions: [
-                              TextSourceAttribution(
-                                'OpenStreetMap contributors',
-                                onTap: () {},
-                              ),
-                            ],
+                          CircularProgressIndicator(color: Colors.blue),
+                          SizedBox(height: 16),
+                          Text(
+                            'Memuat data peta...',
+                            style: TextStyle(color: Colors.white),
                           ),
                         ],
                       ),
+                    )
+                    : Container(
+                      margin: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[600]!),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: FlutterMap(
+                          options: MapOptions(
+                            initialCenter:
+                                _markers.isNotEmpty
+                                    ? _markers.first.point
+                                    : _center,
+                            initialZoom: _markers.isNotEmpty ? 15.0 : 13.0,
+                            interactionOptions: const InteractionOptions(
+                              flags: InteractiveFlag.all,
+                            ),
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName: 'com.example.elsafe',
+                              maxZoom: 19,
+                            ),
+                            MarkerLayer(markers: _markers),
+                            RichAttributionWidget(
+                              attributions: [
+                                TextSourceAttribution(
+                                  'OpenStreetMap contributors',
+                                  onTap: () {},
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
           ),
         ],
       ),
