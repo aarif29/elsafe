@@ -29,13 +29,11 @@ class _MyAppState extends State<MyApp> {
   StreamSubscription<AuthState>? _authSubscription;
   bool _isRedirecting = false;
   
-  // GlobalKey untuk Navigator
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     super.initState();
-    // Delay untuk memastikan Navigator sudah ter-build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 200), () => _redirect());
     });
@@ -46,16 +44,13 @@ class _MyAppState extends State<MyApp> {
     _isRedirecting = true;
 
     try {
-      // Delay awal untuk memastikan aplikasi sudah ter-load
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // Cek URL saat ini
       final uri = Uri.base;
       debugPrint('🌐 [DEBUG] Current URL: $uri');
       debugPrint('🌐 [DEBUG] URL Fragment: ${uri.fragment}');
       debugPrint('🌐 [DEBUG] URL Query: ${uri.query}');
 
-      // Cek apakah ada access_token di URL fragment (OAuth callback)
       bool hasAuthCallback = uri.fragment.contains('access_token') || 
                             uri.fragment.contains('code=') ||
                             uri.query.contains('code=');
@@ -64,10 +59,8 @@ class _MyAppState extends State<MyApp> {
         debugPrint('🔑 [DEBUG] OAuth callback detected in URL!');
         debugPrint('🔑 [DEBUG] Waiting for Supabase to process session...');
         
-        // Tunggu lebih lama untuk session ter-update setelah OAuth callback
         await Future.delayed(const Duration(milliseconds: 1000));
         
-        // Cek session beberapa kali dengan interval
         Session? session;
         for (int i = 0; i < 5; i++) {
           session = Supabase.instance.client.auth.currentSession;
@@ -84,13 +77,11 @@ class _MyAppState extends State<MyApp> {
         }
       }
 
-      // Cek session final
       final session = Supabase.instance.client.auth.currentSession;
       debugPrint('🔍 [DEBUG] Final Session Check: ${session?.user?.email}');
       debugPrint('🔍 [DEBUG] Session Access Token: ${session?.accessToken != null ? "Present" : "Null"}');
       debugPrint('🔍 [DEBUG] Session Expires At: ${session?.expiresAt}');
 
-      // Gunakan NavigatorState dari GlobalKey
       final navigatorState = _navigatorKey.currentState;
       if (navigatorState == null) {
         debugPrint('❌ [DEBUG] Navigator not ready yet, retrying...');
@@ -126,7 +117,6 @@ class _MyAppState extends State<MyApp> {
         }
       }
 
-      // Setup listener untuk perubahan auth state
       _setupAuthListener();
 
     } catch (e) {
@@ -201,7 +191,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: _navigatorKey, // Tambahkan GlobalKey di sini
+      navigatorKey: _navigatorKey,
       title: 'Elsafe App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(useMaterial3: true).copyWith(
