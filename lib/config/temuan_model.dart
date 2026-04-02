@@ -6,8 +6,11 @@ class TemuanModel {
   final String deskripsiTemuan;
   final double? latitude;
   final double? longitude;
+  final List<String>? fotoUrls;
+  final String? nomorAms; 
+  final String? statusTemuan;
+  final String? createdBy;
   final DateTime? createdAt;
-  final DateTime? updatedAt;
 
   TemuanModel({
     this.id,
@@ -17,18 +20,24 @@ class TemuanModel {
     required this.deskripsiTemuan,
     this.latitude,
     this.longitude,
+    this.fotoUrls,
+    this.nomorAms,
+    this.statusTemuan, 
+    this.createdBy,
     this.createdAt,
-    this.updatedAt,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'lokasi': lokasi,
       'nama_pemilik': namaPemilik,
-      'tanggal_temuan': tanggalTemuan.toIso8601String().split('T')[0],
+      'tanggal_temuan': tanggalTemuan.toIso8601String(),
       'deskripsi_temuan': deskripsiTemuan,
       'latitude': latitude,
       'longitude': longitude,
+      'foto_urls': fotoUrls,
+      'nomor_ams': nomorAms,
+      'status_temuan': statusTemuan, 
     };
   }
 
@@ -37,17 +46,18 @@ class TemuanModel {
       id: json['id']?.toString(),
       lokasi: json['lokasi'] ?? '',
       namaPemilik: json['nama_pemilik'] ?? '',
-      tanggalTemuan: json['tanggal_temuan'] != null 
-          ? DateTime.parse(json['tanggal_temuan'])
-          : DateTime.now(),
+      tanggalTemuan: DateTime.parse(json['tanggal_temuan']),
       deskripsiTemuan: json['deskripsi_temuan'] ?? '',
       latitude: json['latitude']?.toDouble(),
       longitude: json['longitude']?.toDouble(),
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      fotoUrls: json['foto_urls'] != null
+          ? List<String>.from(json['foto_urls'])
           : null,
-      updatedAt: json['updated_at'] != null 
-          ? DateTime.parse(json['updated_at']) 
+      nomorAms: json['nomor_ams']?.toString(), 
+      statusTemuan: json['status_temuan']?.toString() ?? 'Open', 
+      createdBy: json['created_by']?.toString(),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : null,
     );
   }

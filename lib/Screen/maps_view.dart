@@ -65,46 +65,49 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
       _markers.add(
         Marker(
           point: LatLng(temuan.latitude!, temuan.longitude!),
-            width: 120,
-            height: 60,
-            child: GestureDetector(
-              onTap: () => _showMarkerInfo(temuan),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey[700],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white, width: 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.35),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      temuan.namaPemilik.length > 15
-                          ? '${temuan.namaPemilik.substring(0, 15)}...'
-                          : temuan.namaPemilik,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                    ),
+          width: 120,
+          height: 60,
+          child: GestureDetector(
+            onTap: () => _showMarkerInfo(temuan),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
                   ),
-                  const SizedBox(height: 2),
-                  const Icon(Icons.location_on, color: Colors.red, size: 32),
-                ],
-              ),
+                  decoration: BoxDecoration(
+                    color: Colors.blueGrey[700],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.35),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    temuan.namaPemilik.length > 15
+                        ? '${temuan.namaPemilik.substring(0, 15)}...'
+                        : temuan.namaPemilik,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                const Icon(Icons.location_on, color: Colors.red, size: 32),
+              ],
             ),
+          ),
         ),
       );
     }
@@ -219,7 +222,9 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   }
 
   Future<void> _openGoogleMaps(double lat, double lng) async {
-    final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    final url = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
     try {
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -241,79 +246,118 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   void _showMarkerInfo(TemuanModel temuan) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: Colors.grey[850],
-        title: Text(
-          temuan.namaPemilik,
-          style: const TextStyle(color: Colors.white),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Lokasi: ${temuan.lokasi}', style: const TextStyle(color: Colors.white)),
-              const SizedBox(height: 4),
-              Text(
-                'Tanggal: ${temuan.tanggalTemuan.day}/${temuan.tanggalTemuan.month}/${temuan.tanggalTemuan.year}',
-                style: const TextStyle(color: Colors.white),
-              ),
-              const SizedBox(height: 4),
-              Text('Deskripsi: ${temuan.deskripsiTemuan}',
-                  style: const TextStyle(color: Colors.white)),
-              if (temuan.latitude != null && temuan.longitude != null) ...[
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[700],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.red, width: 2),
+      builder:
+          (_) => AlertDialog(
+            backgroundColor: Colors.grey[850],
+            title: Text(
+              temuan.namaPemilik,
+              style: const TextStyle(color: Colors.white),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Lokasi: ${temuan.lokasi}',
+                    style: const TextStyle(color: Colors.white),
                   ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Koordinat: ${temuan.latitude}, ${temuan.longitude}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Tanggal: ${temuan.tanggalTemuan.day}/${temuan.tanggalTemuan.month}/${temuan.tanggalTemuan.year}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Deskripsi: ${temuan.deskripsiTemuan}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  if (temuan.latitude != null && temuan.longitude != null) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[700],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red, width: 2),
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      child: Column(
                         children: [
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              _openGoogleMaps(temuan.latitude!, temuan.longitude!);
-                            },
-                            icon: const Icon(Icons.map, size: 16, color: Colors.green),
-                            label: const Text('Maps'),
+                          Text(
+                            'Koordinat: ${temuan.latitude}, ${temuan.longitude}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              _copyCoordinates(temuan.latitude!, temuan.longitude!);
-                            },
-                            icon: const Icon(Icons.copy, size: 16),
-                            label: const Text('Copy'),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _openGoogleMaps(
+                                    temuan.latitude!,
+                                    temuan.longitude!,
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.map,
+                                  size: 16,
+                                  color: Colors.green,
+                                ),
+                                label: const Text('Maps'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey[800],
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
+                              ),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _copyCoordinates(
+                                    temuan.latitude!,
+                                    temuan.longitude!,
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.copy,
+                                  size: 16,
+                                  color: Colors.blue,
+                                ),
+                                label: const Text('Copy'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey[800],
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Tutup',
+                  style: TextStyle(color: Colors.blue),
                 ),
-              ],
+              ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup', style: TextStyle(color: Colors.blue)),
-          ),
-        ],
-      ),
     );
   }
 
@@ -330,37 +374,42 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
 
   Widget _buildMap() {
     // Hide label if _showLabels == false
-    final displayMarkers = _markers.map((m) {
-      if (!_showLabels &&
-          m.child is GestureDetector &&
-          (m.child as GestureDetector).child is Column) {
-        final col = (m.child as GestureDetector).child as Column;
-        if (col.children.length >= 2) {
-          final iconOnly = col.children.last;
-          return Marker(
-            point: m.point,
-            width: 40,
-            height: 40,
-            child: GestureDetector(
-              onTap: (m.child as GestureDetector).onTap,
-              child: iconOnly,
-            ),
-          );
-        }
-      }
-      return m;
-    }).toList();
+    final displayMarkers =
+        _markers.map((m) {
+          if (!_showLabels &&
+              m.child is GestureDetector &&
+              (m.child as GestureDetector).child is Column) {
+            final col = (m.child as GestureDetector).child as Column;
+            if (col.children.length >= 2) {
+              final iconOnly = col.children.last;
+              return Marker(
+                point: m.point,
+                width: 40,
+                height: 40,
+                child: GestureDetector(
+                  onTap: (m.child as GestureDetector).onTap,
+                  child: iconOnly,
+                ),
+              );
+            }
+          }
+          return m;
+        }).toList();
 
     return Stack(
       children: [
         FlutterMap(
           mapController: _mapController,
           options: MapOptions(
-            initialCenter: displayMarkers.isNotEmpty
-                ? (_currentLocationMarker?.point ?? displayMarkers.first.point)
-                : _center,
+            initialCenter:
+                displayMarkers.isNotEmpty
+                    ? (_currentLocationMarker?.point ??
+                        displayMarkers.first.point)
+                    : _center,
             initialZoom: displayMarkers.isNotEmpty ? 15 : 13,
-            interactionOptions: const InteractionOptions(flags: InteractiveFlag.all),
+            interactionOptions: const InteractionOptions(
+              flags: InteractiveFlag.all,
+            ),
           ),
           children: [
             TileLayer(
@@ -470,53 +519,60 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
                       tooltip: 'Tutup',
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),
           // Info panel
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey[800],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Total Temuan: ${_temuanList.length}',
-                      style: const TextStyle(color: Colors.white)),
-                  Text('Marker: ${_markers.length}',
-                      style: const TextStyle(color: Colors.grey)),
-                ],
-              ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey[800],
+              borderRadius: BorderRadius.circular(8),
             ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Total Temuan: ${_temuanList.length}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                Text(
+                  'Marker: ${_markers.length}',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: 16),
           Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(color: Colors.blue),
-                        SizedBox(height: 16),
-                        Text('Memuat data peta...',
-                            style: TextStyle(color: Colors.white)),
-                      ],
+            child:
+                _isLoading
+                    ? const Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(color: Colors.blue),
+                          SizedBox(height: 16),
+                          Text(
+                            'Memuat data peta...',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    )
+                    : Container(
+                      margin: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[600]!),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: _buildMap(),
+                      ),
                     ),
-                  )
-                : Container(
-                    margin: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[600]!),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: _buildMap(),
-                    ),
-                  ),
           ),
         ],
       ),

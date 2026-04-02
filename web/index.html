@@ -25,6 +25,8 @@
   <meta name="description" content="ElSafe - Sistem Keamanan dan Keselamatan">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZZO_vtxfOT5Uofoqp46cj57CzPzEshik"></script>
+
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -101,6 +103,13 @@
         loading.style.display = 'none';
       }
     });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('flutter_service_worker.js');
+      });
+    }
+
   </script>
 </body>
 </html>

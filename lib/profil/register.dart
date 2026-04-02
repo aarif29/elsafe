@@ -11,6 +11,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+
   final _nameController = TextEditingController();
   final _nipController = TextEditingController();
   final _ulpController = TextEditingController();
@@ -18,6 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
@@ -36,53 +38,78 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _handleRegister() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      setState(() => _isLoading = true);
+    // Tutup keyboard
+    FocusScope.of(context).unfocus();
 
-      try {
-        await _supabase.auth.signUp(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-          data: {
-            'full_name': _nameController.text.trim(),
-            'nip': _nipController.text.trim(),
-            'ulp': _ulpController.text.trim(),
-            'phone': _phoneController.text.trim(),
-          },
-        );
-        if (mounted) {
-          SnackBarUtils.showSuccess(
-            context,
-            title: 'Daftar Berhasil!',
-            message:
-                'Akun berhasil dibuat. Silakan cek email untuk verifikasi.',
-          );
-          Navigator.pop(context);
-        }
-      } on AuthException catch (e) {
-        if (mounted) {
-          SnackBarUtils.showError(
-            context,
-            title: 'Pendaftaran Gagal!',
-            message: e.message,
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          SnackBarUtils.showError(
-            context,
-            title: 'Terjadi Kesalahan',
-            message: e.toString(),
-          );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+      final fullName = _nameController.text.trim();
+      final nip = _nipController.text.trim();
+      final ulp = _ulpController.text.trim();
+      final phone = _phoneController.text.trim();
+
+      // 1) Sign Up ke Supabase Auth, kirim metadata juga (optional tapi berguna)
+      final res = await _supabase.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          'full_name': fullName,
+          'nip': nip,
+          'ulp': ulp,
+          'phone': phone,
+        },
+        emailRedirectTo: null, // bisa diisi deep link verifikasi kalau perlu
+      );
+
+      final userId = res.user?.id;
+      if (userId == null) {
+        throw const AuthException('Sign up gagal: user tidak terbentuk');
       }
+
+      // 2) Pastikan data masuk ke tabel profiles sekarang juga
+      //    Gunakan upsert agar aman jika row sudah dibuat oleh trigger/ sebelumnya
+      await _supabase.from('profiles').upsert({
+        'id': userId,       // PK UUID, sama dengan auth.users.id
+        'email': email,
+        'full_name': fullName,
+        'nip': nip,
+        'ulp': ulp,
+        'phone': phone,
+      }, onConflict: 'id');
+
+      if (mounted) {
+        SnackBarUtils.showSuccess(
+          context,
+          title: 'Daftar Berhasil!',
+          message: 'Akun dibuat. Silakan cek email untuk verifikasi.',
+        );
+        Navigator.pop(context);
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        SnackBarUtils.showError(
+          context,
+          title: 'Pendaftaran Gagal!',
+          message: e.message,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        SnackBarUtils.showError(
+          context,
+          title: 'Terjadi Kesalahan',
+          message: e.toString(),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -112,98 +139,126 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
+
                 _buildInputField(
                   controller: _nameController,
                   hint: 'Nama Lengkap',
                   icon: Icons.person,
-                  validator:
-                      (value) =>
-                          value?.isEmpty ?? true ? 'Nama diperlukan' : null,
+                  validator: (value) =>
+                      (value == null || value.trim().isEmpty)
+                          ? 'Nama diperlukan'
+                          : null,
+                  textInputAction: TextInputAction.next,
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 16),
+
                 _buildInputField(
                   controller: _nipController,
                   hint: 'NIP',
                   icon: Icons.badge_outlined,
-                  validator:
-                      (value) =>
-                          value?.isEmpty ?? true ? 'NIP diperlukan' : null,
+                  validator: (value) =>
+                      (value == null || value.trim().isEmpty)
+                          ? 'NIP diperlukan'
+                          : null,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 16),
+
                 _buildInputField(
                   controller: _emailController,
                   hint: 'Email',
                   icon: Icons.email,
                   validator: (value) {
-                    if (value?.isEmpty ?? true) return 'Email diperlukan';
-                    if (!RegExp(
-                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                    ).hasMatch(value!))
-                      return 'Email tidak valid';
+                    final v = value?.trim() ?? '';
+                    if (v.isEmpty) return 'Email diperlukan';
+                    final emailRegex = RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$',
+                    );
+                    if (!emailRegex.hasMatch(v)) return 'Email tidak valid';
                     return null;
                   },
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 16),
+
                 _buildInputField(
                   controller: _ulpController,
                   hint: 'Nama ULP',
                   icon: Icons.location_on_outlined,
-                  validator:
-                      (value) =>
-                          value?.isEmpty ?? true ? 'Nama ULP diperlukan' : null,
+                  validator: (value) =>
+                      (value == null || value.trim().isEmpty)
+                          ? 'Nama ULP diperlukan'
+                          : null,
+                  textInputAction: TextInputAction.next,
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 16),
+
                 _buildInputField(
                   controller: _phoneController,
                   hint: 'Nomor HP',
                   icon: Icons.phone,
                   validator: (value) {
-                    if (value?.isNotEmpty == true) {
-                      if (!RegExp(r'^[0-9+\-\s()]+$').hasMatch(value!)) {
-                        return 'Format nomor HP tidak valid';
-                      }
+                    final v = value?.trim() ?? '';
+                    if (v.isEmpty) return null; // opsional
+                    if (!RegExp(r'^[0-9+\-\s()]+$').hasMatch(v)) {
+                      return 'Format nomor HP tidak valid';
                     }
                     return null;
                   },
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.next,
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 16),
+
                 _buildInputField(
                   controller: _passwordController,
                   hint: 'Password',
                   icon: Icons.lock,
                   isPassword: true,
                   isVisible: _isPasswordVisible,
-                  onToggleVisibility:
-                      () => setState(
-                        () => _isPasswordVisible = !_isPasswordVisible,
-                      ),
+                  onToggleVisibility: () =>
+                      setState(() => _isPasswordVisible = !_isPasswordVisible),
                   validator: (value) {
-                    if (value?.isEmpty ?? true) return 'Password diperlukan';
-                    if (value!.length < 6) return 'Minimal 6 karakter';
+                    final v = value ?? '';
+                    if (v.isEmpty) return 'Password diperlukan';
+                    if (v.length < 6) return 'Minimal 6 karakter';
                     return null;
                   },
+                  textInputAction: TextInputAction.next,
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 16),
+
                 _buildInputField(
                   controller: _confirmPasswordController,
                   hint: 'Konfirmasi Password',
                   icon: Icons.lock_reset,
                   isPassword: true,
                   isVisible: _isPasswordVisible,
-                  onToggleVisibility:
-                      () => setState(
-                        () => _isPasswordVisible = !_isPasswordVisible,
-                      ),
+                  onToggleVisibility: () =>
+                      setState(() => _isPasswordVisible = !_isPasswordVisible),
                   validator: (value) {
-                    if (value?.isEmpty ?? true)
-                      return 'Konfirmasi password diperlukan';
-                    if (value != _passwordController.text)
+                    final v = value ?? '';
+                    if (v.isEmpty) return 'Konfirmasi password diperlukan';
+                    if (v != _passwordController.text) {
                       return 'Password tidak sama';
+                    }
                     return null;
                   },
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) => _handleRegister(),
                 ),
-                const SizedBox(height: 32),
+
+                const SizedBox(height: 24),
+
                 _buildRegisterButton(),
               ],
             ),
@@ -221,6 +276,9 @@ class _RegisterPageState extends State<RegisterPage> {
     bool isVisible = false,
     VoidCallback? onToggleVisibility,
     String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    void Function(String)? onFieldSubmitted,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -236,29 +294,28 @@ class _RegisterPageState extends State<RegisterPage> {
           hintText: hint,
           hintStyle: TextStyle(color: Colors.grey[500]),
           prefixIcon: Icon(icon, color: Colors.grey[500]),
-          suffixIcon:
-              isPassword
-                  ? IconButton(
-                    icon: Icon(
-                      isVisible ? Icons.visibility : Icons.visibility_off,
-                      color: Colors.grey[500],
-                    ),
-                    onPressed: onToggleVisibility,
-                  )
-                  : null,
+          suffixIcon: isPassword
+              ? IconButton(
+                  icon: Icon(
+                    isVisible ? Icons.visibility : Icons.visibility_off,
+                    color: Colors.grey[500],
+                  ),
+                  onPressed: onToggleVisibility,
+                )
+              : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
         validator: validator,
-        keyboardType:
-            hint == 'Email'
+        keyboardType: keyboardType ??
+            (hint == 'Email'
                 ? TextInputType.emailAddress
                 : (hint == 'NIP' || hint.contains('HP'))
-                ? TextInputType.number
-                : TextInputType.text,
+                    ? TextInputType.number
+                    : TextInputType.text),
+        textInputAction: textInputAction ?? TextInputAction.next,
+        onFieldSubmitted: onFieldSubmitted,
       ),
     );
   }
@@ -277,20 +334,19 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           foregroundColor: Colors.white,
         ),
-        child:
-            _isLoading
-                ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2.0,
-                  ),
-                )
-                : const Text(
-                  'Daftar',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        child: _isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.0,
                 ),
+              )
+            : const Text(
+                'Daftar',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
       ),
     );
   }
