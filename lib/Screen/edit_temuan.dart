@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:file_picker/file_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import '../config/snackbar.dart';
 import '../config/temuan_model.dart';
+import '../config/temuan_types.dart';
 import '../config/temuan_service.dart';
-import '../widgets/foto_grid_widget.dart';
+import '../config/sosialisasi_model.dart';
+import '../widgets/foto_picker_widget.dart';
+import '../widgets/matriks_risiko_widget.dart';
+import '../config/notification_service.dart';
 
 class EditTemuanScreen extends StatefulWidget {
   final TemuanModel temuan;
@@ -27,45 +30,87 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
   late TextEditingController _deskripsiController;
   late TextEditingController _nomorAmsController;
   final _temuanService = TemuanService();
-  final ImagePicker _picker = ImagePicker();
+  final _pageController = PageController();
 
+  int _currentStep = 0;
+  static const int _totalSteps = 4;
+
+  // Step 1 - Temuan
   DateTime? _selectedDate;
   bool _isLoadingLocation = false;
   bool _isSubmitting = false;
   bool _showDateError = false;
   double? _currentLatitude;
   double? _currentLongitude;
-  String _statusTemuan = 'Open';
+  String? _tipeTemuan;
 
-  // ========== FOTO MANAGEMENT ==========
+  // Foto management
   List<String> _existingFotoUrls = [];
-  List<XFile> _newFotoFiles = [];
+  final List<PlatformFile> _newFotoFiles = [];
   List<String> _deletedFotoUrls = [];
-  bool _isUploadingPhoto = false;
+
+  // Matriks risiko
+  String? _jarakAktivitas;
+  String? _intensitasAktivitas;
+  String? _jenisObjek;
+  String? _jenisAset;
+  String? _lokasiObjek;
+  int _skorMatriks = 0;
+  String? _levelRisiko;
+
+  // Step 2 - Reminder
+  DateTime? _tglReminder;
+  List<String> _existingFotoReminder = [];
+  List<PlatformFile> _newFotoReminder = [];
+  List<String> _deletedFotoReminder = [];
+
+  // Step 3 - Closing
+  String? _jenisClosing;
+  DateTime? _tglClosing;
+  List<String> _existingFotoClosing = [];
+  List<PlatformFile> _newFotoClosing = [];
+  List<String> _deletedFotoClosing = [];
+
+  // Step 4 - Sosialisasi
+  List<SosialisasiModel> _riwayatSosialisasi = [];
+  bool _isLoadingSosialisasi = false;
+  DateTime? _tglSosialisasiBaru;
+  List<PlatformFile> _fotoSosialisasiBaru = [];
 
   @override
   void initState() {
     super.initState();
-    _lokasiController = TextEditingController(text: widget.temuan.lokasi);
-    _namaPemilikController = TextEditingController(
-      text: widget.temuan.namaPemilik,
-    );
-    _deskripsiController = TextEditingController(
-      text: widget.temuan.deskripsiTemuan,
-    );
+    final t = widget.temuan;
+    _lokasiController = TextEditingController(text: t.lokasi);
+    _namaPemilikController = TextEditingController(text: t.namaPemilik);
+    _deskripsiController = TextEditingController(text: t.deskripsiTemuan);
+    _nomorAmsController = TextEditingController(text: t.nomorAms ?? '');
+    _tipeTemuan = t.tipeTemuan;
+    _selectedDate = t.tanggalTemuan;
+    _currentLatitude = t.latitude;
+    _currentLongitude = t.longitude;
 
-    _nomorAmsController = TextEditingController(
-      text: widget.temuan.nomorAms ?? '',
-    );
-    _statusTemuan = widget.temuan.statusTemuan ?? 'Open';
+    if (t.fotoUrls != null) _existingFotoUrls = List.from(t.fotoUrls!);
 
-    _selectedDate = widget.temuan.tanggalTemuan;
-    _currentLatitude = widget.temuan.latitude;
-    _currentLongitude = widget.temuan.longitude;
+    // Matriks
+    _jarakAktivitas = t.jarakAktivitas;
+    _intensitasAktivitas = t.intensitasAktivitas;
+    _jenisObjek = t.jenisObjek;
+    _jenisAset = t.jenisAset;
+    _lokasiObjek = t.lokasiObjek;
+    _skorMatriks = t.skorMatriks ?? 0;
+    _levelRisiko = t.levelRisiko;
 
-    if (widget.temuan.fotoUrls != null) {
-      _existingFotoUrls = List.from(widget.temuan.fotoUrls!);
-    }
+    // Reminder
+    _tglReminder = t.tglReminder;
+    if (t.fotoReminder != null) _existingFotoReminder = List.from(t.fotoReminder!);
+
+    // Closing
+    _jenisClosing = t.jenisClosing;
+    _tglClosing = t.tglClosing;
+    if (t.fotoClosing != null) _existingFotoClosing = List.from(t.fotoClosing!);
+
+    _loadSosialisasi();
   }
 
   @override
@@ -74,376 +119,145 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     _namaPemilikController.dispose();
     _deskripsiController.dispose();
     _nomorAmsController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
-  // ========== FOTO FUNCTIONS ==========
-  Future<void> _pickImages() async {
-    try {
-      final List<XFile> images = await _picker.pickMultiImage();
-
-      if (images.isNotEmpty) {
-        setState(() {
-          _newFotoFiles.addAll(images);
-        });
-
-        if (mounted) {
-          SnackBarUtils.showSuccess(
-            context,
-            title: 'Berhasil!',
-            message: '${images.length} foto berhasil dipilih',
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        SnackBarUtils.showError(
-          context,
-          title: 'Error!',
-          message: 'Gagal memilih foto: ${e.toString()}',
-        );
-      }
+  Future<void> _loadSosialisasi() async {
+    if (widget.temuan.id == null) return;
+    setState(() => _isLoadingSosialisasi = true);
+    final result = await _temuanService.getSosialisasiByTemuan(widget.temuan.id!);
+    if (mounted) {
+      setState(() {
+        _riwayatSosialisasi = result['data'] as List<SosialisasiModel>? ?? [];
+        _isLoadingSosialisasi = false;
+      });
     }
   }
 
-  Future<void> _takePicture() async {
-    try {
-      if (kIsWeb) {
-        final XFile? photo = await _picker.pickImage(
-          source: ImageSource.gallery, // ← TAMBAHKAN INI
-          imageQuality: 80,
-        );
-
-        if (photo != null) {
-          setState(() {
-            _newFotoFiles.add(photo);
-          });
-
-          if (mounted) {
-            SnackBarUtils.showSuccess(
-              context,
-              title: 'Berhasil!',
-              message: 'Foto berhasil dipilih dari perangkat',
-            );
-          }
-        }
-      } else {
-        // 📱 DI MOBILE: Buka kamera native
-        final XFile? photo = await _picker.pickImage(
-          source: ImageSource.camera, // ← SUDAH BENAR
-          imageQuality: 80,
-        );
-
-        if (photo != null) {
-          setState(() {
-            _newFotoFiles.add(photo);
-          });
-
-          if (mounted) {
-            SnackBarUtils.showSuccess(
-              context,
-              title: 'Berhasil!',
-              message: 'Foto berhasil diambil dari kamera',
-            );
-          }
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        SnackBarUtils.showError(
-          context,
-          title: 'Error!',
-          message: 'Gagal mengambil foto: ${e.toString()}',
-        );
-      }
-    }
-  }
-
-  void _deleteExistingFoto(String url) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: Colors.grey[900],
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: const Row(
-              children: [
-                Icon(
-                  Icons.warning_amber_rounded,
-                  color: Colors.orange,
-                  size: 28,
-                ),
-                SizedBox(width: 12),
-                Text('Hapus Foto?', style: TextStyle(color: Colors.white)),
-              ],
-            ),
-            content: const Text(
-              'Foto akan dihapus permanen saat Anda menyimpan perubahan. Tindakan ini tidak dapat dibatalkan.',
-              style: TextStyle(color: Colors.white70),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Batal',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _existingFotoUrls.remove(url);
-                    _deletedFotoUrls.add(url);
-                  });
-
-                  Navigator.pop(context);
-
-                  SnackBarUtils.showSuccess(
-                    context,
-                    title: 'Ditandai untuk Dihapus',
-                    message: 'Foto akan dihapus saat menyimpan',
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text('Hapus'),
-              ),
-            ],
-          ),
-    );
-  }
-
-  void _deleteNewFoto(XFile file) {
-    setState(() {
-      _newFotoFiles.remove(file);
-    });
-
-    SnackBarUtils.showSuccess(
-      context,
-      title: 'Berhasil!',
-      message: 'Foto dibatalkan',
-    );
-  }
-
-  int get _totalFotoCount => _existingFotoUrls.length + _newFotoFiles.length;
-
-  // ========== LOCATION FUNCTIONS ==========
-  Future<void> _getCurrentLocation() async {
-    setState(() {
-      _isLoadingLocation = true;
-    });
-
-    try {
-      if (kIsWeb) {
-        // 🌐 Di web, geolocator mungkin tidak support semua browser
-        SnackBarUtils.showWarning(
-          context,
-          title: 'Peringatan!',
-          message:
-              'Gunakan "Pilih Lokasi dari Peta".',
-        );
-        setState(() {
-          _isLoadingLocation = false;
-        });
+  void _goToStep(int step) {
+    if (step < 0 || step >= _totalSteps) return;
+    if (_currentStep == 0 && step > 0) {
+      setState(() => _showDateError = _selectedDate == null);
+      if (!_formKey.currentState!.validate() || _selectedDate == null) {
+        SnackBarUtils.showWarning(context,
+            title: 'Peringatan!', message: 'Lengkapi data temuan di Step 1 terlebih dahulu');
         return;
       }
+    }
+    setState(() => _currentStep = step);
+    _pageController.animateToPage(step,
+        duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+  }
 
-      var permission = await Permission.location.request();
-      if (permission.isDenied) {
-        throw Exception('Izin lokasi ditolak. Silakan aktifkan di pengaturan.');
+  Future<void> _getCurrentLocation() async {
+    setState(() => _isLoadingLocation = true);
+    try {
+      if (kIsWeb) {
+        SnackBarUtils.showWarning(context, title: 'Peringatan!', message: 'Gunakan "Pilih Lokasi dari Peta".');
+        setState(() => _isLoadingLocation = false);
+        return;
       }
+      var permission = await Permission.location.request();
+      if (permission.isDenied) throw Exception('Izin lokasi ditolak.');
 
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       setState(() {
         _currentLatitude = position.latitude;
         _currentLongitude = position.longitude;
-        _lokasiController.text =
-            'Lat: ${position.latitude.toStringAsFixed(6)}, '
-            'Long: ${position.longitude.toStringAsFixed(6)}';
+        _lokasiController.text = 'Lat: ${position.latitude.toStringAsFixed(6)}, Long: ${position.longitude.toStringAsFixed(6)}';
       });
-
-      if (mounted) {
-        SnackBarUtils.showSuccess(
-          context,
-          title: 'Berhasil!',
-          message: 'Lokasi berhasil didapatkan',
-        );
-      }
+      if (mounted) SnackBarUtils.showSuccess(context, title: 'Berhasil!', message: 'Lokasi berhasil didapatkan');
     } catch (e) {
-      if (mounted) {
-        SnackBarUtils.showError(
-          context,
-          title: 'Error!',
-          message: e.toString(),
-        );
-      }
+      if (mounted) SnackBarUtils.showError(context, title: 'Error!', message: e.toString());
     } finally {
-      setState(() {
-        _isLoadingLocation = false;
-      });
+      setState(() => _isLoadingLocation = false);
     }
   }
 
   Future<void> _pickLocationManually() async {
-    LatLng initialPosition = LatLng(
-      _currentLatitude ?? -6.2088,
-      _currentLongitude ?? 106.8456,
-    );
-
+    LatLng initialPosition = LatLng(_currentLatitude ?? -6.2088, _currentLongitude ?? 106.8456);
     final LatLng? result = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => MapPickerScreen(initialPosition: initialPosition),
-      ),
+      MaterialPageRoute(builder: (context) => _MapPickerScreen(initialPosition: initialPosition)),
     );
-
     if (result != null) {
       setState(() {
         _currentLatitude = result.latitude;
         _currentLongitude = result.longitude;
-        _lokasiController.text =
-            'Lat: ${result.latitude.toStringAsFixed(6)}, '
-            'Long: ${result.longitude.toStringAsFixed(6)}';
+        _lokasiController.text = 'Lat: ${result.latitude.toStringAsFixed(6)}, Long: ${result.longitude.toStringAsFixed(6)}';
       });
-
-      if (mounted) {
-        SnackBarUtils.showSuccess(
-          context,
-          title: 'Berhasil!',
-          message: 'Lokasi berhasil dipilih dari peta',
-        );
-      }
+      if (mounted) SnackBarUtils.showSuccess(context, title: 'Berhasil!', message: 'Lokasi berhasil dipilih dari peta');
     }
   }
 
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
+  Future<DateTime?> _pickDate({DateTime? initial}) async {
+    return showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
+      initialDate: initial ?? DateTime.now(),
       firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(2030),
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Colors.blue,
-              onPrimary: Colors.white,
-              surface: Color(0xFF1E1E1E),
-              onSurface: Colors.white,
-            ),
+            colorScheme: const ColorScheme.dark(primary: Colors.blue, onPrimary: Colors.white, surface: Color(0xFF1E1E1E), onSurface: Colors.white),
           ),
           child: child!,
         );
       },
     );
-
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-        _showDateError = false;
-      });
-    }
   }
 
-  // ========== SUBMIT FORM ==========
+  Future<List<String>> _uploadFiles(List<PlatformFile> files, String label) async {
+    List<String> urls = [];
+    for (int i = 0; i < files.length; i++) {
+      SnackBarUtils.hide(context);
+      SnackBarUtils.showLoading(context, message: 'Mengupload $label ${i + 1}/${files.length}...');
+      final result = await _temuanService.uploadFoto(files[i]);
+      if (result['success']) {
+        urls.add(result['url']);
+      } else {
+        throw Exception('Gagal upload $label ${i + 1}: ${result['message']}');
+      }
+    }
+    return urls;
+  }
+
   Future<void> _submitForm() async {
-    setState(() {
-      _showDateError = _selectedDate == null;
-    });
-
+    setState(() => _showDateError = _selectedDate == null);
     if (!_formKey.currentState!.validate() || _selectedDate == null) {
-      SnackBarUtils.showWarning(
-        context,
-        title: 'Peringatan!',
-        message: 'Mohon lengkapi semua field yang diperlukan',
-      );
+      _goToStep(0);
+      SnackBarUtils.showWarning(context, title: 'Peringatan!', message: 'Mohon lengkapi data temuan di Step 1');
       return;
     }
 
-    final bool hasChanges =
-        _newFotoFiles.isNotEmpty ||
-        _deletedFotoUrls.isNotEmpty ||
-        _lokasiController.text != widget.temuan.lokasi ||
-        _namaPemilikController.text != widget.temuan.namaPemilik ||
-        _deskripsiController.text != widget.temuan.deskripsiTemuan ||
-        _selectedDate != widget.temuan.tanggalTemuan ||
-        _nomorAmsController.text != (widget.temuan.nomorAms ?? '') ||
-        _statusTemuan != (widget.temuan.statusTemuan ?? 'Open');
-
-    if (!hasChanges) {
-      SnackBarUtils.showInfo(
-        context,
-        title: 'Info',
-        message: 'Tidak ada perubahan yang dilakukan',
-      );
-      return;
-    }
-
-    setState(() {
-      _isSubmitting = true;
-    });
+    setState(() => _isSubmitting = true);
 
     try {
       SnackBarUtils.showLoading(context, message: 'Memperbarui data temuan...');
 
+      // Upload new foto temuan
       List<String> newUploadedUrls = [];
-      List<String> failedUploads = [];
-
       if (_newFotoFiles.isNotEmpty) {
-        setState(() {
-          _isUploadingPhoto = true;
-        });
-
-        for (int i = 0; i < _newFotoFiles.length; i++) {
-          final xfile = _newFotoFiles[i];
-          try {
-            final result = await _temuanService.uploadFoto(xfile);
-
-            if (result['success']) {
-              newUploadedUrls.add(result['url']);
-              print('✅ Foto ${i + 1} berhasil diupload');
-            } else {
-              failedUploads.add('Foto ${i + 1}');
-              print('❌ Foto ${i + 1} gagal: ${result['message']}');
-            }
-          } catch (e) {
-            failedUploads.add('Foto ${i + 1}');
-            debugPrint('❌ Error uploading foto ${i + 1}: $e');
-          }
-        }
-
-        setState(() {
-          _isUploadingPhoto = false;
-        });
-
-        if (failedUploads.isNotEmpty && mounted) {
-          SnackBarUtils.hide(context);
-          SnackBarUtils.showWarning(
-            context,
-            title: 'Peringatan!',
-            message:
-                '${failedUploads.length} foto gagal diupload: ${failedUploads.join(", ")}',
-          );
-          await Future.delayed(const Duration(seconds: 2));
-          SnackBarUtils.showLoading(
-            context,
-            message: 'Melanjutkan pembaruan...',
-          );
-        }
+        newUploadedUrls = await _uploadFiles(_newFotoFiles, 'foto temuan');
       }
-
       final allFotoUrls = [..._existingFotoUrls, ...newUploadedUrls];
 
+      // Upload new foto reminder
+      List<String> newReminderUrls = [];
+      if (_newFotoReminder.isNotEmpty) {
+        newReminderUrls = await _uploadFiles(_newFotoReminder, 'foto reminder');
+      }
+      final allReminderUrls = [..._existingFotoReminder, ...newReminderUrls];
+
+      // Upload new foto closing
+      List<String> newClosingUrls = [];
+      if (_newFotoClosing.isNotEmpty) {
+        newClosingUrls = await _uploadFiles(_newFotoClosing, 'foto closing');
+      }
+      final allClosingUrls = [..._existingFotoClosing, ...newClosingUrls];
+
+      // Build updated temuan
       final updatedTemuan = TemuanModel(
         id: widget.temuan.id,
         lokasi: _lokasiController.text,
@@ -453,1023 +267,594 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         latitude: _currentLatitude,
         longitude: _currentLongitude,
         fotoUrls: allFotoUrls.isEmpty ? null : allFotoUrls,
-        nomorAms:
-            _nomorAmsController.text.isEmpty ? null : _nomorAmsController.text,
-        statusTemuan: _statusTemuan,
+        nomorAms: _nomorAmsController.text.isEmpty ? null : _nomorAmsController.text,
+        statusTemuan: widget.temuan.statusTemuan ?? 'Open',
+        tipeTemuan: _tipeTemuan,
+        jarakAktivitas: _jarakAktivitas,
+        intensitasAktivitas: _intensitasAktivitas,
+        jenisObjek: _jenisObjek,
+        jenisAset: _jenisAset,
+        lokasiObjek: _lokasiObjek,
+        skorMatriks: _skorMatriks > 0 ? _skorMatriks : null,
+        levelRisiko: _levelRisiko,
+        tglReminder: _tglReminder,
+        fotoReminder: allReminderUrls.isEmpty ? null : allReminderUrls,
+        jenisClosing: _jenisClosing,
+        tglClosing: _tglClosing,
+        fotoClosing: allClosingUrls.isEmpty ? null : allClosingUrls,
       );
 
-      final result = await _temuanService.updateTemuan(
-        widget.temuan.id!,
-        updatedTemuan,
-      );
+      final result = await _temuanService.updateTemuan(widget.temuan.id!, updatedTemuan);
 
-      if (_deletedFotoUrls.isNotEmpty) {
-        for (var url in _deletedFotoUrls) {
-          try {
-            await _temuanService.deleteFoto(url);
-          } catch (e) {
-            debugPrint('Error deleting foto: $e');
-          }
-        }
+      // Delete removed photos
+      for (var url in [..._deletedFotoUrls, ..._deletedFotoReminder, ..._deletedFotoClosing]) {
+        try { await _temuanService.deleteFoto(url); } catch (_) {}
       }
 
-      SnackBarUtils.hide(context);
+      // Save new sosialisasi if filled
+      if (_tglSosialisasiBaru != null) {
+        List<String>? sosUrls;
+        if (_fotoSosialisasiBaru.isNotEmpty) {
+          sosUrls = await _uploadFiles(_fotoSosialisasiBaru, 'foto sosialisasi');
+        }
+        await _temuanService.addSosialisasi(SosialisasiModel(
+          temuanId: widget.temuan.id!,
+          tglSosialisasi: _tglSosialisasiBaru!,
+          fotoUrls: sosUrls,
+        ));
+      }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).clearSnackBars();
 
       if (result['success']) {
-        SnackBarUtils.showSuccess(
-          context,
-          title: 'Berhasil!',
-          message:
-              failedUploads.isEmpty
-                  ? 'Data temuan berhasil diperbarui'
-                  : 'Data temuan diperbarui (${failedUploads.length} foto gagal diupload)',
+        // Selalu clear dulu notif lama; lalu buat baru jika sudah overdue
+        await NotificationService.instance.clearReminderNotifIfNotOverdue(
+          temuanId: widget.temuan.id!,
+          tglReminder: _tglReminder,
         );
-
-        await Future.delayed(const Duration(milliseconds: 500));
-        if (mounted) {
-          Navigator.of(context).pop(true);
+        if (_tglReminder != null) {
+          NotificationService.instance.checkAndNotifyOverdue(
+            temuanId: widget.temuan.id!,
+            namaPemilik: _namaPemilikController.text,
+            lokasi: _lokasiController.text,
+            tglReminder: _tglReminder!,
+          );
         }
+
+        SnackBarUtils.showSuccess(context, title: 'Berhasil!', message: 'Data temuan berhasil diperbarui');
+        await Future.delayed(const Duration(milliseconds: 800));
+        if (mounted) Navigator.of(context).pop(true);
       } else {
-        SnackBarUtils.showError(
-          context,
-          title: 'Gagal!',
-          message: result['message'] ?? 'Terjadi kesalahan saat memperbarui',
-        );
+        SnackBarUtils.showError(context, title: 'Gagal!', message: result['message'] ?? 'Terjadi kesalahan');
       }
     } catch (e) {
-      SnackBarUtils.hide(context);
-
-      SnackBarUtils.showError(
-        context,
-        title: 'Error!',
-        message: 'Terjadi kesalahan: ${e.toString()}',
-      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).clearSnackBars();
+      SnackBarUtils.showError(context, title: 'Error!', message: e.toString());
     } finally {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-          _isUploadingPhoto = false;
-        });
-      }
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
-  // ========== BUILD UI ==========
-  Widget _buildUserInfo() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.withOpacity(0.3)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.edit_note, color: Colors.blue, size: 20),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Mengedit data: ${widget.temuan.namaPemilik}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
+  bool get _isFormDirty =>
+      _lokasiController.text != widget.temuan.lokasi ||
+      _namaPemilikController.text != widget.temuan.namaPemilik ||
+      _deskripsiController.text != widget.temuan.deskripsiTemuan ||
+      _selectedDate != widget.temuan.tanggalTemuan ||
+      _newFotoFiles.isNotEmpty ||
+      _deletedFotoUrls.isNotEmpty;
+
+  Future<bool> _confirmDiscard() async {
+    if (!_isFormDirty) return true;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text('Keluar tanpa menyimpan?', style: TextStyle(color: Colors.white)),
+        content: const Text('Perubahan yang belum disimpan akan hilang.', style: TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal', style: TextStyle(color: Colors.grey))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text('Keluar')),
         ],
       ),
     );
+    return result ?? false;
   }
 
-  Widget _buildFotoSection() {
+  // ==================== BUILD HELPERS ====================
+
+  InputDecoration _inputDecoration({required String hint, String? label, IconData? icon, Color? iconColor}) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.white),
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.white70),
+      filled: true,
+      fillColor: Colors.grey[800],
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey[600]!)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: iconColor ?? Colors.blue)),
+      disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey[700]!)),
+      prefixIcon: icon != null ? Icon(icon, color: iconColor ?? Colors.blue) : null,
+    );
+  }
+
+  Widget _buildDatePicker({required String label, DateTime? value, required ValueChanged<DateTime?> onChanged, bool showError = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Foto Temuan',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color:
-                    _totalFotoCount > 0
-                        ? Colors.blue.withOpacity(0.2)
-                        : Colors.grey.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color:
-                      _totalFotoCount > 0
-                          ? Colors.blue.withOpacity(0.5)
-                          : Colors.grey.withOpacity(0.3),
-                ),
-              ),
-              child: Text(
-                '$_totalFotoCount foto',
-                style: TextStyle(
-                  color: _totalFotoCount > 0 ? Colors.blue : Colors.grey[400],
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-
-        // Tombol Tambah Foto
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed:
-                    _isUploadingPhoto || _isSubmitting ? null : _pickImages,
-                icon: const Icon(
-                  Icons.photo_library,
-                  color: Colors.blue,
-                  size: 20,
-                ),
-                label: const Text(
-                  'Pilih dari Galeri',
-                  style: TextStyle(color: Colors.white, fontSize: 13),
-                ),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  side: BorderSide(
-                    color:
-                        _isUploadingPhoto || _isSubmitting
-                            ? Colors.grey
-                            : Colors.blue,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed:
-                    _isUploadingPhoto || _isSubmitting ? null : _takePicture,
-                icon: const Icon(
-                  Icons.camera_alt,
-                  color: Colors.green,
-                  size: 20,
-                ),
-                label: Text(
-                  kIsWeb ? 'Ambil dari Perangkat' : 'Ambil Foto',
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                ),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  side: BorderSide(
-                    color:
-                        _isUploadingPhoto || _isSubmitting
-                            ? Colors.grey
-                            : Colors.green,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 16),
-
-        // Display Existing Photos
-        if (_existingFotoUrls.isNotEmpty) ...[
-          Row(
-            children: [
-              Container(
-                width: 4,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Foto yang Sudah Ada',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '(${_existingFotoUrls.length})',
-                style: TextStyle(color: Colors.grey[400], fontSize: 13),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          FotoGridWidget(
-            fotoUrls: _existingFotoUrls,
-            isEditable: !_isSubmitting,
-            onDelete: _deleteExistingFoto,
-          ),
-          const SizedBox(height: 16),
-        ],
-
-        // Display New Photos
-        if (_newFotoFiles.isNotEmpty) ...[
-          Row(
-            children: [
-              Container(
-                width: 4,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: Colors.orange,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Foto Baru (Belum Disimpan)',
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '(${_newFotoFiles.length})',
-                style: const TextStyle(color: Colors.orange, fontSize: 13),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            itemCount: _newFotoFiles.length,
-            itemBuilder: (context, index) {
-              final xfile = _newFotoFiles[index];
-              return Stack(
-                fit: StackFit.expand,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child:
-                        kIsWeb
-                            ? Image.network(
-                              xfile.path,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: Colors.grey[800],
-                                  child: const Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.image,
-                                        color: Colors.grey,
-                                        size: 40,
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'Preview\nTidak Tersedia',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 10,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            )
-                            : FutureBuilder<File>(
-                              future: Future.value(File(xfile.path)),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Image.file(
-                                    snapshot.data!,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        color: Colors.grey[800],
-                                        child: const Icon(
-                                          Icons.image,
-                                          color: Colors.grey,
-                                          size: 40,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                                return Container(
-                                  color: Colors.grey[800],
-                                  child: const Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                  ),
-                  // Badge "Baru"
-                  Positioned(
-                    top: 4,
-                    left: 4,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.circular(4),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 4,
-                          ),
-                        ],
-                      ),
-                      child: const Text(
-                        'BARU',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Delete button
-                  if (!_isSubmitting)
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: GestureDetector(
-                        onTap: () => _deleteNewFoto(xfile),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 4,
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-        ],
-
-        // Peringatan jika ada foto yang akan dihapus
-        if (_deletedFotoUrls.isNotEmpty)
-          Container(
-            padding: const EdgeInsets.all(12),
+        Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: _isSubmitting ? null : () async {
+            final picked = await _pickDate(initial: value);
+            if (picked != null) onChanged(picked);
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.red.withOpacity(0.3)),
+              color: Colors.grey[800],
+              border: Border.all(color: showError && value == null ? Colors.red.withValues(alpha: 0.5) : Colors.grey[600]!),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
               children: [
-                const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '${_deletedFotoUrls.length} foto akan dihapus permanen',
-                    style: const TextStyle(color: Colors.red, fontSize: 12),
-                  ),
+                const Icon(Icons.calendar_today, color: Colors.blue),
+                const SizedBox(width: 12),
+                Text(
+                  value != null
+                      ? '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}'
+                      : 'Pilih tanggal',
+                  style: const TextStyle(color: Colors.white),
                 ),
               ],
             ),
           ),
+        ),
+        if (showError && value == null)
+          const Padding(padding: EdgeInsets.only(top: 8, left: 12), child: Text('Tanggal harus dipilih', style: TextStyle(color: Colors.red, fontSize: 12))),
+      ],
+    );
+  }
 
-        // Empty state
-        if (_totalFotoCount == 0)
-          Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[700]!),
-            ),
-            child: const Center(
+  Widget _buildStepIndicator() {
+    const labels = ['Temuan', 'Reminder', 'Closing', 'Sosialisasi'];
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      child: Row(
+        children: List.generate(_totalSteps, (i) {
+          final isActive = i == _currentStep;
+          final isDone = i < _currentStep;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => _goToStep(i),
               child: Column(
                 children: [
-                  Icon(
-                    Icons.add_photo_alternate_outlined,
-                    size: 48,
-                    color: Colors.grey,
+                  Container(
+                    width: 28, height: 28,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isActive ? Colors.blue : isDone ? Colors.green : Colors.grey[700],
+                    ),
+                    child: Center(
+                      child: isDone
+                          ? const Icon(Icons.check, size: 16, color: Colors.white)
+                          : Text('${i + 1}', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
                   ),
-                  SizedBox(height: 8),
-                  Text('Belum ada foto', style: TextStyle(color: Colors.grey)),
-                  SizedBox(height: 4),
-                  Text(
-                    'Tambahkan foto temuan',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
+                  const SizedBox(height: 4),
+                  Text(labels[i], style: TextStyle(fontSize: 10, color: isActive ? Colors.blue : Colors.white70, fontWeight: isActive ? FontWeight.bold : FontWeight.normal)),
                 ],
               ),
             ),
-          ),
+          );
+        }),
+      ),
+    );
+  }
 
+  // ==================== STEP PAGES ====================
+
+  Widget _buildStep1Temuan() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // User info
+        Container(
+          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.blue.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.edit_note, color: Colors.blue, size: 20),
+              const SizedBox(width: 8),
+              Expanded(child: Text('Mengedit data: ${widget.temuan.namaPemilik}', style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500))),
+            ],
+          ),
+        ),
+
+        // Tipe Temuan picker
+        _buildTipePicker(),
+
+        // Foto
+        FotoPickerWidget(
+          existingUrls: _existingFotoUrls,
+          isEnabled: !_isSubmitting,
+          onNewFilesChanged: (files) { _newFotoFiles..clear()..addAll(files); },
+          onExistingUrlsChanged: (urls) => setState(() => _existingFotoUrls = urls),
+          onDeletedUrlsChanged: (deleted) => setState(() => _deletedFotoUrls = deleted),
+        ),
+        const SizedBox(height: 16),
+
+        // Lokasi
+        const Text('Lokasi Temuan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _lokasiController,
+          style: const TextStyle(color: Colors.white),
+          enabled: !_isSubmitting,
+          decoration: _inputDecoration(hint: 'Masukkan lokasi atau gunakan GPS', icon: Icons.location_on),
+          validator: (v) => (v == null || v.isEmpty) ? 'Lokasi harus diisi' : null,
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _isLoadingLocation || _isSubmitting ? null : _getCurrentLocation,
+            icon: _isLoadingLocation
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : const Icon(Icons.my_location, size: 20),
+            label: Text(_isLoadingLocation ? 'Mengambil Lokasi...' : kIsWeb ? 'Pilih lokasi sekarang' : 'Gunakan Lokasi Sekarang'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: _isSubmitting ? null : _pickLocationManually,
+            icon: const Icon(Icons.map, color: Colors.blue, size: 20),
+            label: const Text('Pilih Lokasi dari Peta', style: TextStyle(color: Colors.white)),
+            style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.blue), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+          ),
+        ),
         const SizedBox(height: 20),
+
+        // Nama Pemilik
+        const Text('Nama Pemilik', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _namaPemilikController,
+          style: const TextStyle(color: Colors.white),
+          enabled: !_isSubmitting,
+          decoration: _inputDecoration(hint: 'Masukkan nama pemilik', label: 'Nama Pemilik', icon: Icons.person),
+          validator: (v) => (v == null || v.isEmpty) ? 'Nama pemilik harus diisi' : null,
+        ),
+        const SizedBox(height: 20),
+
+        // Tanggal
+        _buildDatePicker(
+          label: 'Tanggal Temuan',
+          value: _selectedDate,
+          onChanged: (d) => setState(() { _selectedDate = d; _showDateError = false; }),
+          showError: _showDateError,
+        ),
+        const SizedBox(height: 20),
+
+        // Deskripsi
+        const Text('Deskripsi Temuan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _deskripsiController,
+          maxLines: 4,
+          style: const TextStyle(color: Colors.white),
+          enabled: !_isSubmitting,
+          decoration: _inputDecoration(hint: 'Jelaskan detail temuan', label: 'Deskripsi Temuan', icon: Icons.description),
+          validator: (v) => (v == null || v.isEmpty) ? 'Deskripsi harus diisi' : null,
+        ),
+        const SizedBox(height: 20),
+
+        // Nomor AMS
+        Row(children: [
+          const Text('Nomor AMS', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.orange)),
+            child: const Text('Opsional', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
+          ),
+        ]),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _nomorAmsController,
+          style: const TextStyle(color: Colors.white),
+          enabled: !_isSubmitting,
+          decoration: _inputDecoration(hint: 'Masukkan nomor AMS (jika ada)', icon: Icons.confirmation_number, iconColor: Colors.orange),
+        ),
+        const SizedBox(height: 24),
+
+        // Matriks Risiko
+        MatriksRisikoWidget(
+          initialJarak: _jarakAktivitas,
+          initialIntensitas: _intensitasAktivitas,
+          initialObjek: _jenisObjek,
+          initialAset: _jenisAset,
+          initialLokasi: _lokasiObjek,
+          onChanged: (level, skor, {required jarak, required intensitas, required objek, required aset, required lokasi}) {
+            setState(() {
+              _jarakAktivitas = jarak;
+              _intensitasAktivitas = intensitas;
+              _jenisObjek = objek;
+              _jenisAset = aset;
+              _lokasiObjek = lokasi;
+              _skorMatriks = skor;
+              _levelRisiko = level;
+            });
+          },
+        ),
+        const SizedBox(height: 24),
       ],
+    );
+  }
+
+  Widget _buildStep2Reminder() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text('Step 2: Reminder', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        const Text('Opsional — isi jika sudah melakukan reminder ke pemilik.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+        const SizedBox(height: 24),
+
+        _buildDatePicker(label: 'Tanggal Reminder', value: _tglReminder, onChanged: (d) => setState(() => _tglReminder = d)),
+        const SizedBox(height: 20),
+
+        const Text('Foto Surat Tanda Terima', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        FotoPickerWidget(
+          existingUrls: _existingFotoReminder,
+          isEnabled: !_isSubmitting,
+          onNewFilesChanged: (files) => _newFotoReminder = files,
+          onExistingUrlsChanged: (urls) => setState(() => _existingFotoReminder = urls),
+          onDeletedUrlsChanged: (deleted) => setState(() => _deletedFotoReminder = deleted),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildStep3Closing() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text('Step 3: Closing', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.orange.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
+          ),
+          child: const Row(children: [
+            Icon(Icons.warning_amber, color: Colors.orange),
+            SizedBox(width: 8),
+            Expanded(child: Text('Mengisi closing akan menutup temuan ini secara otomatis.', style: TextStyle(color: Colors.orange, fontSize: 13))),
+          ]),
+        ),
+        const SizedBox(height: 24),
+
+        const Text('Jenis Closing', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(color: Colors.grey[800], borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey[600]!)),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _jenisClosing,
+              isExpanded: true,
+              dropdownColor: Colors.grey[850],
+              hint: const Text('Pilih jenis closing', style: TextStyle(color: Colors.white70)),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+              items: const [
+                DropdownMenuItem(value: 'pfk', child: Text('PFK')),
+                DropdownMenuItem(value: 'preventif', child: Text('Preventif')),
+              ],
+              onChanged: _isSubmitting ? null : (val) => setState(() => _jenisClosing = val),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        _buildDatePicker(label: 'Tanggal Closing', value: _tglClosing, onChanged: (d) => setState(() => _tglClosing = d)),
+        const SizedBox(height: 20),
+
+        const Text('Foto Tindaklanjut', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        FotoPickerWidget(
+          existingUrls: _existingFotoClosing,
+          isEnabled: !_isSubmitting,
+          onNewFilesChanged: (files) => _newFotoClosing = files,
+          onExistingUrlsChanged: (urls) => setState(() => _existingFotoClosing = urls),
+          onDeletedUrlsChanged: (deleted) => setState(() => _deletedFotoClosing = deleted),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildStep4Sosialisasi() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text('Step 4: Sosialisasi', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        const Text('Riwayat sosialisasi dan tambah entri baru.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+        const SizedBox(height: 24),
+
+        // Riwayat
+        const Text('Riwayat Sosialisasi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        if (_isLoadingSosialisasi)
+          const Center(child: CircularProgressIndicator())
+        else if (_riwayatSosialisasi.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: Colors.grey[850], borderRadius: BorderRadius.circular(12)),
+            child: const Text('Belum ada riwayat sosialisasi.', style: TextStyle(color: Colors.white70), textAlign: TextAlign.center),
+          )
+        else
+          ..._riwayatSosialisasi.map((s) => Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: Colors.grey[850], borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey[700]!)),
+            child: Row(
+              children: [
+                const Icon(Icons.event, color: Colors.blue, size: 18),
+                const SizedBox(width: 8),
+                Expanded(child: Text(
+                  '${s.tglSosialisasi.day.toString().padLeft(2, '0')}/${s.tglSosialisasi.month.toString().padLeft(2, '0')}/${s.tglSosialisasi.year}',
+                  style: const TextStyle(color: Colors.white),
+                )),
+                if (s.fotoUrls != null && s.fotoUrls!.isNotEmpty)
+                  Text('${s.fotoUrls!.length} foto', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                  onPressed: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: Colors.grey[900],
+                        title: const Text('Hapus sosialisasi?', style: TextStyle(color: Colors.white)),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+                          TextButton(onPressed: () => Navigator.pop(ctx, true), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text('Hapus')),
+                        ],
+                      ),
+                    );
+                    if (confirm == true && s.id != null) {
+                      await _temuanService.deleteSosialisasi(s.id!);
+                      _loadSosialisasi();
+                    }
+                  },
+                ),
+              ],
+            ),
+          )),
+
+        const SizedBox(height: 24),
+        const Divider(color: Colors.grey),
+        const SizedBox(height: 16),
+
+        // Tambah baru
+        const Text('Tambah Sosialisasi Baru', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 12),
+
+        _buildDatePicker(label: 'Tanggal Sosialisasi', value: _tglSosialisasiBaru, onChanged: (d) => setState(() => _tglSosialisasiBaru = d)),
+        const SizedBox(height: 16),
+
+        const Text('Foto Sosialisasi', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white)),
+        const SizedBox(height: 8),
+        FotoPickerWidget(
+          isEnabled: !_isSubmitting,
+          onNewFilesChanged: (files) => _fotoSosialisasiBaru = files,
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildTipePicker() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Tipe Temuan', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          const SizedBox(height: 8),
+          Row(children: [
+            _TipeOption(label: 'KMU', icon: Icons.bolt, color: Colors.red, selected: _tipeTemuan == TipeTemuan.kmu, onTap: () => setState(() => _tipeTemuan = TipeTemuan.kmu)),
+            const SizedBox(width: 12),
+            _TipeOption(label: 'ROW', icon: Icons.nature, color: Colors.green, selected: _tipeTemuan == TipeTemuan.row, onTap: () => setState(() => _tipeTemuan = TipeTemuan.row)),
+          ]),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: const Text('Edit Temuan'),
-        backgroundColor: Colors.grey[900],
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: SizedBox(
-            width: screenWidth > 600 ? screenWidth * 0.7 : double.infinity,
-            child: Form(
-              key: _formKey,
-              child: ListView(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        if (await _confirmDiscard() && context.mounted) Navigator.of(context).pop();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          title: Text('Edit ${TipeTemuan.label(widget.temuan.tipeTemuan)}'),
+          backgroundColor: Colors.grey[900],
+          foregroundColor: Colors.white,
+        ),
+        body: Column(
+          children: [
+            _buildStepIndicator(),
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: PageView(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    _buildStep1Temuan(),
+                    _buildStep2Reminder(),
+                    _buildStep3Closing(),
+                    _buildStep4Sosialisasi(),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: Colors.grey[900], border: Border(top: BorderSide(color: Colors.grey[800]!))),
+              child: Row(
                 children: [
-                  _buildUserInfo(),
-                  _buildFotoSection(),
-
-                  // ========== LOKASI SECTION ==========
-                  const Text(
-                    'Lokasi Temuan',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _lokasiController,
-                    style: const TextStyle(color: Colors.white),
-                    enabled: !_isSubmitting,
-                    decoration: InputDecoration(
-                      labelText: 'Lokasi',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintText: 'Masukkan lokasi atau gunakan GPS',
-                      hintStyle: const TextStyle(color: Colors.white70),
-                      filled: true,
-                      fillColor: Colors.grey[800],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: Colors.grey[600]!),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Colors.blue),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: Colors.grey[700]!),
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.location_on,
-                        color: Colors.blue,
+                  if (_currentStep > 0)
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => _goToStep(_currentStep - 1),
+                        style: OutlinedButton.styleFrom(foregroundColor: Colors.white, side: const BorderSide(color: Colors.grey), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.symmetric(vertical: 14)),
+                        child: const Text('Sebelumnya'),
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Lokasi harus diisi';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed:
-                          _isLoadingLocation || _isSubmitting
-                              ? null
-                              : _getCurrentLocation,
-                      icon:
-                          _isLoadingLocation
-                              ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                              : const Icon(Icons.my_location, size: 20),
-                      label: Text(
-                        _isLoadingLocation
-                            ? 'Mengambil Lokasi...'
-                            : kIsWeb
-                            ? 'Pilih lokasi sekarang'
-                            : 'Gunakan Lokasi Sekarang',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        disabledBackgroundColor: Colors.grey[700],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _isSubmitting ? null : _pickLocationManually,
-                      icon: const Icon(Icons.map, color: Colors.blue, size: 20),
-                      label: const Text(
-                        'Pilih Lokasi dari Peta',
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        side: BorderSide(
-                          color: _isSubmitting ? Colors.grey : Colors.blue,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // ========== NAMA PEMILIK ==========
-                  const Text(
-                    'Nama Pemilik',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _namaPemilikController,
-                    style: const TextStyle(color: Colors.white),
-                    enabled: !_isSubmitting,
-                    decoration: InputDecoration(
-                      labelText: 'Nama Pemilik',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintText: 'Masukkan nama pemilik',
-                      hintStyle: const TextStyle(color: Colors.white70),
-                      filled: true,
-                      fillColor: Colors.grey[800],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: Colors.grey[600]!),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Colors.blue),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: Colors.grey[700]!),
-                      ),
-                      prefixIcon: const Icon(Icons.person, color: Colors.blue),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Nama pemilik harus diisi';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // ========== TANGGAL ==========
-                  const Text(
-                    'Tanggal Temuan',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  InkWell(
-                    onTap: _isSubmitting ? null : _selectDate,
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color:
-                            _isSubmitting ? Colors.grey[850] : Colors.grey[800],
-                        border: Border.all(
-                          color:
-                              _showDateError && _selectedDate == null
-                                  ? Colors.red.withOpacity(0.5)
-                                  : Colors.grey[600]!,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_today,
-                            color: _isSubmitting ? Colors.grey : Colors.blue,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            _selectedDate != null
-                                ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-                                : 'Pilih tanggal temuan',
-                            style: TextStyle(
-                              color: _isSubmitting ? Colors.grey : Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (_showDateError && _selectedDate == null)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8, left: 12),
-                      child: Text(
-                        'Tanggal temuan harus dipilih',
-                        style: TextStyle(color: Colors.red, fontSize: 12),
-                      ),
-                    ),
-
-                  const SizedBox(height: 20),
-
-                  // ========== DESKRIPSI ==========
-                  const Text(
-                    'Deskripsi Temuan',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _deskripsiController,
-                    maxLines: 4,
-                    style: const TextStyle(color: Colors.white),
-                    enabled: !_isSubmitting,
-                    decoration: InputDecoration(
-                      labelText: 'Deskripsi Temuan',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintText: 'Jelaskan detail temuan',
-                      hintStyle: const TextStyle(color: Colors.white70),
-                      filled: true,
-                      fillColor: Colors.grey[800],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: Colors.grey[600]!),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Colors.blue),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: Colors.grey[700]!),
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.description,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Deskripsi harus diisi';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // ========== NOMOR AMS ==========
-                  Row(
-                    children: [
-                      const Text(
-                        'Nomor AMS',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.orange),
-                        ),
-                        child: const Text(
-                          'Tindak Lanjut',
-                          style: TextStyle(
-                            color: Colors.orange,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _nomorAmsController,
-                    style: const TextStyle(color: Colors.white),
-                    enabled: !_isSubmitting,
-                    decoration: InputDecoration(
-                      labelText: 'Nomor AMS',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintText: 'Masukkan nomor AMS',
-                      hintStyle: const TextStyle(color: Colors.white70),
-                      filled: true,
-                      fillColor: Colors.grey[800],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: Colors.grey[600]!),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Colors.orange),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: Colors.grey[700]!),
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.confirmation_number,
-                        color: Colors.orange,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Row(
-                    children: [
-                      const Text(
-                        'Status Temuan',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              _statusTemuan == 'Open'
-                                  ? Colors.red.withOpacity(0.2)
-                                  : Colors.green.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color:
-                                _statusTemuan == 'Open'
-                                    ? Colors.red
-                                    : Colors.green,
-                          ),
-                        ),
-                        child: Text(
-                          _statusTemuan,
-                          style: TextStyle(
-                            color:
-                                _statusTemuan == 'Open'
-                                    ? Colors.red
-                                    : Colors.green,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[800],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey[600]!),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: _statusTemuan,
-                        isExpanded: true,
-                        dropdownColor: Colors.grey[850],
-                        icon: Icon(
-                          Icons.arrow_drop_down,
-                          color: _isSubmitting ? Colors.grey : Colors.white,
-                        ),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                        items: [
-                          DropdownMenuItem(
-                            value: 'Open',
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 12,
-                                  height: 12,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.red,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                const Text('Open'),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '(Belum Selesai)',
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Close',
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 12,
-                                  height: 12,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.green,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                const Text('Close'),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '(Sudah Selesai)',
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                        onChanged:
-                            _isSubmitting
-                                ? null
-                                : (String? newValue) {
-                                  if (newValue != null) {
-                                    setState(() {
-                                      _statusTemuan = newValue;
-                                    });
-                                  }
-                                },
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ========== SUBMIT BUTTON ==========
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
+                  if (_currentStep > 0) const SizedBox(width: 12),
+                  Expanded(
                     child: ElevatedButton(
-                      onPressed: _isSubmitting ? null : _submitForm,
+                      onPressed: _isSubmitting ? null : _currentStep < _totalSteps - 1 ? () => _goToStep(_currentStep + 1) : _submitForm,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            _isSubmitting ? Colors.grey[700] : Colors.blue,
+                        backgroundColor: _currentStep < _totalSteps - 1 ? Colors.blue : Colors.green,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: _isSubmitting ? 0 : 2,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child:
-                          _isSubmitting
-                              ? Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    _isUploadingPhoto
-                                        ? 'Mengupload foto...'
-                                        : 'Memperbarui...',
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ],
-                              )
-                              : const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.save, size: 20),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Perbarui Temuan',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                      child: _isSubmitting
+                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          : Text(_currentStep < _totalSteps - 1 ? 'Selanjutnya' : 'Perbarui Temuan', style: const TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
-
-                  const SizedBox(height: 16),
                 ],
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -1477,17 +862,15 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
 }
 
 // ========== MAP PICKER SCREEN ==========
-class MapPickerScreen extends StatefulWidget {
+class _MapPickerScreen extends StatefulWidget {
   final LatLng initialPosition;
-
-  const MapPickerScreen({Key? key, required this.initialPosition})
-    : super(key: key);
+  const _MapPickerScreen({required this.initialPosition});
 
   @override
-  State<MapPickerScreen> createState() => _MapPickerScreenState();
+  State<_MapPickerScreen> createState() => _MapPickerScreenState();
 }
 
-class _MapPickerScreenState extends State<MapPickerScreen> {
+class _MapPickerScreenState extends State<_MapPickerScreen> {
   late LatLng _selectedPosition;
   final MapController _mapController = MapController();
 
@@ -1498,14 +881,10 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   }
 
   void _onMapTap(TapPosition tapPosition, LatLng position) {
-    setState(() {
-      _selectedPosition = position;
-    });
+    setState(() => _selectedPosition = position);
   }
 
-  void _confirmLocation() {
-    Navigator.pop(context, _selectedPosition);
-  }
+  void _confirmLocation() => Navigator.pop(context, _selectedPosition);
 
   @override
   Widget build(BuildContext context) {
@@ -1515,157 +894,35 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         title: const Text('Pilih Lokasi Temuan'),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check_circle, color: Colors.green),
-            onPressed: _confirmLocation,
-            tooltip: 'Konfirmasi Lokasi',
-          ),
-        ],
+        actions: [IconButton(icon: const Icon(Icons.check_circle, color: Colors.green), onPressed: _confirmLocation)],
       ),
       body: Stack(
         children: [
           FlutterMap(
             mapController: _mapController,
-            options: MapOptions(
-              initialCenter: _selectedPosition,
-              initialZoom: 15.0,
-              onTap: _onMapTap,
-            ),
+            options: MapOptions(initialCenter: _selectedPosition, initialZoom: 15.0, onTap: _onMapTap, interactionOptions: const InteractionOptions(flags: InteractiveFlag.all)),
             children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.elsafe',
-                maxZoom: 19,
-              ),
-              MarkerLayer(
-                markers: [
-                  Marker(
-                    point: _selectedPosition,
-                    width: 50,
-                    height: 50,
-                    child: const Icon(
-                      Icons.location_on,
-                      color: Colors.red,
-                      size: 50,
-                    ),
-                  ),
-                ],
-              ),
+              TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.example.elsafe', maxZoom: 19),
+              MarkerLayer(markers: [Marker(point: _selectedPosition, width: 50, height: 50, child: const Icon(Icons.location_on, color: Colors.red, size: 50))]),
             ],
           ),
           Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
+            bottom: 20, left: 20, right: 20,
             child: Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
+              decoration: BoxDecoration(color: Colors.grey[900], borderRadius: BorderRadius.circular(12)),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.info_outline,
-                        color: Colors.blue,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      const Expanded(
-                        child: Text(
-                          'Tap pada peta untuk memilih lokasi',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[850],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Latitude:',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              _selectedPosition.latitude.toStringAsFixed(6),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Longitude:',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              _selectedPosition.longitude.toStringAsFixed(6),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  Text('Lat: ${_selectedPosition.latitude.toStringAsFixed(6)}, Long: ${_selectedPosition.longitude.toStringAsFixed(6)}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: _confirmLocation,
-                      icon: const Icon(Icons.check_circle, size: 20),
-                      label: const Text(
-                        'Gunakan Lokasi Ini',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 2,
-                      ),
+                      icon: const Icon(Icons.check_circle),
+                      label: const Text('Gunakan Lokasi Ini'),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                     ),
                   ),
                 ],
@@ -1673,6 +930,42 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _TipeOption extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _TipeOption({required this.label, required this.icon, required this.color, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: selected ? color.withValues(alpha: 0.2) : Colors.grey[800],
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: selected ? color : Colors.grey[600]!, width: selected ? 2 : 1),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: selected ? color : Colors.grey[400], size: 18),
+              const SizedBox(width: 6),
+              Text(label, style: TextStyle(color: selected ? color : Colors.grey[400], fontWeight: selected ? FontWeight.bold : FontWeight.normal, fontSize: 14)),
+            ],
+          ),
+        ),
       ),
     );
   }

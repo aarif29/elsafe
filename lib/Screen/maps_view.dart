@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../config/temuan_service.dart';
 import '../config/temuan_model.dart';
 import '../config/location_service.dart';
+import '../config/ulp_service.dart';
 import '../widgets/maps_control_button.dart';
 
 class MapsViewWidget extends StatefulWidget {
@@ -16,9 +17,29 @@ class MapsViewWidget extends StatefulWidget {
   State<MapsViewWidget> createState() => _MapsViewWidgetState();
 }
 
+class _LegendItem extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String label;
+  const _LegendItem({required this.icon, required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: color, size: 14),
+        const SizedBox(width: 3),
+        Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w500)),
+      ],
+    );
+  }
+}
+
 class _MapsViewWidgetState extends State<MapsViewWidget> {
   final _temuanService = TemuanService();
   final _locationService = LocationService();
+  final _ulpService = UlpService();
   final MapController _mapController = MapController();
 
   List<TemuanModel> _temuanList = [];
@@ -28,12 +49,34 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   bool _isLoading = true;
   bool _isGettingLocation = false;
   bool _showLabels = true;
+  bool _isAdmin = false;
+  String _filterUlp = 'Semua';
 
   final LatLng _center = const LatLng(-7.9666, 112.6326);
+
+  List<String> get _ulpOptions {
+    final ulps = _temuanList
+        .map((t) => t.ulp ?? '')
+        .where((u) => u.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort();
+    return ['Semua', ...ulps];
+  }
+
+  List<TemuanModel> get _filteredTemuan =>
+      _filterUlp == 'Semua'
+          ? _temuanList
+          : _temuanList.where((t) => t.ulp == _filterUlp).toList();
 
   @override
   void initState() {
     super.initState();
+    _initLoad();
+  }
+
+  Future<void> _initLoad() async {
+    _isAdmin = await _ulpService.isAdmin();
     _loadTemuanData();
   }
 
@@ -58,29 +101,63 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
     }
   }
 
+  // ===== Marker color helpers =====
+
+  Color _labelBgColor(String? tipe) {
+    if (tipe == 'KMU') return Colors.red[700]!;
+    if (tipe == 'ROW') return Colors.green[700]!;
+    return Colors.blueGrey[700]!;
+  }
+
+  Color _labelBorderColor(String? tipe) {
+    if (tipe == 'KMU') return Colors.red[300]!;
+    if (tipe == 'ROW') return Colors.green[300]!;
+    return Colors.white;
+  }
+
+  IconData _pinIcon(String? level) {
+    if (level == 'Medium' || level == 'High' || level == 'Extreme') {
+      return Icons.bolt;
+    }
+    return Icons.location_on;
+  }
+
+  Color _pinColor(String? tipe, String? level) {
+    if (level == 'Medium') return Colors.amber;
+    if (level == 'High') return Colors.orange;
+    if (level == 'Extreme') return Colors.red;
+    // No level: fallback to tipe color
+    if (tipe == 'KMU') return Colors.red;
+    if (tipe == 'ROW') return Colors.green;
+    return Colors.red;
+  }
+
   void _createMarkers() {
     _markers.clear();
-    for (final temuan in _temuanList) {
+    for (final temuan in _filteredTemuan) {
       if (temuan.latitude == null || temuan.longitude == null) continue;
+
+      final labelBg = _labelBgColor(temuan.tipeTemuan);
+      final labelBorder = _labelBorderColor(temuan.tipeTemuan);
+      final pinIcon = _pinIcon(temuan.levelRisiko);
+      final pinColor = _pinColor(temuan.tipeTemuan, temuan.levelRisiko);
+
       _markers.add(
         Marker(
           point: LatLng(temuan.latitude!, temuan.longitude!),
           width: 120,
-          height: 60,
+          height: 64,
           child: GestureDetector(
             onTap: () => _showMarkerInfo(temuan),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.blueGrey[700],
+                    color: labelBg,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white, width: 1),
+                    border: Border.all(color: labelBorder, width: 1),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.35),
@@ -104,7 +181,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
                   ),
                 ),
                 const SizedBox(height: 2),
-                const Icon(Icons.location_on, color: Colors.red, size: 32),
+                Icon(pinIcon, color: pinColor, size: 32),
               ],
             ),
           ),
@@ -257,6 +334,46 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Tipe & Level badges
+                  Row(
+                    children: [
+                      if (temuan.tipeTemuan != null) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: _labelBgColor(temuan.tipeTemuan),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            temuan.tipeTemuan!,
+                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      if (temuan.levelRisiko != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: _pinColor(temuan.tipeTemuan, temuan.levelRisiko).withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: _pinColor(temuan.tipeTemuan, temuan.levelRisiko)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.bolt, size: 12, color: _pinColor(temuan.tipeTemuan, temuan.levelRisiko)),
+                              const SizedBox(width: 3),
+                              Text(
+                                temuan.levelRisiko!,
+                                style: TextStyle(color: _pinColor(temuan.tipeTemuan, temuan.levelRisiko), fontSize: 11, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
                   Text(
                     'Lokasi: ${temuan.lokasi}',
                     style: const TextStyle(color: Colors.white),
@@ -523,24 +640,85 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
               ],
             ),
           ),
+          // ULP filter — hanya admin
+          if (_isAdmin) ...[
+            SizedBox(
+              height: 36,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: _ulpOptions.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 6),
+                itemBuilder: (_, i) {
+                  final ulp = _ulpOptions[i];
+                  final isSelected = _filterUlp == ulp;
+                  return GestureDetector(
+                    onTap: () => setState(() {
+                      _filterUlp = ulp;
+                      _createMarkers();
+                    }),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.blue : Colors.grey[800],
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: isSelected ? Colors.blue : Colors.grey[600]!,
+                        ),
+                      ),
+                      child: Text(
+                        ulp == 'Semua' ? 'Semua ULP' : ulp,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.grey[300],
+                          fontSize: 11,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+
           // Info panel
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               color: Colors.grey[800],
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                Text(
-                  'Total Temuan: ${_temuanList.length}',
-                  style: const TextStyle(color: Colors.white),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total: ${_filteredTemuan.length}${_filterUlp != 'Semua' ? ' · $_filterUlp' : ''}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    Text('Marker: ${_markers.length}', style: const TextStyle(color: Colors.grey)),
+                  ],
                 ),
-                Text(
-                  'Marker: ${_markers.length}',
-                  style: const TextStyle(color: Colors.grey),
+                const SizedBox(height: 8),
+                // Legenda
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _LegendItem(icon: Icons.location_on, color: Colors.red, label: 'KMU'),
+                      const SizedBox(width: 12),
+                      _LegendItem(icon: Icons.location_on, color: Colors.green, label: 'ROW'),
+                      const SizedBox(width: 12),
+                      _LegendItem(icon: Icons.bolt, color: Colors.amber, label: 'Medium'),
+                      const SizedBox(width: 12),
+                      _LegendItem(icon: Icons.bolt, color: Colors.orange, label: 'High'),
+                      const SizedBox(width: 12),
+                      _LegendItem(icon: Icons.bolt, color: Colors.red, label: 'Extreme'),
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -76,6 +76,7 @@ class _ElsafeSplashScreenState extends State<ElsafeSplashScreen>
 
     // Auto navigate to login after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LoginPage()),
       );
@@ -116,7 +117,7 @@ class _ElsafeSplashScreenState extends State<ElsafeSplashScreen>
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blueAccent.withOpacity(0.6),
+                              color: Colors.blueAccent.withValues(alpha: 0.6),
                               blurRadius: 20,
                               spreadRadius: 1,
                               offset: const Offset(0, 8),

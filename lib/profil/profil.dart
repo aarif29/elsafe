@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/snackbar.dart';
+import '../config/ulp_service.dart';
+import '../config/ulp_list.dart';
+import '../Screen/admin/admin_approval_screen.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -12,12 +15,15 @@ class _ProfileState extends State<Profile> {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _nipController = TextEditingController();
-  final _ulpController = TextEditingController();
   final _phoneController = TextEditingController();
   final supabase = Supabase.instance.client;
+  final _ulpService = UlpService();
 
   bool _isLoading = false;
   String? _profileId;
+  String? _currentUlp;
+  String? _currentRole;
+  bool _hasPendingUlpRequest = false;
 
   @override
   void initState() {
@@ -58,12 +64,15 @@ class _ProfileState extends State<Profile> {
               .maybeSingle();
 
       if (data != null) {
+        final hasPending = await _ulpService.hasPendingRequest();
         setState(() {
           _profileId = data['id'] as String?;
           _fullNameController.text = data['full_name'] ?? '';
           _nipController.text = data['nip'] ?? '';
-          _ulpController.text = data['ulp'] ?? '';
           _phoneController.text = data['phone'] ?? '';
+          _currentUlp = data['ulp'] as String?;
+          _currentRole = data['role'] as String?;
+          _hasPendingUlpRequest = hasPending;
         });
       }
     } catch (e) {
@@ -107,9 +116,9 @@ class _ProfileState extends State<Profile> {
       'id': user.id,
       'full_name': _fullNameController.text,
       'nip': _nipController.text,
-      'ulp': _ulpController.text,
       'phone': _phoneController.text,
       'email': user.email,
+      // ulp tidak disimpan langsung — harus melalui approval admin
     };
 
     try {
@@ -146,11 +155,110 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  Future<void> _showGantiUlpDialog() async {
+    String? ulpBaru;
+    final alasanController = TextEditingController();
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (ctx) => StatefulBuilder(
+            builder:
+                (ctx, setDlgState) => AlertDialog(
+                  title: const Text('Minta Ganti ULP'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'ULP saat ini: ${_currentUlp ?? "-"}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'ULP Baru',
+                          border: OutlineInputBorder(),
+                        ),
+                        items:
+                            daftarUlp
+                                .where((u) => u != _currentUlp)
+                                .map(
+                                  (u) => DropdownMenuItem(
+                                    value: u,
+                                    child: Text(u),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (v) => setDlgState(() => ulpBaru = v),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: alasanController,
+                        decoration: const InputDecoration(
+                          labelText: 'Alasan (opsional)',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 2,
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: const Text('Batal'),
+                    ),
+                    ElevatedButton(
+                      onPressed:
+                          ulpBaru != null
+                              ? () => Navigator.pop(ctx, true)
+                              : null,
+                      child: const Text(
+                        'Kirim Permintaan',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+          ),
+    );
+
+    if (confirm != true || ulpBaru == null || !mounted) return;
+
+    setState(() => _isLoading = true);
+    final result = await _ulpService.requestGantiUlp(
+      ulpBaru!,
+      alasan:
+          alasanController.text.trim().isEmpty
+              ? null
+              : alasanController.text.trim(),
+    );
+    alasanController.dispose();
+    if (!mounted) return;
+    setState(() {
+      _isLoading = false;
+      if (result['success'] == true) _hasPendingUlpRequest = true;
+    });
+
+    if (result['success'] == true) {
+      SnackBarUtils.showSuccess(
+        context,
+        title: 'Berhasil',
+        message: result['message'],
+      );
+    } else {
+      SnackBarUtils.showError(
+        context,
+        title: 'Gagal',
+        message: result['message'],
+      );
+    }
+  }
+
   @override
   void dispose() {
     _fullNameController.dispose();
     _nipController.dispose();
-    _ulpController.dispose();
     _phoneController.dispose();
     super.dispose();
   }
@@ -225,11 +333,8 @@ class _ProfileState extends State<Profile> {
                           ),
                           const SizedBox(height: 20),
 
-                          _buildDarkTextField(
-                            controller: _ulpController,
-                            label: 'ULP',
-                            icon: Icons.business_outlined,
-                          ),
+                          // ULP (read-only)
+                          _buildUlpRow(),
                           const SizedBox(height: 20),
 
                           _buildDarkTextField(
@@ -286,6 +391,156 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
+    );
+  }
+
+  Widget _buildUlpRow() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Info ULP (read-only display)
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A1A1A),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFF2A2A2A)),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(right: 12),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.business_outlined,
+                  color: Colors.blue,
+                  size: 20,
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'ULP',
+                      style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 12),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Text(
+                          _currentUlp ?? 'Belum disetel',
+                          style: TextStyle(
+                            color:
+                                _currentUlp != null
+                                    ? Colors.white
+                                    : Colors.grey,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        if (_currentRole == 'admin') ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.purple.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Colors.purple.withValues(alpha: 0.5),
+                              ),
+                            ),
+                            child: const Text(
+                              'Admin',
+                              style: TextStyle(
+                                color: Colors.purple,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.lock_outline,
+                color: Color(0xFF4B5563),
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // Tombol ganti ULP / status pending
+        if (_hasPendingUlpRequest)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.hourglass_empty,
+                  color: Colors.orange,
+                  size: 16,
+                ),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'Permintaan ganti ULP sedang menunggu persetujuan admin',
+                    style: TextStyle(color: Colors.orange, fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else if (_currentRole != 'admin')
+          TextButton.icon(
+            onPressed: _showGantiUlpDialog,
+            icon: const Icon(Icons.edit, size: 14),
+            label: const Text('Minta Ganti ULP'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.blue,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            ),
+          ),
+
+        // Tombol Admin: kelola persetujuan
+        if (_currentRole == 'admin') ...[
+          const SizedBox(height: 4),
+          OutlinedButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdminApprovalScreen()),
+              );
+            },
+            icon: const Icon(Icons.admin_panel_settings, size: 16),
+            label: const Text('Kelola Persetujuan ULP'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.purple,
+              side: const BorderSide(color: Colors.purple),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 

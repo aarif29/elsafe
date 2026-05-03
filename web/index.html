@@ -107,6 +107,10 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
         navigator.serviceWorker.register('flutter_service_worker.js');
+        // Register Firebase messaging service worker
+        navigator.serviceWorker.register('firebase-messaging-sw.js')
+          .then(reg => console.log('[SW] FCM service worker registered:', reg.scope))
+          .catch(err => console.error('[SW] FCM service worker error:', err));
       });
     }
 

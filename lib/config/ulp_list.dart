@@ -1,0 +1,15 @@
+const List<String> daftarUlp = [
+  'ULP Batu',
+  'ULP Dinoyo',
+  'ULP Lawang',
+  'ULP Singosari',
+  'ULP Malang Kota',
+  'ULP Blimbing',
+  'ULP Kebonagung',
+  'ULP Bululawang',
+  'ULP Kepanjen',
+  'ULP Gondanglegi',
+  'ULP Sumberpucung',
+  'ULP Dampit',
+  'ULP Tumpang',
+];
