@@ -2,10 +2,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:file_picker/file_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'app_logger.dart';
 import 'temuan_model.dart';
+import 'sosialisasi_model.dart';
+import 'ulp_service.dart';
 
 class TemuanService {
   final _supabase = Supabase.instance.client;
+  final _ulpService = UlpService();
 
   String? get currentUserId {
     final user = _supabase.auth.currentUser;
@@ -29,7 +33,7 @@ class TemuanService {
 
       return response;
     } catch (e) {
-      print('❌ Error get user profile: $e');
+      appLog.e('❌ Error get user profile', error: e);
       return null;
     }
   }
@@ -49,8 +53,8 @@ class TemuanService {
         fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.name}';
         filePath = 'temuan_photos/$fileName';
 
-        print('📤 Uploading foto: ${file.name}');
-        print('📝 File path: $filePath');
+        appLog.d('📤 Uploading foto: ${file.name}');
+        appLog.d('📝 File path: $filePath');
 
         if (kIsWeb) {
           // ===== WEB: Gunakan bytes =====
@@ -58,7 +62,7 @@ class TemuanService {
             throw Exception('File bytes is null for web');
           }
 
-          print('📦 File size (WEB): ${file.bytes!.length} bytes');
+          appLog.d('📦 File size (WEB): ${file.bytes!.length} bytes');
 
           final String uploadedPath = await _supabase.storage
               .from('foto-temuan')
@@ -72,14 +76,14 @@ class TemuanService {
                 ),
               );
 
-          print('✅ Upload berhasil (WEB): $uploadedPath');
+          appLog.d('✅ Upload berhasil (WEB): $uploadedPath');
         } else {
           // ===== MOBILE: Gunakan path =====
           if (file.path == null) {
             throw Exception('File path is null for mobile');
           }
 
-          print('📦 File path (MOBILE): ${file.path}');
+          appLog.d('📦 File path (MOBILE): ${file.path}');
 
           final fileToUpload = File(file.path!);
 
@@ -94,14 +98,14 @@ class TemuanService {
                 ),
               );
 
-          print('✅ Upload berhasil (MOBILE): $uploadedPath');
+          appLog.d('✅ Upload berhasil (MOBILE): $uploadedPath');
         }
       } else if (file is File && !kIsWeb) {
         // ===== Fallback untuk File langsung (mobile only) =====
         fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
         filePath = 'temuan_photos/$fileName';
 
-        print('📤 Uploading foto (File): ${file.path}');
+        appLog.d('📤 Uploading foto (File): ${file.path}');
 
         final String uploadedPath = await _supabase.storage
             .from('foto-temuan')
@@ -114,7 +118,7 @@ class TemuanService {
               ),
             );
 
-        print('✅ Upload berhasil: $uploadedPath');
+        appLog.d('✅ Upload berhasil: $uploadedPath');
       } else {
         throw Exception('Unsupported file type. Expected PlatformFile or File.');
       }
@@ -124,7 +128,7 @@ class TemuanService {
           .from('foto-temuan')
           .getPublicUrl(filePath);
 
-      print('🔗 Public URL: $publicUrl');
+      appLog.d('🔗 Public URL: $publicUrl');
 
       return {
         'success': true,
@@ -133,7 +137,7 @@ class TemuanService {
         'message': 'Foto berhasil diupload',
       };
     } catch (e) {
-      print('❌ Error upload foto: $e');
+      appLog.e('❌ Error upload foto', error: e);
       return {
         'success': false,
         'message': 'Gagal upload foto: ${e.toString()}',
@@ -162,7 +166,7 @@ class TemuanService {
   // ========== DELETE FOTO ==========
   Future<Map<String, dynamic>> deleteFoto(String url) async {
     try {
-      print('🗑️ Deleting foto: $url');
+      appLog.d('🗑️ Deleting foto: $url');
 
       // Extract file path from URL
       // Contoh URL: https://xxx.supabase.co/storage/v1/object/public/foto-temuan/temuan_photos/123456_photo.jpg
@@ -177,19 +181,19 @@ class TemuanService {
 
       final filePath = pathSegments.sublist(bucketIndex + 1).join('/');
 
-      print('📝 File path to delete: $filePath');
+      appLog.d('📝 File path to delete: $filePath');
 
       // Delete dari Supabase Storage
       await _supabase.storage.from('foto-temuan').remove([filePath]);
 
-      print('✅ Foto berhasil dihapus');
+      appLog.d('✅ Foto berhasil dihapus');
 
       return {
         'success': true,
         'message': 'Foto berhasil dihapus',
       };
     } catch (e) {
-      print('❌ Error delete foto: $e');
+      appLog.e('❌ Error delete foto', error: e);
       return {
         'success': false,
         'message': 'Gagal menghapus foto: ${e.toString()}',
@@ -208,7 +212,7 @@ class TemuanService {
 
   Future<Map<String, dynamic>> createTemuan(TemuanModel temuan) async {
     try {
-      print('🔄 Creating temuan untuk user: $currentUserId');
+      appLog.d('🔄 Creating temuan untuk user: $currentUserId');
 
       if (currentUserId == null) {
         return {'success': false, 'message': 'User tidak terautentikasi'};
@@ -218,12 +222,23 @@ class TemuanService {
       temuanData['user_id'] = currentUserId;
       temuanData['created_by'] = currentUserEmail;
 
-      print('📝 Data temuan: $temuanData');
+      // Set ULP dari profil user
+      final profile = await _ulpService.getCurrentUserProfile();
+      if (profile != null && profile['ulp'] != null) {
+        temuanData['ulp'] = profile['ulp'];
+      }
+
+      // Auto-close: saat closing diisi, otomatis set status Closed
+      if (temuanData['jenis_closing'] != null) {
+        temuanData['status_temuan'] = 'Closed';
+      }
+
+      appLog.d('📝 Data temuan: $temuanData');
 
       final response =
           await _supabase.from('temuan').insert(temuanData).select().single();
 
-      print('✅ Temuan berhasil dibuat: ${response['id']}');
+      appLog.d('✅ Temuan berhasil dibuat: ${response['id']}');
 
       return {
         'success': true,
@@ -231,7 +246,7 @@ class TemuanService {
         'data': TemuanModel.fromJson(response),
       };
     } catch (e) {
-      print('❌ Error create temuan: $e');
+      appLog.e('❌ Error create temuan', error: e);
       return {
         'success': false,
         'message': 'Gagal menyimpan temuan: ${e.toString()}',
@@ -239,9 +254,73 @@ class TemuanService {
     }
   }
 
+  Future<Map<String, dynamic>> getTemuanPaginated({
+    int page = 0,
+    int pageSize = 10,
+  }) async {
+    try {
+      if (currentUserId == null) {
+        return {
+          'success': false,
+          'message': 'User tidak terautentikasi',
+          'data': <TemuanModel>[],
+          'hasMore': false,
+        };
+      }
+
+      final from = page * pageSize;
+      final to = from + pageSize - 1;
+
+      final profile = await _ulpService.getCurrentUserProfile();
+      final isAdmin = profile?['role'] == 'admin';
+      final ulp = profile?['ulp'] as String?;
+
+      late List response;
+      if (isAdmin) {
+        response = await _supabase
+            .from('temuan')
+            .select('*')
+            .order('created_at', ascending: false)
+            .range(from, to);
+      } else if (ulp != null && ulp.isNotEmpty) {
+        response = await _supabase
+            .from('temuan')
+            .select('*')
+            .eq('ulp', ulp)
+            .order('created_at', ascending: false)
+            .range(from, to);
+      } else {
+        // Fallback: tampilkan hanya milik sendiri jika ULP belum disetel
+        response = await _supabase
+            .from('temuan')
+            .select('*')
+            .eq('user_id', currentUserId!)
+            .order('created_at', ascending: false)
+            .range(from, to);
+      }
+
+      final List<TemuanModel> temuanList =
+          response.map((json) => TemuanModel.fromJson(json as Map<String, dynamic>)).toList();
+
+      return {
+        'success': true,
+        'message': 'Data berhasil dimuat',
+        'data': temuanList,
+        'hasMore': temuanList.length == pageSize,
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Gagal memuat data: ${e.toString()}',
+        'data': <TemuanModel>[],
+        'hasMore': false,
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> getAllTemuanSilent() async {
     try {
-      print('🔄 Loading temuan untuk user: $currentUserId');
+      appLog.d('🔄 Loading temuan untuk user: $currentUserId');
 
       if (currentUserId == null) {
         return {
@@ -251,18 +330,35 @@ class TemuanService {
         };
       }
 
-      final response = await _supabase
-          .from('temuan')
-          .select('*')
-          .eq('user_id', currentUserId!)
-          .order('created_at', ascending: false);
+      final profile = await _ulpService.getCurrentUserProfile();
+      final isAdmin = profile?['role'] == 'admin';
+      final ulp = profile?['ulp'] as String?;
+
+      late List response;
+      if (isAdmin) {
+        response = await _supabase
+            .from('temuan')
+            .select('*')
+            .order('created_at', ascending: false);
+        appLog.d('✅ Admin: load semua temuan (${response.length})');
+      } else if (ulp != null && ulp.isNotEmpty) {
+        response = await _supabase
+            .from('temuan')
+            .select('*')
+            .eq('ulp', ulp)
+            .order('created_at', ascending: false);
+        appLog.d('✅ User: load temuan ULP=$ulp (${response.length})');
+      } else {
+        response = await _supabase
+            .from('temuan')
+            .select('*')
+            .eq('user_id', currentUserId!)
+            .order('created_at', ascending: false);
+        appLog.d('✅ Fallback: load temuan user_id (${response.length})');
+      }
 
       final List<TemuanModel> temuanList =
-          (response as List).map((json) => TemuanModel.fromJson(json)).toList();
-
-      print(
-        '✅ Berhasil load ${temuanList.length} temuan untuk user: $currentUserEmail',
-      );
+          response.map((json) => TemuanModel.fromJson(json as Map<String, dynamic>)).toList();
 
       return {
         'success': true,
@@ -270,7 +366,7 @@ class TemuanService {
         'data': temuanList,
       };
     } catch (e) {
-      print('❌ Error get temuan: $e');
+      appLog.e('❌ Error get temuan', error: e);
       return {
         'success': false,
         'message': 'Gagal memuat data: ${e.toString()}',
@@ -281,7 +377,7 @@ class TemuanService {
 
   Future<Map<String, dynamic>> deleteTemuanSilent(String id) async {
     try {
-      print('🔄 Deleting temuan $id untuk user: $currentUserId');
+      appLog.d('🔄 Deleting temuan $id untuk user: $currentUserId');
 
       if (currentUserId == null) {
         return {'success': false, 'message': 'User tidak terautentikasi'};
@@ -304,7 +400,7 @@ class TemuanService {
       // Delete photos if exist
       if (temuanResponse['foto_urls'] != null) {
         final fotoUrls = List<String>.from(temuanResponse['foto_urls']);
-        print('🗑️ Menghapus ${fotoUrls.length} foto...');
+        appLog.d('🗑️ Menghapus ${fotoUrls.length} foto...');
         await deleteFotos(fotoUrls);
       }
 
@@ -315,11 +411,11 @@ class TemuanService {
           .eq('id', id)
           .eq('user_id', currentUserId!);
 
-      print('✅ Temuan $id berhasil dihapus');
+      appLog.d('✅ Temuan $id berhasil dihapus');
 
       return {'success': true, 'message': 'Data berhasil dihapus'};
     } catch (e) {
-      print('❌ Error delete temuan: $e');
+      appLog.e('❌ Error delete temuan', error: e);
       return {
         'success': false,
         'message': 'Gagal menghapus data: ${e.toString()}',
@@ -332,7 +428,7 @@ class TemuanService {
     TemuanModel temuan,
   ) async {
     try {
-      print('🔄 Updating temuan $id untuk user: $currentUserId');
+      appLog.d('🔄 Updating temuan $id untuk user: $currentUserId');
 
       if (currentUserId == null) {
         return {'success': false, 'message': 'User tidak terautentikasi'};
@@ -354,6 +450,11 @@ class TemuanService {
       final temuanData = temuan.toJson();
       temuanData['updated_at'] = DateTime.now().toIso8601String();
 
+      // Auto-close: saat closing diisi, otomatis set status Closed
+      if (temuanData['jenis_closing'] != null) {
+        temuanData['status_temuan'] = 'Closed';
+      }
+
       final response = await _supabase
           .from('temuan')
           .update(temuanData)
@@ -362,7 +463,7 @@ class TemuanService {
           .select()
           .single();
 
-      print('✅ Temuan $id berhasil diupdate');
+      appLog.d('✅ Temuan $id berhasil diupdate');
 
       return {
         'success': true,
@@ -370,7 +471,7 @@ class TemuanService {
         'data': TemuanModel.fromJson(response),
       };
     } catch (e) {
-      print('❌ Error update temuan: $e');
+      appLog.e('❌ Error update temuan', error: e);
       return {
         'success': false,
         'message': 'Gagal memperbarui data: ${e.toString()}',
@@ -378,9 +479,25 @@ class TemuanService {
     }
   }
 
+  /// Fetch temuan by ID tanpa filter user — untuk navigasi dari notifikasi (admin bisa lihat semua)
+  Future<TemuanModel?> getTemuanByIdAny(String id) async {
+    try {
+      final response = await _supabase
+          .from('temuan')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+      if (response == null) return null;
+      return TemuanModel.fromJson(response);
+    } catch (e) {
+      appLog.e('❌ Error get temuan by id (any)', error: e);
+      return null;
+    }
+  }
+
   Future<Map<String, dynamic>> getTemuanById(String id) async {
     try {
-      print('🔄 Getting temuan $id untuk user: $currentUserId');
+      appLog.d('🔄 Getting temuan $id untuk user: $currentUserId');
 
       if (currentUserId == null) {
         return {'success': false, 'message': 'User tidak terautentikasi'};
@@ -399,7 +516,7 @@ class TemuanService {
         'data': TemuanModel.fromJson(response),
       };
     } catch (e) {
-      print('❌ Error get temuan by id: $e');
+      appLog.e('❌ Error get temuan by id', error: e);
       return {
         'success': false,
         'message': 'Data tidak ditemukan atau bukan milik Anda',
@@ -424,6 +541,93 @@ class TemuanService {
       };
     } catch (e) {
       return {'success': false, 'message': 'Gagal memuat statistik'};
+    }
+  }
+
+  // ==================== SOSIALISASI CRUD ====================
+
+  Future<Map<String, dynamic>> addSosialisasi(SosialisasiModel sosialisasi) async {
+    try {
+      if (currentUserId == null) {
+        return {'success': false, 'message': 'User tidak terautentikasi'};
+      }
+
+      final data = sosialisasi.toJson();
+      data['created_by'] = currentUserEmail;
+
+      final response = await _supabase
+          .from('temuan_sosialisasi')
+          .insert(data)
+          .select()
+          .single();
+
+      appLog.d('✅ Sosialisasi berhasil ditambah: ${response['id']}');
+
+      return {
+        'success': true,
+        'message': 'Sosialisasi berhasil disimpan',
+        'data': SosialisasiModel.fromJson(response),
+      };
+    } catch (e) {
+      appLog.e('❌ Error add sosialisasi', error: e);
+      return {
+        'success': false,
+        'message': 'Gagal menyimpan sosialisasi: ${e.toString()}',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getSosialisasiByTemuan(String temuanId) async {
+    try {
+      if (currentUserId == null) {
+        return {
+          'success': false,
+          'message': 'User tidak terautentikasi',
+          'data': <SosialisasiModel>[],
+        };
+      }
+
+      final response = await _supabase
+          .from('temuan_sosialisasi')
+          .select('*')
+          .eq('temuan_id', temuanId)
+          .order('tgl_sosialisasi', ascending: false);
+
+      final List<SosialisasiModel> list = (response as List)
+          .map((json) => SosialisasiModel.fromJson(json))
+          .toList();
+
+      return {
+        'success': true,
+        'data': list,
+      };
+    } catch (e) {
+      appLog.e('❌ Error get sosialisasi', error: e);
+      return {
+        'success': false,
+        'message': 'Gagal memuat sosialisasi: ${e.toString()}',
+        'data': <SosialisasiModel>[],
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteSosialisasi(String id) async {
+    try {
+      if (currentUserId == null) {
+        return {'success': false, 'message': 'User tidak terautentikasi'};
+      }
+
+      await _supabase.from('temuan_sosialisasi').delete().eq('id', id);
+
+      appLog.d('✅ Sosialisasi $id berhasil dihapus');
+
+      return {'success': true, 'message': 'Sosialisasi berhasil dihapus'};
+    } catch (e) {
+      appLog.e('❌ Error delete sosialisasi', error: e);
+      return {
+        'success': false,
+        'message': 'Gagal menghapus sosialisasi: ${e.toString()}',
+      };
     }
   }
 }

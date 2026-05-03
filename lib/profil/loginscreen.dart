@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'register.dart';
+import '../config/lupa_password.dart';
+import '../config/app_logger.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,17 +19,17 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
     try {
-      debugPrint('🚀 [DEBUG] Starting Google OAuth...');
+      appLog.d('🚀 Starting Google OAuth...');
 
       await Supabase.instance.client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'http://localhost:8080',
+        redirectTo: kIsWeb ? 'http://localhost:8080' : null,
         scopes: 'email profile',
       );
 
-      debugPrint('✅ [DEBUG] OAuth request sent successfully');
+      appLog.d('✅ OAuth request sent successfully');
     } catch (e) {
-      debugPrint('❌ [DEBUG] OAuth Error: $e');
+      appLog.e('❌ OAuth Error', error: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
@@ -74,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: 100,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color(0xFF0072FF).withOpacity(0.1),
+                            color: const Color(0xFF0072FF).withValues(alpha: 0.1),
                             border: Border.all(
                               color: const Color(0xFF0072FF),
                               width: 2,
@@ -131,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withValues(alpha: 0.2),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -276,6 +279,29 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ],
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Link lupa password
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => const ForgotPasswordDialog(),
+                            );
+                          },
+                          child: Text(
+                            'Lupa Password?',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 14,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.grey[500],
+                            ),
+                          ),
+                        ),
                       ),
 
                       // Spacer fleksibel biar footer nempel bawah ketika ruang cukup,

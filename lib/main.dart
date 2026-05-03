@@ -1,20 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter/services.dart';
 import 'Screen/splashscreen.dart';
 import 'profil/loginscreen.dart';
-import 'Screen/dashboard.dart';
+import 'Screen/main_shell.dart';
+import 'Screen/ulp_selection_screen.dart';
+import 'config/supabase_config.dart';
+import 'config/new_password.dart';
+import 'config/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Supabase.initialize(
-    url: 'https://garlimmkvdmhfifqdkgb.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhcmxpbW1rdmRtaGZpZnFka2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MTM3OTEsImV4cCI6MjA2NzA4OTc5MX0.5i88_bUQw5OTGxJq0zwV43cDJF9cPt80SnkeB4Lgs6Y',
-    debug: true,
-  );
-
+  await SupabaseConfig.initialize();
   runApp(const MyApp());
 }
 
@@ -34,9 +31,58 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _setupAuthListener(); // pasang listener DULU agar passwordRecovery event tidak terlewat
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 200), () => _redirect());
     });
+  }
+
+  /// Setelah login berhasil, cek apakah user sudah memiliki ULP.
+  /// Jika belum → arahkan ke UlpSelectionScreen.
+  /// Jika sudah → arahkan ke MainShell.
+  Future<void> _navigateAfterLogin(NavigatorState nav, String userId) async {
+    try {
+      final profile = await Supabase.instance.client
+          .from('profiles')
+          .select('ulp')
+          .eq('id', userId)
+          .maybeSingle();
+
+      final ulp = profile?['ulp'] as String?;
+      final hasUlp = ulp != null && ulp.isNotEmpty;
+
+      debugPrint('🏢 [DEBUG] ULP check: ${hasUlp ? ulp : "belum disetel"}');
+
+      final currentRoute = ModalRoute.of(nav.context)?.settings.name;
+
+      if (!hasUlp && currentRoute != '/ulp-selection') {
+        nav.pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => const UlpSelectionScreen(),
+            settings: const RouteSettings(name: '/ulp-selection'),
+          ),
+          (route) => false,
+        );
+      } else if (hasUlp && currentRoute != '/shell') {
+        nav.pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => const MainShell(),
+            settings: const RouteSettings(name: '/shell'),
+          ),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ [DEBUG] Error cek ULP: $e');
+      // Fallback ke MainShell jika ada error
+      nav.pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => const MainShell(),
+          settings: const RouteSettings(name: '/shell'),
+        ),
+        (route) => false,
+      );
+    }
   }
 
   void _redirect() async {
@@ -51,26 +97,29 @@ class _MyAppState extends State<MyApp> {
       debugPrint('🌐 [DEBUG] URL Fragment: ${uri.fragment}');
       debugPrint('🌐 [DEBUG] URL Query: ${uri.query}');
 
-      bool hasAuthCallback = uri.fragment.contains('access_token') || 
+      bool hasAuthCallback = uri.fragment.contains('access_token') ||
                             uri.fragment.contains('code=') ||
                             uri.query.contains('code=');
+      bool isPasswordRecovery = uri.fragment.contains('type=recovery') ||
+                                uri.query.contains('type=recovery');
 
       if (hasAuthCallback) {
         debugPrint('🔑 [DEBUG] OAuth callback detected in URL!');
+        debugPrint('🔑 [DEBUG] Is password recovery: $isPasswordRecovery');
         debugPrint('🔑 [DEBUG] Waiting for Supabase to process session...');
-        
+
         await Future.delayed(const Duration(milliseconds: 1000));
-        
+
         Session? session;
         for (int i = 0; i < 5; i++) {
           session = Supabase.instance.client.auth.currentSession;
           debugPrint('🔄 [DEBUG] Session check attempt ${i + 1}: ${session?.user?.email}');
-          
+
           if (session != null) {
             debugPrint('✅ [DEBUG] Session found after OAuth callback!');
             break;
           }
-          
+
           if (i < 4) {
             await Future.delayed(const Duration(milliseconds: 500));
           }
@@ -91,18 +140,19 @@ class _MyAppState extends State<MyApp> {
         return;
       }
 
-      if (session != null) {
-        debugPrint('✅ [DEBUG] Valid session found, redirecting to dashboard');
-        final currentRoute = ModalRoute.of(navigatorState.context)?.settings.name;
-        if (currentRoute != '/dashboard') {
-          navigatorState.pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => const DashboardScreen(),
-              settings: const RouteSettings(name: '/dashboard'),
-            ),
-            (route) => false,
-          );
-        }
+      if (session != null && isPasswordRecovery) {
+        debugPrint('🔑 [DEBUG] Password recovery session, redirecting to NewPasswordPage');
+        navigatorState.pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const NewPasswordPage(),
+            settings: const RouteSettings(name: '/new-password'),
+          ),
+          (route) => false,
+        );
+      } else if (session != null) {
+        debugPrint('✅ [DEBUG] Valid session found, checking ULP...');
+        await ThemeService.instance.loadTheme();
+        await _navigateAfterLogin(navigatorState, session.user.id);
       } else {
         debugPrint('🔒 [DEBUG] No valid session found, redirecting to login');
         final currentRoute = ModalRoute.of(navigatorState.context)?.settings.name;
@@ -116,8 +166,6 @@ class _MyAppState extends State<MyApp> {
           );
         }
       }
-
-      _setupAuthListener();
 
     } catch (e) {
       debugPrint('❌ [DEBUG] Error in _redirect: $e');
@@ -146,16 +194,19 @@ class _MyAppState extends State<MyApp> {
 
       if (event == AuthChangeEvent.signedIn && session != null) {
         debugPrint('🎉 [DEBUG] User signed in successfully!');
+        // Jika ini recovery flow, biarkan passwordRecovery event yang handle navigasi
+        final uri = Uri.base;
+        final isRecovery = uri.fragment.contains('type=recovery') ||
+                           uri.query.contains('type=recovery');
+        if (isRecovery) {
+          debugPrint('🔑 [DEBUG] signedIn event diabaikan — ini recovery flow, tunggu passwordRecovery event');
+          return;
+        }
         final currentRoute = ModalRoute.of(navigatorState.context)?.settings.name;
-        if (currentRoute != '/dashboard') {
+        if (currentRoute != '/shell' && currentRoute != '/ulp-selection') {
           _isRedirecting = true;
-          navigatorState.pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => const DashboardScreen(),
-              settings: const RouteSettings(name: '/dashboard'),
-            ),
-            (route) => false,
-          ).then((_) {
+          ThemeService.instance.loadTheme().then((_) async {
+            await _navigateAfterLogin(navigatorState, session.user.id);
             _isRedirecting = false;
           });
         }
@@ -168,6 +219,21 @@ class _MyAppState extends State<MyApp> {
             MaterialPageRoute(
               builder: (context) => const LoginPage(),
               settings: const RouteSettings(name: '/login'),
+            ),
+            (route) => false,
+          ).then((_) {
+            _isRedirecting = false;
+          });
+        }
+      } else if (event == AuthChangeEvent.passwordRecovery) {
+        debugPrint('🔑 [DEBUG] Password recovery event received');
+        final currentRoute = ModalRoute.of(navigatorState.context)?.settings.name;
+        if (currentRoute != '/new-password') {
+          _isRedirecting = true;
+          navigatorState.pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => const NewPasswordPage(),
+              settings: const RouteSettings(name: '/new-password'),
             ),
             (route) => false,
           ).then((_) {
@@ -190,28 +256,19 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: _navigatorKey,
-      title: 'Elsafe App',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(useMaterial3: true).copyWith(
-        scaffoldBackgroundColor: Colors.black,
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF0072FF),
-          secondary: Color(0xFF00C6FF),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0072FF),
-          ),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.black,
-          elevation: 0,
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-        ),
-      ),
-      home: const ElsafeSplashScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: ThemeService.instance.themeMode,
+      builder: (context, mode, _) {
+        return MaterialApp(
+          navigatorKey: _navigatorKey,
+          title: 'Elsafe App',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeService.light(),
+          darkTheme: ThemeService.dark(),
+          themeMode: mode,
+          home: const ElsafeSplashScreen(),
+        );
+      },
     );
   }
 }
