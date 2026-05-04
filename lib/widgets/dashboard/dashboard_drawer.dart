@@ -3,6 +3,7 @@ import '../../Screen/settings_screen.dart';
 import '../../Screen/notifications_screen.dart';
 import '../../config/app_theme.dart';
 import '../../config/notification_service.dart';
+import '../panduan_penggunaan.dart';
 
 class DashboardDrawer extends StatelessWidget {
   final String userName;
@@ -208,74 +209,10 @@ class DashboardDrawer extends StatelessWidget {
   }
 
   void _showHelpDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.help_outline, color: Colors.green, size: 24),
-            ),
-            const SizedBox(width: 12),
-            Text('Panduan ELSAFE',
-                style: TextStyle(color: context.textPrimary, fontSize: 18)),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Cara menggunakan aplikasi:',
-                style: TextStyle(
-                  color: context.textSecondary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              _helpItem(context, 'Tap tombol + untuk menambah temuan baru'),
-              _helpItem(context, 'Gunakan GPS atau pilih lokasi dari peta'),
-              _helpItem(context, 'Lihat semua temuan di menu Daftar'),
-              _helpItem(context, 'Lihat peta lokasi temuan di menu Peta'),
-              _helpItem(context, 'Edit atau hapus temuan dari daftar'),
-              _helpItem(context, 'Swipe down untuk refresh data'),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Mengerti',
-                style: TextStyle(color: Colors.blue, fontSize: 14)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _helpItem(BuildContext context, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.check_circle, color: Colors.green, size: 18),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(text,
-                style: TextStyle(color: context.textSecondary, fontSize: 13)),
-          ),
-        ],
-      ),
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PanduanPenggunaanScreen()),
     );
   }
 
