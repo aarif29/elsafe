@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../config/app_theme.dart';
 
 class PanduanPenggunaanScreen extends StatelessWidget {
-  const PanduanPenggunaanScreen({super.key});
+  final VoidCallback onBack;
+
+  const PanduanPenggunaanScreen({super.key, required this.onBack});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,7 @@ class PanduanPenggunaanScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: context.textPrimary),
-          onPressed: () => Navigator.pop(context),
+          onPressed: onBack,
         ),
         title: Text(
           'Panduan Penggunaan',

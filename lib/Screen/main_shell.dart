@@ -7,6 +7,7 @@ import '../widgets/tipe_temuan_picker.dart';
 import 'temuan.dart';
 import 'maps_view.dart';
 import '../config/notification_service.dart';
+import '../widgets/panduan_penggunaan.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -17,15 +18,25 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _navIndex = 0;
+  bool _showPanduan = false;
   final _dashboardKey = GlobalKey<DashboardScreenState>();
   final _daftarKey = GlobalKey<DaftarTemuanScreenState>();
 
   // navIndex: 0=Dashboard, 1=Daftar, 2=Peta(modal), 3=Notifikasi, 4=Profil
-  // stackIndex: 0=Dashboard, 1=Daftar, 2=Notifikasi, 3=Profil
+  // stackIndex: 0=Dashboard, 1=Daftar, 2=Notifikasi, 3=Profil, 4=Panduan
   int get _stackIndex {
-    if (_navIndex == 3) return 2; // Notifikasi
-    if (_navIndex == 4) return 3; // Profil
-    return _navIndex;            // 0=Dashboard, 1=Daftar
+    if (_showPanduan) return 4;
+    if (_navIndex == 3) return 2;
+    if (_navIndex == 4) return 3;
+    return _navIndex;
+  }
+
+  void openPanduan() {
+    setState(() => _showPanduan = true);
+  }
+
+  void closePanduan() {
+    setState(() => _showPanduan = false);
   }
 
   @override
@@ -86,13 +97,15 @@ class _MainShellState extends State<MainShell> {
           DashboardScreen(
             key: _dashboardKey,
             onLihatSemua: () => setState(() => _navIndex = 1),
+            onOpenPanduan: openPanduan,
           ),
           DaftarTemuanScreen(key: _daftarKey),
           const NotificationsScreen(),
           const Profile(),
+          PanduanPenggunaanScreen(onBack: closePanduan),
         ],
       ),
-      floatingActionButton: (_navIndex == 3 || _navIndex == 4)
+      floatingActionButton: (_showPanduan || _navIndex == 3 || _navIndex == 4)
           ? null
           : _buildFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

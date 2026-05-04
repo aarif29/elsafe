@@ -12,8 +12,9 @@ import '../widgets/dashboard/dashboard_drawer.dart';
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback? onLihatSemua;
+  final VoidCallback? onOpenPanduan;
 
-  const DashboardScreen({super.key, this.onLihatSemua});
+  const DashboardScreen({super.key, this.onLihatSemua, this.onOpenPanduan});
 
   @override
   State<DashboardScreen> createState() => DashboardScreenState();
@@ -133,6 +134,7 @@ class DashboardScreenState extends State<DashboardScreen> {
         userName: _userName,
         userEmail: _temuanService.currentUserEmail ?? '',
         onLogout: () => _handleLogout(context),
+        onOpenPanduan: widget.onOpenPanduan ?? () {},
       ),
       body: _isLoading
           ? const Center(

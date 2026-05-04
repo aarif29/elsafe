@@ -3,18 +3,19 @@ import '../../Screen/settings_screen.dart';
 import '../../Screen/notifications_screen.dart';
 import '../../config/app_theme.dart';
 import '../../config/notification_service.dart';
-import '../panduan_penggunaan.dart';
 
 class DashboardDrawer extends StatelessWidget {
   final String userName;
   final String userEmail;
   final VoidCallback onLogout;
+  final VoidCallback onOpenPanduan;
 
   const DashboardDrawer({
     super.key,
     required this.userName,
     required this.userEmail,
     required this.onLogout,
+    required this.onOpenPanduan,
   });
 
   @override
@@ -209,13 +210,7 @@ class DashboardDrawer extends StatelessWidget {
   }
 
   void _showHelpDialog(BuildContext context) {
-    Navigator.pop(context);
-    Future.delayed(const Duration(milliseconds: 150), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const PanduanPenggunaanScreen()),
-      );
-    });
+    onOpenPanduan();
   }
 
   void _showAboutDialog(BuildContext context) {
