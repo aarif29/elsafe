@@ -106,23 +106,29 @@ class _MyAppState extends State<MyApp> {
       if (hasAuthCallback) {
         debugPrint('🔑 [DEBUG] OAuth callback detected in URL!');
         debugPrint('🔑 [DEBUG] Is password recovery: $isPasswordRecovery');
-        debugPrint('🔑 [DEBUG] Waiting for Supabase to process session...');
 
-        await Future.delayed(const Duration(milliseconds: 1000));
+        // Jika ada PKCE code di URL, tukar secara eksplisit dengan session.
+        if (uri.query.contains('code=')) {
+          debugPrint('🔑 [DEBUG] PKCE code detected, exchanging for session...');
+          try {
+            await Supabase.instance.client.auth.exchangeCodeForSession(uri.toString());
+            debugPrint('✅ [DEBUG] exchangeCodeForSession succeeded');
+          } catch (e) {
+            debugPrint('❌ [DEBUG] exchangeCodeForSession failed: $e');
+          }
+        } else {
+          await Future.delayed(const Duration(milliseconds: 1000));
+        }
 
         Session? session;
         for (int i = 0; i < 5; i++) {
           session = Supabase.instance.client.auth.currentSession;
           debugPrint('🔄 [DEBUG] Session check attempt ${i + 1}: ${session?.user?.email}');
-
           if (session != null) {
             debugPrint('✅ [DEBUG] Session found after OAuth callback!');
             break;
           }
-
-          if (i < 4) {
-            await Future.delayed(const Duration(milliseconds: 500));
-          }
+          if (i < 4) await Future.delayed(const Duration(milliseconds: 500));
         }
       }
 
