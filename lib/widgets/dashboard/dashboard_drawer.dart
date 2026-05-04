@@ -210,10 +210,12 @@ class DashboardDrawer extends StatelessWidget {
 
   void _showHelpDialog(BuildContext context) {
     Navigator.pop(context);
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const PanduanPenggunaanScreen()),
-    );
+    Future.delayed(const Duration(milliseconds: 150), () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PanduanPenggunaanScreen()),
+      );
+    });
   }
 
   void _showAboutDialog(BuildContext context) {

@@ -140,30 +140,6 @@ class PanduanPenggunaanScreen extends StatelessWidget {
                 '  - Hanya melihat data ULP tempat bertugas\n'
                 '  - Data difilter otomatis berdasarkan data akun\n',
           ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.blue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.lightbulb_outline, color: Colors.blue[700], size: 24),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Geser ke bawah untuk refresh data di setiap halaman.',
-                    style: TextStyle(
-                      color: context.textSecondary,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
           const SizedBox(height: 32),
         ],
       ),
