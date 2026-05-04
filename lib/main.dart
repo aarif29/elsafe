@@ -106,29 +106,19 @@ class _MyAppState extends State<MyApp> {
       if (hasAuthCallback) {
         debugPrint('🔑 [DEBUG] OAuth callback detected in URL!');
         debugPrint('🔑 [DEBUG] Is password recovery: $isPasswordRecovery');
+        debugPrint('🔑 [DEBUG] Waiting for supabase_flutter internal PKCE exchange...');
 
-        // Jika ada PKCE code di URL, tukar secara eksplisit dengan session.
-        if (uri.query.contains('code=')) {
-          debugPrint('🔑 [DEBUG] PKCE code detected, exchanging for session...');
-          try {
-            await Supabase.instance.client.auth.exchangeCodeForSession(uri.toString());
-            debugPrint('✅ [DEBUG] exchangeCodeForSession succeeded');
-          } catch (e) {
-            debugPrint('❌ [DEBUG] exchangeCodeForSession failed: $e');
-          }
-        } else {
-          await Future.delayed(const Duration(milliseconds: 1000));
-        }
-
+        // Biarkan supabase_flutter exchange PKCE code secara internal.
+        // Poll sampai session tersedia (max 10 detik).
         Session? session;
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
           session = Supabase.instance.client.auth.currentSession;
           debugPrint('🔄 [DEBUG] Session check attempt ${i + 1}: ${session?.user?.email}');
           if (session != null) {
-            debugPrint('✅ [DEBUG] Session found after OAuth callback!');
+            debugPrint('✅ [DEBUG] Session found!');
             break;
           }
-          if (i < 4) await Future.delayed(const Duration(milliseconds: 500));
+          await Future.delayed(const Duration(milliseconds: 500));
         }
       }
 
@@ -187,7 +177,9 @@ class _MyAppState extends State<MyApp> {
   void _setupAuthListener() {
     _authSubscription?.cancel();
     _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      if (_isRedirecting && data.event != AuthChangeEvent.signedIn) return;
+      if (_isRedirecting &&
+          data.event != AuthChangeEvent.signedIn &&
+          data.event != AuthChangeEvent.initialSession) return;
       
       final event = data.event;
       final session = data.session;
@@ -202,7 +194,9 @@ class _MyAppState extends State<MyApp> {
         return;
       }
 
-      if (event == AuthChangeEvent.signedIn && session != null) {
+      if ((event == AuthChangeEvent.signedIn ||
+              (event == AuthChangeEvent.initialSession && session != null)) &&
+          session != null) {
         debugPrint('🎉 [DEBUG] User signed in successfully!');
         // Jika ini recovery flow, biarkan passwordRecovery event yang handle navigasi
         final uri = Uri.base;

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'register.dart';
 import '../config/lupa_password.dart';
 import '../config/app_logger.dart';
@@ -25,6 +26,9 @@ class _LoginPageState extends State<LoginPage> {
         OAuthProvider.google,
         redirectTo: kIsWeb ? Uri.base.origin : null,
         scopes: 'email profile',
+        authScreenLaunchMode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
       );
 
       appLog.d('✅ OAuth request sent successfully');
