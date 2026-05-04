@@ -95,7 +95,7 @@ extension AppThemeExt on BuildContext {
 
   Color get bgColor => isDark ? Colors.black : const Color(0xFFF2F4F7);
   Color get surfaceColor => isDark ? Colors.grey[900]! : Colors.white;
-  Color get cardColor => isDark ? Colors.grey[800]! : Colors.grey[100]!;
+  Color get cardColor => isDark ? Colors.grey[800]! : Colors.grey[200]!;
   Color get inputFillColor => isDark ? Colors.grey[850]! : Colors.grey[100]!;
   Color get subtleSurface => isDark ? Colors.grey[850]! : Colors.grey[100]!;
 
