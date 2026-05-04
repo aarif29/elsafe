@@ -2,20 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../profil/loginscreen.dart';
 import '../config/app_logger.dart';
+import '../config/app_theme.dart';
 import '../config/temuan_service.dart';
 import '../config/temuan_model.dart';
-import '../config/app_theme.dart';
 import '../widgets/dashboard/dashboard_welcome_card.dart';
 import '../widgets/dashboard/dashboard_stats_section.dart';
 import '../widgets/dashboard/dashboard_recent_activity.dart';
 import '../widgets/dashboard/dashboard_info_section.dart';
-import '../widgets/dashboard/dashboard_drawer.dart';
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback? onLihatSemua;
-  final VoidCallback? onOpenPanduan;
 
-  const DashboardScreen({super.key, this.onLihatSemua, this.onOpenPanduan});
+  const DashboardScreen({super.key, this.onLihatSemua});
 
   @override
   State<DashboardScreen> createState() => DashboardScreenState();
@@ -142,12 +140,6 @@ class DashboardScreenState extends State<DashboardScreen> {
             tooltip: 'Refresh',
           ),
         ],
-      ),
-      drawer: DashboardDrawer(
-        userName: _userName,
-        userEmail: _temuanService.currentUserEmail ?? '',
-        onLogout: () => _handleLogout(context),
-        onOpenPanduan: widget.onOpenPanduan ?? () {},
       ),
       body: _isLoading
           ? const Center(

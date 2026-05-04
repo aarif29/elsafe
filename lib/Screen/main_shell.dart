@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dashboard.dart';
 import 'daftar_temuan.dart';
 import 'notifications_screen.dart';
@@ -7,7 +8,9 @@ import '../widgets/tipe_temuan_picker.dart';
 import 'temuan.dart';
 import 'maps_view.dart';
 import '../config/notification_service.dart';
+import '../config/temuan_service.dart';
 import '../widgets/panduan_penggunaan.dart';
+import '../widgets/dashboard/dashboard_drawer.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -19,6 +22,7 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _navIndex = 0;
   bool _showPanduan = false;
+  final _temuanService = TemuanService();
   final _dashboardKey = GlobalKey<DashboardScreenState>();
   final _daftarKey = GlobalKey<DaftarTemuanScreenState>();
 
@@ -37,6 +41,29 @@ class _MainShellState extends State<MainShell> {
 
   void closePanduan() {
     setState(() => _showPanduan = false);
+  }
+
+  Future<void> _handleLogout() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Apakah Anda yakin ingin logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true && mounted) {
+      await Supabase.instance.client.auth.signOut();
+    }
   }
 
   @override
@@ -90,14 +117,27 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final userEmail = _temuanService.currentUserEmail ?? '';
+    final userName = userEmail.isNotEmpty ? userEmail.split('@')[0] : 'User';
+
     return Scaffold(
+      drawer: userEmail.isNotEmpty
+          ? DashboardDrawer(
+              userName: userName,
+              userEmail: userEmail,
+              onLogout: _handleLogout,
+              onOpenPanduan: () {
+                Navigator.pop(context);
+                openPanduan();
+              },
+            )
+          : null,
       body: IndexedStack(
         index: _stackIndex,
         children: [
           DashboardScreen(
             key: _dashboardKey,
             onLihatSemua: () => setState(() => _navIndex = 1),
-            onOpenPanduan: openPanduan,
           ),
           DaftarTemuanScreen(key: _daftarKey),
           const NotificationsScreen(),
