@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../Screen/settings_screen.dart';
 import '../../Screen/notifications_screen.dart';
 import '../../config/app_theme.dart';
 import '../../config/notification_service.dart';
@@ -81,17 +80,6 @@ class DashboardDrawer extends StatelessWidget {
                 letterSpacing: 1,
               ),
             ),
-          ),
-          _DrawerItem(
-            icon: Icons.settings_outlined,
-            title: 'Pengaturan Aplikasi',
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
-              );
-            },
           ),
           ValueListenableBuilder<int>(
             valueListenable: NotificationService.instance.unreadCount,

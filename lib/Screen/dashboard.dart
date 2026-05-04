@@ -4,6 +4,7 @@ import '../profil/loginscreen.dart';
 import '../config/app_logger.dart';
 import '../config/temuan_service.dart';
 import '../config/temuan_model.dart';
+import '../config/app_theme.dart';
 import '../widgets/dashboard/dashboard_welcome_card.dart';
 import '../widgets/dashboard/dashboard_stats_section.dart';
 import '../widgets/dashboard/dashboard_recent_activity.dart';
@@ -123,6 +124,18 @@ class DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
+          ValueListenableBuilder<ThemeMode>(
+            valueListenable: ThemeService.instance.themeMode,
+            builder: (context, mode, _) {
+              return IconButton(
+                icon: Icon(mode == ThemeMode.dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
+                onPressed: () {
+                  ThemeService.instance.setTheme(mode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark);
+                },
+                tooltip: mode == ThemeMode.dark ? 'Mode Terang' : 'Mode Gelap',
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadDashboardData,
