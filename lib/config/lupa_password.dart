@@ -32,7 +32,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
     await Supabase.instance.client.auth.resetPasswordForEmail(
       _emailController.text.trim(),
       redirectTo: kIsWeb
-          ? 'http://localhost:8080/'
+          ? Uri.base.origin
           : 'io.supabase.flutter://reset-callback/',
     );
 

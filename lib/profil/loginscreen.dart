@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
 
       await Supabase.instance.client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: kIsWeb ? 'http://localhost:8080' : null,
+        redirectTo: kIsWeb ? Uri.base.origin : null,
         scopes: 'email profile',
       );
 
