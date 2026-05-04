@@ -20,19 +20,14 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Create .env file
-        run: |
-          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
-          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
-
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Flutter Web
-        run: flutter build web --release --base-href /
-
-      - name: Copy vercel.json to build output
-        run: cp vercel.json build/web/vercel.json
+      - name: Build Flutter Web with Environment Variables
+        run: |
+          flutter build web --release --base-href / \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest

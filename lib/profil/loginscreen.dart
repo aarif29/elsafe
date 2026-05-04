@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
 
       await Supabase.instance.client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: kIsWeb ? Uri.base.origin : null,
+        redirectTo: kIsWeb ? 'https://elsafe.vercel.app' : null,
         scopes: 'email profile',
         authScreenLaunchMode: kIsWeb
             ? LaunchMode.platformDefault
