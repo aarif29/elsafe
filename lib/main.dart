@@ -153,7 +153,9 @@ class _MyAppState extends State<MyApp> {
         debugPrint('✅ [DEBUG] Valid session found, checking ULP...');
         await ThemeService.instance.loadTheme();
         await _navigateAfterLogin(navigatorState, session.user.id);
-      } else {
+      } else if (!hasAuthCallback) {
+        // Hanya redirect ke login jika tidak ada OAuth code di URL.
+        // Jika ada code, biarkan auth listener yang handle setelah PKCE exchange selesai.
         debugPrint('🔒 [DEBUG] No valid session found, redirecting to login');
         final currentRoute = ModalRoute.of(navigatorState.context)?.settings.name;
         if (currentRoute != '/login') {
@@ -165,6 +167,8 @@ class _MyAppState extends State<MyApp> {
             (route) => false,
           );
         }
+      } else {
+        debugPrint('⏳ [DEBUG] OAuth code detected, waiting for auth listener to handle signedIn...');
       }
 
     } catch (e) {
@@ -177,7 +181,7 @@ class _MyAppState extends State<MyApp> {
   void _setupAuthListener() {
     _authSubscription?.cancel();
     _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      if (_isRedirecting) return;
+      if (_isRedirecting && data.event != AuthChangeEvent.signedIn) return;
       
       final event = data.event;
       final session = data.session;
