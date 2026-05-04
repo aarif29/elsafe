@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../Screen/notifications_screen.dart';
 import '../../config/app_theme.dart';
 import '../../config/notification_service.dart';
 
@@ -7,6 +6,7 @@ class DashboardDrawer extends StatelessWidget {
   final String userName;
   final String userEmail;
   final VoidCallback onLogout;
+  final VoidCallback onOpenNotifications;
   final VoidCallback onOpenPanduan;
 
   const DashboardDrawer({
@@ -14,6 +14,7 @@ class DashboardDrawer extends StatelessWidget {
     required this.userName,
     required this.userEmail,
     required this.onLogout,
+    required this.onOpenNotifications,
     required this.onOpenPanduan,
   });
 
@@ -89,12 +90,9 @@ class DashboardDrawer extends StatelessWidget {
                   title: count > 0 ? 'Notifikasi ($count)' : 'Notifikasi',
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const NotificationsScreen(),
-                      ),
-                    );
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      onOpenNotifications();
+                    });
                   },
                 ),
           ),

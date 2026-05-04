@@ -21,27 +21,40 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _navIndex = 0;
+  bool _showPanduan = false;
   final _temuanService = TemuanService();
   final _dashboardKey = GlobalKey<DashboardScreenState>();
   final _daftarKey = GlobalKey<DaftarTemuanScreenState>();
 
   // navIndex: 0=Dashboard, 1=Daftar, 2=Peta(modal), 3=Notifikasi, 4=Profil
-  // stackIndex: 0=Dashboard, 1=Daftar, 2=Notifikasi, 3=Profil
+  // stackIndex: 0=Dashboard, 1=Daftar, 2=Notifikasi, 3=Profil, 4=Panduan
   int get _stackIndex {
+    if (_showPanduan) return 4;
     if (_navIndex == 3) return 2;
     if (_navIndex == 4) return 3;
     return _navIndex;
   }
 
   void openPanduan() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder:
-            (routeContext) => PanduanPenggunaanScreen(
-              onBack: () => Navigator.of(routeContext).pop(),
-            ),
-      ),
-    );
+    setState(() => _showPanduan = true);
+  }
+
+  void closePanduan() {
+    setState(() => _showPanduan = false);
+  }
+
+  void openNotifications() {
+    setState(() {
+      _showPanduan = false;
+      _navIndex = 3;
+    });
+  }
+
+  void backToDashboard() {
+    setState(() {
+      _showPanduan = false;
+      _navIndex = 0;
+    });
   }
 
   Future<void> _handleLogout() async {
@@ -84,10 +97,14 @@ class _MainShellState extends State<MainShell> {
 
   void _onNavTap(int index) {
     if (index == 2) {
+      setState(() => _showPanduan = false);
       _showMapsView();
       return;
     }
-    setState(() => _navIndex = index);
+    setState(() {
+      _showPanduan = false;
+      _navIndex = index;
+    });
   }
 
   void _showMapsView() {
@@ -129,6 +146,7 @@ class _MainShellState extends State<MainShell> {
                 userName: userName,
                 userEmail: userEmail,
                 onLogout: _handleLogout,
+                onOpenNotifications: openNotifications,
                 onOpenPanduan: openPanduan,
               )
               : null,
@@ -140,12 +158,15 @@ class _MainShellState extends State<MainShell> {
             onLihatSemua: () => setState(() => _navIndex = 1),
           ),
           DaftarTemuanScreen(key: _daftarKey),
-          const NotificationsScreen(),
+          NotificationsScreen(onBack: backToDashboard),
           const Profile(),
+          PanduanPenggunaanScreen(onBack: closePanduan),
         ],
       ),
       floatingActionButton:
-          (_navIndex == 3 || _navIndex == 4) ? null : _buildFab(),
+          (_showPanduan || _navIndex == 3 || _navIndex == 4)
+              ? null
+              : _buildFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: _buildBottomNav(),
     );

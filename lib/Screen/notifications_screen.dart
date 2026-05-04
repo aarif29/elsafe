@@ -5,7 +5,9 @@ import '../config/app_theme.dart';
 import 'edit_temuan.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({super.key});
+  final VoidCallback? onBack;
+
+  const NotificationsScreen({super.key, this.onBack});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -88,6 +90,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       appBar: AppBar(
         title: const Text('Notifikasi'),
         automaticallyImplyLeading: false,
+        leading:
+            widget.onBack == null
+                ? null
+                : IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: widget.onBack,
+                  tooltip: 'Kembali',
+                ),
         actions: [
           if (unread > 0)
             TextButton.icon(
@@ -103,22 +113,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _notifications.isEmpty
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _notifications.isEmpty
               ? _buildEmpty()
               : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _notifications.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
-                    itemBuilder: (_, i) => _NotifCard(
-                      notif: _notifications[i],
-                      onTap: () => _onTapNotif(_notifications[i]),
-                    ),
-                  ),
+                onRefresh: _load,
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _notifications.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  itemBuilder:
+                      (_, i) => _NotifCard(
+                        notif: _notifications[i],
+                        onTap: () => _onTapNotif(_notifications[i]),
+                      ),
                 ),
+              ),
     );
   }
 
@@ -156,9 +168,10 @@ class _NotifCard extends StatelessWidget {
     final isRead = notif['is_read'] == true;
     final title = notif['title'] as String? ?? '';
     final body = notif['body'] as String? ?? '';
-    final createdAt = notif['created_at'] != null
-        ? DateTime.parse(notif['created_at'] as String).toLocal()
-        : null;
+    final createdAt =
+        notif['created_at'] != null
+            ? DateTime.parse(notif['created_at'] as String).toLocal()
+            : null;
     final type = notif['type'] as String? ?? '';
 
     return InkWell(
@@ -166,10 +179,16 @@ class _NotifCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         decoration: BoxDecoration(
-          color: isRead ? context.cardColor : Colors.orange.withValues(alpha: 0.08),
+          color:
+              isRead
+                  ? context.cardColor
+                  : Colors.orange.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isRead ? context.borderColor : Colors.orange.withValues(alpha: 0.4),
+            color:
+                isRead
+                    ? context.borderColor
+                    : Colors.orange.withValues(alpha: 0.4),
             width: isRead ? 0.5 : 1,
           ),
         ),
@@ -201,7 +220,8 @@ class _NotifCard extends StatelessWidget {
                           title,
                           style: TextStyle(
                             color: context.textPrimary,
-                            fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
+                            fontWeight:
+                                isRead ? FontWeight.normal : FontWeight.bold,
                             fontSize: 13,
                           ),
                         ),
@@ -220,7 +240,10 @@ class _NotifCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     body,
-                    style: TextStyle(color: context.textSecondary, fontSize: 12),
+                    style: TextStyle(
+                      color: context.textSecondary,
+                      fontSize: 12,
+                    ),
                   ),
                   if (createdAt != null) ...[
                     const SizedBox(height: 6),
@@ -228,12 +251,18 @@ class _NotifCard extends StatelessWidget {
                       children: [
                         Text(
                           _formatDate(createdAt),
-                          style: TextStyle(color: context.textHint, fontSize: 11),
+                          style: TextStyle(
+                            color: context.textHint,
+                            fontSize: 11,
+                          ),
                         ),
                         const Spacer(),
                         Text(
                           'Tap untuk lihat detail →',
-                          style: TextStyle(color: Colors.blue.withValues(alpha: 0.7), fontSize: 11),
+                          style: TextStyle(
+                            color: Colors.blue.withValues(alpha: 0.7),
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
