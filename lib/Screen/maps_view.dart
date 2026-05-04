@@ -206,38 +206,6 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
     }
   }
 
-  Widget _buildStatusToggle(String status) {
-    final isSelected = _filterStatus == status;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() {
-          _filterStatus = status;
-          _createMarkers();
-        }),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.blue : Colors.grey[800],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isSelected ? Colors.blue : Colors.grey[600]!,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              status,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.grey[300],
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Future<void> _goToCurrentLocation() async {
     if (_isGettingLocation) return;
     setState(() => _isGettingLocation = true);
@@ -685,62 +653,115 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
               ],
             ),
           ),
-          // ULP filter — hanya admin
-          if (_isAdmin) ...[
-            SizedBox(
-              height: 36,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _ulpOptions.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 6),
-                itemBuilder: (_, i) {
-                  final ulp = _ulpOptions[i];
-                  final isSelected = _filterUlp == ulp;
-                  return GestureDetector(
-                    onTap: () => setState(() {
-                      _filterUlp = ulp;
-                      _createMarkers();
-                    }),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue : Colors.grey[800],
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected ? Colors.blue : Colors.grey[600]!,
-                        ),
-                      ),
-                      child: Text(
-                        ulp == 'Semua' ? 'Semua ULP' : ulp,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.grey[300],
-                          fontSize: 11,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-          ],
-
-          // Status filter — semua user bisa lihat
+          // Filter section: ULP (admin) + Status (all users)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                _buildStatusToggle('Semua'),
-                const SizedBox(width: 8),
-                _buildStatusToggle('Open'),
-                const SizedBox(width: 8),
-                _buildStatusToggle('Closed'),
+                // ULP Filter - hanya untuk admin
+                if (_isAdmin) ...[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, size: 14, color: Colors.white70),
+                            const SizedBox(width: 4),
+                            const Text(
+                              'ULP:',
+                              style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[800],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey[600]!),
+                          ),
+                          child: DropdownButton<String>(
+                            value: _filterUlp,
+                            isExpanded: true,
+                            underline: const SizedBox(),
+                            dropdownColor: Colors.grey[800],
+                            style: const TextStyle(color: Colors.white, fontSize: 13),
+                            icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
+                            items: _ulpOptions.map((ulp) {
+                              return DropdownMenuItem(
+                                value: ulp,
+                                child: Text(ulp == 'Semua' ? 'Semua ULP' : ulp),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _filterUlp = value;
+                                  _createMarkers();
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                ],
+                // Status Filter - untuk semua user
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: _isAdmin ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.assessment, size: 14, color: Colors.white70),
+                          const SizedBox(width: 4),
+                          const Text(
+                            'Status:',
+                            style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[800],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey[600]!),
+                        ),
+                        child: DropdownButton<String>(
+                          value: _filterStatus,
+                          isExpanded: true,
+                          underline: const SizedBox(),
+                          dropdownColor: Colors.grey[800],
+                          style: const TextStyle(color: Colors.white, fontSize: 13),
+                          icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
+                          items: const [
+                            DropdownMenuItem(value: 'Semua', child: Text('Semua')),
+                            DropdownMenuItem(value: 'Open', child: Text('Open')),
+                            DropdownMenuItem(value: 'Closed', child: Text('Closed')),
+                          ],
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _filterStatus = value;
+                                _createMarkers();
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
 
           // Info panel
           Container(
