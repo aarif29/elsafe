@@ -51,6 +51,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   bool _showLabels = true;
   bool _isAdmin = false;
   String _filterUlp = 'Semua';
+  String _filterStatus = 'Semua';
 
   final LatLng _center = const LatLng(-7.9666, 112.6326);
 
@@ -64,10 +65,22 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
     return ['Semua', ...ulps];
   }
 
-  List<TemuanModel> get _filteredTemuan =>
-      _filterUlp == 'Semua'
-          ? _temuanList
-          : _temuanList.where((t) => t.ulp == _filterUlp).toList();
+  List<TemuanModel> get _filteredTemuan {
+    var result = _temuanList;
+    
+    // Filter ULP (hanya untuk admin)
+    if (_filterUlp != 'Semua') {
+      result = result.where((t) => t.ulp == _filterUlp).toList();
+    }
+    
+    // Filter Status (untuk semua user)
+    if (_filterStatus != 'Semua') {
+      final statusMatch = _filterStatus == 'Closed' ? 'Closed' : 'Open';
+      result = result.where((t) => t.statusTemuan == statusMatch).toList();
+    }
+    
+    return result;
+  }
 
   @override
   void initState() {
@@ -191,6 +204,38 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
     if (_currentLocationMarker != null) {
       _markers.add(_currentLocationMarker!);
     }
+  }
+
+  Widget _buildStatusToggle(String status) {
+    final isSelected = _filterStatus == status;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() {
+          _filterStatus = status;
+          _createMarkers();
+        }),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.blue : Colors.grey[800],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isSelected ? Colors.blue : Colors.grey[600]!,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              status,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.grey[300],
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _goToCurrentLocation() async {
@@ -682,6 +727,21 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
             const SizedBox(height: 8),
           ],
 
+          // Status filter — semua user bisa lihat
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                _buildStatusToggle('Semua'),
+                const SizedBox(width: 8),
+                _buildStatusToggle('Open'),
+                const SizedBox(width: 8),
+                _buildStatusToggle('Closed'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+
           // Info panel
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -696,7 +756,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Total: ${_filteredTemuan.length}${_filterUlp != 'Semua' ? ' · $_filterUlp' : ''}',
+                      'Total: ${_filteredTemuan.length}${_filterUlp != 'Semua' ? ' · $_filterUlp' : ''}${_filterStatus != 'Semua' ? ' · $_filterStatus' : ''}',
                       style: const TextStyle(color: Colors.white),
                     ),
                     Text('Marker: ${_markers.length}', style: const TextStyle(color: Colors.grey)),
