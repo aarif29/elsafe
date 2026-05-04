@@ -126,10 +126,7 @@ class _MainShellState extends State<MainShell> {
               userName: userName,
               userEmail: userEmail,
               onLogout: _handleLogout,
-              onOpenPanduan: () {
-                Navigator.pop(context);
-                openPanduan();
-              },
+              onOpenPanduan: openPanduan,
             )
           : null,
       body: IndexedStack(
