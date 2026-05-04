@@ -21,6 +21,23 @@ void main() {
     expect(find.text('Panduan Penggunaan'), findsOneWidget);
     expect(find.text('Pendahuluan'), findsOneWidget);
 
+    await tester.scrollUntilVisible(
+      find.textContaining('ULP (Unit Layanan Pelanggan)'),
+      300,
+    );
+    expect(find.textContaining('ULP (Unit Layanan Pelanggan)'), findsWidgets);
+
+    await tester.scrollUntilVisible(
+      find.textContaining('KMU (Kecelakaan Masyarakat Umum)'),
+      500,
+    );
+
+    expect(
+      find.textContaining('KMU (Kecelakaan Masyarakat Umum)'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('ROW (Right of Way)'), findsOneWidget);
+
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pump();
 

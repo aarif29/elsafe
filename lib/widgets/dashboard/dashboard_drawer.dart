@@ -83,20 +83,28 @@ class DashboardDrawer extends StatelessWidget {
           ),
           ValueListenableBuilder<int>(
             valueListenable: NotificationService.instance.unreadCount,
-            builder: (context, count, _) => _DrawerItem(
-              icon: Icons.notifications_outlined,
-              title: count > 0 ? 'Notifikasi ($count)' : 'Notifikasi',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-                );
-              },
-            ),
+            builder:
+                (context, count, _) => _DrawerItem(
+                  icon: Icons.notifications_outlined,
+                  title: count > 0 ? 'Notifikasi ($count)' : 'Notifikasi',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsScreen(),
+                      ),
+                    );
+                  },
+                ),
           ),
 
-          Divider(color: context.borderColor, height: 24, indent: 16, endIndent: 16),
+          Divider(
+            color: context.borderColor,
+            height: 24,
+            indent: 16,
+            endIndent: 16,
+          ),
 
           // BANTUAN
           Padding(
@@ -116,7 +124,9 @@ class DashboardDrawer extends StatelessWidget {
             title: 'Panduan Penggunaan',
             onTap: () {
               Navigator.pop(context);
-              _showHelpDialog(context);
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                onOpenPanduan();
+              });
             },
           ),
           _DrawerItem(
@@ -136,7 +146,12 @@ class DashboardDrawer extends StatelessWidget {
             },
           ),
 
-          Divider(color: context.borderColor, height: 24, indent: 16, endIndent: 16),
+          Divider(
+            color: context.borderColor,
+            height: 24,
+            indent: 16,
+            endIndent: 16,
+          ),
 
           // AKUN
           Padding(
@@ -197,64 +212,72 @@ class DashboardDrawer extends StatelessWidget {
     );
   }
 
-  void _showHelpDialog(BuildContext context) {
-    onOpenPanduan();
-  }
-
   void _showAboutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.blue.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: context.surfaceColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.info_outline,
+                    color: Colors.blue,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Tentang ELSAFE',
+                  style: TextStyle(color: context.textPrimary, fontSize: 18),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Electricity Safe',
+                  style: TextStyle(
+                    color: context.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Aplikasi untuk mengelola data temuan potensi bahaya dengan sistem tracking lokasi berbasis GPS.',
+                  style: TextStyle(color: context.textSecondary, fontSize: 13),
+                ),
+                const SizedBox(height: 20),
+                Divider(color: context.borderColor),
+                const SizedBox(height: 12),
+                _aboutItem(context, 'Versi', '1.0.0'),
+                _aboutItem(context, 'Developer', 'M. Arif Trianto'),
+                _aboutItem(context, 'Tahun', '2026'),
+                _aboutItem(context, 'Platform', 'Android & Web App'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Tutup',
+                  style: TextStyle(color: Colors.blue, fontSize: 14),
+                ),
               ),
-              child: const Icon(Icons.info_outline, color: Colors.blue, size: 24),
-            ),
-            const SizedBox(width: 12),
-            Text('Tentang ELSAFE',
-                style: TextStyle(color: context.textPrimary, fontSize: 18)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Electricity Safe',
-              style: TextStyle(
-                  color: context.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Aplikasi untuk mengelola data temuan potensi bahaya dengan sistem tracking lokasi berbasis GPS.',
-              style: TextStyle(color: context.textSecondary, fontSize: 13),
-            ),
-            const SizedBox(height: 20),
-            Divider(color: context.borderColor),
-            const SizedBox(height: 12),
-            _aboutItem(context, 'Versi', '1.0.0'),
-            _aboutItem(context, 'Developer', 'M. Arif Trianto'),
-            _aboutItem(context, 'Tahun', '2026'),
-            _aboutItem(context, 'Platform', 'Android & Web App'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup',
-                style: TextStyle(color: Colors.blue, fontSize: 14)),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -264,12 +287,18 @@ class DashboardDrawer extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: context.textSecondary, fontSize: 13)),
-          Text(value,
-              style: TextStyle(
-                  color: context.textPrimary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold)),
+          Text(
+            label,
+            style: TextStyle(color: context.textSecondary, fontSize: 13),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: context.textPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
@@ -278,53 +307,78 @@ class DashboardDrawer extends StatelessWidget {
   void _showContactDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: context.surfaceColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.contact_support_outlined,
+                    color: Colors.orange,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Hubungi Kami',
+                  style: TextStyle(color: context.textPrimary, fontSize: 18),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Butuh bantuan? Hubungi kami melalui:',
+                  style: TextStyle(color: context.textSecondary, fontSize: 13),
+                ),
+                const SizedBox(height: 20),
+                _contactItem(
+                  context,
+                  Icons.email,
+                  'Email',
+                  'k3ltumpang@gmail.com',
+                ),
+                const SizedBox(height: 12),
+                _contactItem(context, Icons.phone, 'Telepon', '085155177829'),
+                const SizedBox(height: 12),
+                _contactItem(
+                  context,
+                  Icons.location_on,
+                  'Alamat',
+                  'Malang, Indonesia',
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Tutup',
+                  style: TextStyle(color: Colors.blue, fontSize: 14),
+                ),
               ),
-              child: const Icon(Icons.contact_support_outlined,
-                  color: Colors.orange, size: 24),
-            ),
-            const SizedBox(width: 12),
-            Text('Hubungi Kami',
-                style: TextStyle(color: context.textPrimary, fontSize: 18)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Butuh bantuan? Hubungi kami melalui:',
-              style: TextStyle(color: context.textSecondary, fontSize: 13),
-            ),
-            const SizedBox(height: 20),
-            _contactItem(context, Icons.email, 'Email', 'k3ltumpang@gmail.com'),
-            const SizedBox(height: 12),
-            _contactItem(context, Icons.phone, 'Telepon', '085155177829'),
-            const SizedBox(height: 12),
-            _contactItem(context, Icons.location_on, 'Alamat', 'Malang, Indonesia'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup',
-                style: TextStyle(color: Colors.blue, fontSize: 14)),
+            ],
           ),
-        ],
-      ),
     );
   }
 
-  Widget _contactItem(BuildContext context, IconData icon, String label, String value) {
+  Widget _contactItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -334,11 +388,15 @@ class DashboardDrawer extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: TextStyle(color: context.textSecondary, fontSize: 11)),
+              Text(
+                label,
+                style: TextStyle(color: context.textSecondary, fontSize: 11),
+              ),
               const SizedBox(height: 2),
-              Text(value,
-                  style: TextStyle(color: context.textPrimary, fontSize: 13)),
+              Text(
+                value,
+                style: TextStyle(color: context.textPrimary, fontSize: 13),
+              ),
             ],
           ),
         ),

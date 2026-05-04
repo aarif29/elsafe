@@ -21,45 +21,47 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _navIndex = 0;
-  bool _showPanduan = false;
   final _temuanService = TemuanService();
   final _dashboardKey = GlobalKey<DashboardScreenState>();
   final _daftarKey = GlobalKey<DaftarTemuanScreenState>();
 
   // navIndex: 0=Dashboard, 1=Daftar, 2=Peta(modal), 3=Notifikasi, 4=Profil
-  // stackIndex: 0=Dashboard, 1=Daftar, 2=Notifikasi, 3=Profil, 4=Panduan
+  // stackIndex: 0=Dashboard, 1=Daftar, 2=Notifikasi, 3=Profil
   int get _stackIndex {
-    if (_showPanduan) return 4;
     if (_navIndex == 3) return 2;
     if (_navIndex == 4) return 3;
     return _navIndex;
   }
 
   void openPanduan() {
-    setState(() => _showPanduan = true);
-  }
-
-  void closePanduan() {
-    setState(() => _showPanduan = false);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (routeContext) => PanduanPenggunaanScreen(
+              onBack: () => Navigator.of(routeContext).pop(),
+            ),
+      ),
+    );
   }
 
   Future<void> _handleLogout() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Apakah Anda yakin ingin logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Batal'),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Logout'),
+            content: const Text('Apakah Anda yakin ingin logout?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('Logout'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
     );
     if (confirm == true && mounted) {
       await Supabase.instance.client.auth.signOut();
@@ -121,14 +123,15 @@ class _MainShellState extends State<MainShell> {
     final userName = userEmail.isNotEmpty ? userEmail.split('@')[0] : 'User';
 
     return Scaffold(
-      drawer: userEmail.isNotEmpty
-          ? DashboardDrawer(
-              userName: userName,
-              userEmail: userEmail,
-              onLogout: _handleLogout,
-              onOpenPanduan: openPanduan,
-            )
-          : null,
+      drawer:
+          userEmail.isNotEmpty
+              ? DashboardDrawer(
+                userName: userName,
+                userEmail: userEmail,
+                onLogout: _handleLogout,
+                onOpenPanduan: openPanduan,
+              )
+              : null,
       body: IndexedStack(
         index: _stackIndex,
         children: [
@@ -139,12 +142,10 @@ class _MainShellState extends State<MainShell> {
           DaftarTemuanScreen(key: _daftarKey),
           const NotificationsScreen(),
           const Profile(),
-          PanduanPenggunaanScreen(onBack: closePanduan),
         ],
       ),
-      floatingActionButton: (_showPanduan || _navIndex == 3 || _navIndex == 4)
-          ? null
-          : _buildFab(),
+      floatingActionButton:
+          (_navIndex == 3 || _navIndex == 4) ? null : _buildFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: _buildBottomNav(),
     );
@@ -200,10 +201,7 @@ class _MainShellState extends State<MainShell> {
               icon: Icon(Icons.list),
               label: 'Daftar',
             ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.map),
-              label: 'Peta',
-            ),
+            const BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Peta'),
             // Tab Notifikasi dengan badge
             BottomNavigationBarItem(
               icon: _buildNotifIcon(count),
