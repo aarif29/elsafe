@@ -281,15 +281,6 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
   }
 
   Widget _buildSearchAndFilter() {
-    final totalCount = _temuanList.length;
-    final openCount = _temuanList.where((t) => t.statusTemuan == 'Open').length;
-    final closeCount = _temuanList.where((t) => t.statusTemuan == 'Closed' || t.statusTemuan == 'Close').length;
-    final kmuCount = _temuanList.where((t) => t.tipeTemuan == 'KMU').length;
-    final rowCount = _temuanList.where((t) => t.tipeTemuan == 'ROW').length;
-    final mediumCount = _temuanList.where((t) => t.levelRisiko == 'Medium').length;
-    final highCount = _temuanList.where((t) => t.levelRisiko == 'High').length;
-    final extremeCount = _temuanList.where((t) => t.levelRisiko == 'Extreme').length;
-
     return Container(
       color: context.surfaceColor,
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
@@ -325,202 +316,107 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
           ),
           const SizedBox(height: 10),
 
-          // Status filter
-          _buildSegmentRow(
-            label: 'Status',
-            segments: [
-              _Segment('Semua', null, Colors.blue, totalCount),
-              _Segment('Open', Icons.radio_button_unchecked, Colors.red, openCount),
-              _Segment('Close', Icons.check_circle_outline, Colors.green, closeCount),
-            ],
-            selected: _filterStatus,
-            onSelect: (v) => setState(() => _filterStatus = v),
+          // Filter row with dropdowns
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                // ULP filter - hanya untuk admin
+                if (_isAdmin) ...[
+                  _buildFilterDropdown(
+                    icon: Icons.location_on,
+                    label: 'ULP',
+                    value: _filterUlp,
+                    items: _ulpOptions,
+                    onChanged: (v) => setState(() => _filterUlp = v!),
+                    itemBuilder: (item) => item == 'Semua' ? 'Semua ULP' : item,
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                // Status filter
+                _buildFilterDropdown(
+                  icon: Icons.assessment,
+                  label: 'Status',
+                  value: _filterStatus,
+                  items: const ['Semua', 'Open', 'Closed'],
+                  onChanged: (v) => setState(() => _filterStatus = v!),
+                ),
+                const SizedBox(width: 8),
+                // Tipe filter
+                _buildFilterDropdown(
+                  icon: Icons.category,
+                  label: 'Tipe',
+                  value: _filterTipe,
+                  items: const ['Semua', 'KMU', 'ROW'],
+                  onChanged: (v) => setState(() => _filterTipe = v!),
+                ),
+                const SizedBox(width: 8),
+                // Kategori filter
+                _buildFilterDropdown(
+                  icon: Icons.warning_amber,
+                  label: 'Kategori',
+                  value: _filterKategori,
+                  items: const ['Semua', 'Medium', 'High', 'Extreme'],
+                  onChanged: (v) => setState(() => _filterKategori = v!),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-
-          // Tipe filter
-          _buildSegmentRow(
-            label: 'Tipe',
-            segments: [
-              _Segment('Semua', null, Colors.blue, totalCount),
-              _Segment('KMU', Icons.bolt, Colors.red, kmuCount),
-              _Segment('ROW', Icons.nature, Colors.green, rowCount),
-            ],
-            selected: _filterTipe,
-            onSelect: (v) => setState(() => _filterTipe = v),
-          ),
-          const SizedBox(height: 8),
-
-          // Kategori (level risiko) filter
-          _buildSegmentRow(
-            label: 'Kategori',
-            labelWidth: 58,
-            segments: [
-              _Segment('Semua', null, Colors.blue, totalCount),
-              _Segment('Medium', Icons.shield, Colors.amber, mediumCount),
-              _Segment('High', Icons.shield, Colors.orange, highCount),
-              _Segment('Extreme', Icons.shield, Colors.red, extremeCount),
-            ],
-            selected: _filterKategori,
-            onSelect: (v) => setState(() => _filterKategori = v),
-          ),
-
-          // ULP filter — hanya untuk admin
-          if (_isAdmin) ...[
-            const SizedBox(height: 8),
-            _buildUlpFilterRow(),
-          ],
         ],
       ),
     );
   }
 
-  Widget _buildUlpFilterRow() {
-    return Row(
-      children: [
-        SizedBox(
-          width: 52,
-          child: Text('ULP',
-              style: TextStyle(color: context.textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: _ulpOptions.map((ulp) {
-                final isSelected = _filterUlp == ulp;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: GestureDetector(
-                    onTap: () => setState(() => _filterUlp = ulp),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue : context.inputFillColor,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected ? Colors.blue : context.borderColor,
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        ulp == 'Semua' ? 'Semua ULP' : ulp,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : context.textSecondary,
-                          fontSize: 11,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSegmentRow({
+  Widget _buildFilterDropdown({
+    required IconData icon,
     required String label,
-    required List<_Segment> segments,
-    required String selected,
-    required void Function(String) onSelect,
-    double labelWidth = 40,
+    required String value,
+    required List<String> items,
+    required void Function(String?) onChanged,
+    String Function(String)? itemBuilder,
   }) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          width: labelWidth,
-          child: Text(
-            label,
-            style: TextStyle(
-              color: context.textHint,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.4,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: context.textHint),
+            const SizedBox(width: 4),
+            Text(
+              '$label:',
+              style: TextStyle(
+                color: context.textHint,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
+          ],
         ),
-        Expanded(
-          child: Container(
-            height: 34,
-            decoration: BoxDecoration(
-              color: context.segmentBg,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: const EdgeInsets.all(3),
-            child: Row(
-              children: segments.map((seg) {
-                final isSelected = selected == seg.value;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => onSelect(seg.value),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? seg.color.withValues(alpha: 0.18)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(6),
-                        border: isSelected
-                            ? Border.all(
-                                color: seg.color.withValues(alpha: 0.45),
-                                width: 1,
-                              )
-                            : null,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (seg.icon != null) ...[
-                            Icon(
-                              seg.icon,
-                              size: 12,
-                              color: isSelected ? seg.color : context.textHint,
-                            ),
-                            const SizedBox(width: 4),
-                          ],
-                          Text(
-                            seg.value,
-                            style: TextStyle(
-                              color: isSelected ? seg.color : context.textHint,
-                              fontSize: 12,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                          if (seg.count > 0) ...[
-                            const SizedBox(width: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 4, vertical: 1),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? seg.color.withValues(alpha: 0.25)
-                                    : context.skeletonBase,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                '${seg.count}',
-                                style: TextStyle(
-                                  color: isSelected ? seg.color : context.textSecondary,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            color: context.inputFillColor,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: context.borderColor),
+          ),
+          child: DropdownButton<String>(
+            value: value,
+            isDense: true,
+            underline: const SizedBox(),
+            dropdownColor: context.surfaceColor,
+            style: TextStyle(color: context.textPrimary, fontSize: 12),
+            icon: Icon(Icons.arrow_drop_down, size: 18, color: context.textHint),
+            items: items.map((item) {
+              final displayText = itemBuilder != null ? itemBuilder(item) : item;
+              return DropdownMenuItem(
+                value: item,
+                child: Text(displayText, style: TextStyle(color: context.textPrimary, fontSize: 12)),
+              );
+            }).toList(),
+            onChanged: onChanged,
           ),
         ),
       ],
@@ -644,15 +540,6 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
       },
     );
   }
-}
-
-class _Segment {
-  final String value;
-  final IconData? icon;
-  final Color color;
-  final int count;
-
-  const _Segment(this.value, this.icon, this.color, this.count);
 }
 
 class _SkeletonListItem extends StatefulWidget {
