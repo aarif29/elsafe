@@ -93,12 +93,12 @@ class PanduanPenggunaanScreen extends StatelessWidget {
                 '   • Gunakan GPS untuk lokasi otomatis\n'
                 '   • Atau pilih lokasi dari peta\n'
                 '4. Pilih Kategori Risiko:\n'
-                '   • Medium - Risiko rendah\n'
+                '   • Medium - Risiko medium\n'
                 '   • High - Risiko tinggi\n'
                 '   • Extreme - Risiko sangat tinggi\n'
                 '5. Pilih Tipe Temuan:\n'
-                '   • KMU (Kelainan Menyimpang Umum)\n'
-                '   • ROW (Risk of Work)\n'
+                '   • KMU (Kecelakaan Masyarakat Umum)\n'
+                '   • ROW (Right of Way)\n'
                 '6. Isi Deskripsi pendukung\n'
                 '7. Upload Foto bukti temuan\n'
                 '8. Tap Simpan untuk menyimpan',
@@ -138,8 +138,7 @@ class PanduanPenggunaanScreen extends StatelessWidget {
                 '  - Dapat filter data berdasarkan ULP manapun\n'
                 '• Petugas/ULP:\n'
                 '  - Hanya melihat data ULP tempat bertugas\n'
-                '  - Tidak menerima notifikasi\n'
-                '  - Data difilter otomatis berdasarkan ULP session',
+                '  - Data difilter otomatis berdasarkan data akun\n',
           ),
           const SizedBox(height: 24),
           Container(
