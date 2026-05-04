@@ -34,7 +34,7 @@ class PanduanPenggunaanScreen extends StatelessWidget {
             icon: Icons.info_outline,
             title: 'Pendahuluan',
             content:
-                'ELSAFE (Electrical Safety) adalah aplikasi untuk mengelola temuan inspeksi keselamatan listrik. Aplikasi ini membantu pengguna mencatat, memantau, dan menyelesaikan temuan bahaya listrik di berbagai lokasi.',
+                'ELSAFE (Electricity Safe) adalah aplikasi untuk mencatat, memantau, dan menindaklanjuti temuan potensi bahaya listrik. Aplikasi ini mendukung pencatatan lokasi, foto bukti, kategori risiko, status temuan, serta pemantauan data berdasarkan ULP.',
           ),
           _buildSection(
             context,
@@ -42,35 +42,35 @@ class PanduanPenggunaanScreen extends StatelessWidget {
             title: 'Login & Pemilihan ULP',
             content:
                 '1. Masukkan email dan password yang telah terdaftar.\n'
-                '2. Untuk peran Petugas, pilih Unit Layanan Pengadaan (ULP) tempat Anda bertugas setelah login.\n'
-                '3. Admin dapat mengakses semua data tanpa pemilihan ULP.',
+                '2. Setelah login, petugas memilih ULP (Unit Layanan Pelanggan) sesuai wilayah tugas.\n'
+                '3. Data petugas akan mengikuti ULP yang dipilih.\n'
+                '4. Admin dapat melihat data lintas ULP dan meninjau data pengguna.',
           ),
           _buildSection(
             context,
             icon: Icons.dashboard,
             title: 'Dashboard',
             content:
-                'Dashboard menampilkan statistik temuan secara real-time:\n'
-                '• Total Temuan: Jumlah keseluruhan temuan\n'
-                '• Open: Temuan yang belum diselesaikan\n'
-                '• Closed: Temuan yang telah diselesaikan\n'
-                '• Filter berdasarkan Kategori Risiko (Medium, High, Extreme)\n'
-                '• Filter berdasarkan Tipe Temuan (KMU - Kelainan Menyimpang Umum, ROW - Risk of Work)',
+                'Dashboard menampilkan ringkasan kondisi temuan:\n'
+                '- Total temuan yang tersedia untuk akun Anda\n'
+                '- Jumlah temuan pada bulan berjalan\n'
+                '- Aktivitas atau temuan terbaru\n'
+                '- Informasi singkat terkait keselamatan dan pemantauan temuan\n'
+                'Gunakan tombol refresh di app bar untuk memuat ulang data.',
           ),
           _buildSection(
             context,
             icon: Icons.list_alt,
             title: 'Daftar Temuan',
             content:
-                'Menu Daftar Temuan berfungsi untuk melihat dan mengelola semua temuan:\n'
-                '• Melihat daftar lengkap semua temuan\n'
-                '• Filter berdasarkan ULP (hanya untuk Admin)\n'
-                '• Filter berdasarkan Status (Open/Closed)\n'
-                '• Filter berdasarkan Tipe (KMU/ROW)\n'
-                '• Filter berdasarkan Kategori Risiko\n'
-                '• Pencarian berdasarkan nama, lokasi, atau deskripsi\n'
-                '• Tap item untuk melihat detail\n'
-                '• Edit atau hapus temuan dari menu actions',
+                'Menu Daftar Temuan berfungsi untuk melihat dan mengelola temuan:\n'
+                '- Melihat daftar temuan yang sesuai hak akses akun\n'
+                '- Pencarian berdasarkan nama, lokasi, deskripsi, atau pembuat data\n'
+                '- Filter status Open/Close\n'
+                '- Filter tipe KMU atau ROW\n'
+                '- Filter kategori risiko Medium, High, atau Extreme\n'
+                '- Filter ULP tersedia untuk admin\n'
+                '- Buka detail temuan, edit data, hapus data, atau buka lokasi di Google Maps.',
           ),
           _buildSection(
             context,
@@ -78,10 +78,10 @@ class PanduanPenggunaanScreen extends StatelessWidget {
             title: 'Peta (Maps View)',
             content:
                 'Peta menampilkan lokasi temuan secara visual:\n'
-                '• Lihat semua lokasi temuan pada peta interaktif\n'
-                '• Filter berdasarkan Status (Open/Closed)\n'
-                '• Tap marker untuk melihat detail temuan\n'
-                '•Marker menunjukkan kategori risiko dengan warna berbeda',
+                '- Lihat lokasi temuan pada peta interaktif\n'
+                '- Tap marker untuk melihat informasi temuan\n'
+                '- Gunakan peta untuk membantu validasi posisi temuan di lapangan\n'
+                '- Marker membantu membedakan lokasi temuan yang tercatat.',
           ),
           _buildSection(
             context,
@@ -90,20 +90,13 @@ class PanduanPenggunaanScreen extends StatelessWidget {
             content:
                 'Cara menambah temuan baru:\n'
                 '1. Tap tombol (+) pada bagian bawah layar\n'
-                '2. Isi Nama Temuan (identifikasi temuan)\n'
-                '3. Pilih Lokasi:\n'
-                '   • Gunakan GPS untuk lokasi otomatis\n'
-                '   • Atau pilih lokasi dari peta\n'
-                '4. Pilih Kategori Risiko:\n'
-                '   • Medium - Risiko medium\n'
-                '   • High - Risiko tinggi\n'
-                '   • Extreme - Risiko sangat tinggi\n'
-                '5. Pilih Tipe Temuan:\n'
-                '   • KMU (Kecelakaan Masyarakat Umum)\n'
-                '   • ROW (Right of Way)\n'
-                '6. Isi Deskripsi pendukung\n'
-                '7. Upload Foto bukti temuan\n'
-                '8. Tap Simpan untuk menyimpan',
+                '2. Pilih tipe temuan: KMU (Kecelakaan Masyarakat Umum) atau ROW (Right of Way)\n'
+                '3. Isi nama temuan dan deskripsi pendukung\n'
+                '4. Isi lokasi secara manual, gunakan lokasi GPS saat ini, atau pilih titik dari peta\n'
+                '5. Upload foto temuan sebagai bukti lapangan\n'
+                '6. Lengkapi matriks risiko untuk menentukan level Medium, High, atau Extreme\n'
+                '7. Jika tersedia, tambahkan foto surat tanda terima, data tindak lanjut, dan foto sosialisasi\n'
+                '8. Tap Simpan Temuan untuk menyimpan data.',
           ),
           _buildSection(
             context,
@@ -111,10 +104,10 @@ class PanduanPenggunaanScreen extends StatelessWidget {
             title: 'Notifikasi',
             content:
                 'Notifikasi berfungsi untuk memberi tahu pengguna tentang informasi penting:\n'
-                '• Admin menerima notifikasi ketika ada temuan baru yang perlu ditinjau\n'
-                '• Petugas tidak menerima notifikasi untuk fokus pada tugas lapangan\n'
-                '• Notifikasi dapat diakses di tab Notifikasi pada menu bawah\n'
-                '• Tap notifikasi untuk melihat detail',
+                '- Notifikasi dapat diakses dari tab Notifikasi atau dari AppDrawer\n'
+                '- Badge menampilkan jumlah notifikasi yang belum dibaca\n'
+                '- Tap notifikasi untuk membuka detail temuan terkait\n'
+                '- Gunakan fitur ini untuk memantau temuan baru atau pembaruan data penting.',
           ),
           _buildSection(
             context,
@@ -122,11 +115,10 @@ class PanduanPenggunaanScreen extends StatelessWidget {
             title: 'Profil & Pengaturan',
             content:
                 'Menu Profil dan Pengaturan:\n'
-                '• Profil: Melihat nama, email, dan role pengguna\n'
-                '• Pengaturan Aplikasi:\n'
-                '  - Dark Mode: Mengaktifkan tema gelap\n'
-                '  - Notifikasi: Mengaktifkan/mematikan notifikasi\n'
-                '• Logout: Keluar dari aplikasi',
+                '- Profil menampilkan informasi akun seperti nama, email, role, dan ULP\n'
+                '- Mode terang/gelap dapat diganti dari tombol tema di dashboard atau pengaturan aplikasi\n'
+                '- AppDrawer menyediakan akses ke Panduan Penggunaan, Tentang Aplikasi, Hubungi Kami, dan Logout\n'
+                '- Logout digunakan untuk keluar dari akun aktif.',
           ),
           _buildSection(
             context,
@@ -134,13 +126,10 @@ class PanduanPenggunaanScreen extends StatelessWidget {
             title: 'Peran Pengguna',
             content:
                 'Terdapat dua peran dalam aplikasi:\n'
-                '• Admin:\n'
-                '  - Dapat melihat semua data dari semua ULP\n'
-                '  - Menerima notifikasi temuan baru\n'
-                '  - Dapat filter data berdasarkan ULP manapun\n'
-                '• Petugas/ULP:\n'
-                '  - Hanya melihat data ULP tempat bertugas\n'
-                '  - Data difilter otomatis berdasarkan data akun\n',
+                '- Admin dapat melihat data dari semua ULP, memakai filter ULP, dan meninjau data secara lebih luas\n'
+                '- Petugas melihat data sesuai ULP (Unit Layanan Pelanggan) tempat bertugas\n'
+                '- Jika ULP belum disetel, aplikasi akan mengarahkan pengguna untuk memilih ULP terlebih dahulu\n'
+                '- Hak akses data mengikuti role dan profil pengguna yang tersimpan.',
           ),
           const SizedBox(height: 32),
         ],
