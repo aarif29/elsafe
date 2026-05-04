@@ -74,13 +74,7 @@ class _ElsafeSplashScreenState extends State<ElsafeSplashScreen>
 
     _animationController.forward();
 
-    // Auto navigate to login after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-      );
-    });
+    // Removed auto navigate to let main.dart handle routing based on auth state.
   }
 
   @override
