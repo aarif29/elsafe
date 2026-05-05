@@ -63,6 +63,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
   String? _currentUlp;
   String? _namaPenyulang;
   int? _section;
+  int? _zona;
 
   // Step 2 - Reminder
   DateTime? _tglReminder;
@@ -119,6 +120,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     // Jaringan listrik
     _namaPenyulang = t.namaPenyulang;
     _section = t.section;
+    _zona = t.zona;
     UlpService().getCurrentUserProfile().then((profile) {
       if (profile != null && mounted) {
         setState(() => _currentUlp = profile['ulp'] as String?);
@@ -294,6 +296,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         levelRisiko: _levelRisiko,
         namaPenyulang: _namaPenyulang,
         section: _section,
+        zona: _zona,
         tglReminder: _tglReminder,
         fotoReminder: allReminderUrls.isEmpty ? null : allReminderUrls,
         jenisClosing: _jenisClosing,
