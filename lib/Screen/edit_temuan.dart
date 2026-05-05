@@ -447,6 +447,51 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         ),
         const SizedBox(height: 20),
 
+        // ZONA
+        Row(
+          children: [
+            const Text('Zona', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange),
+              ),
+              child: const Text('Opsional', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey[600]!),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int?>(
+              value: _zona,
+              isExpanded: true,
+              dropdownColor: Colors.grey[850],
+              hint: const Text('Pilih zona (1-5)', style: TextStyle(color: Colors.white70)),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+              items: [
+                const DropdownMenuItem<int?>(
+                  value: null,
+                  child: Text('-- Tidak dipilih --', style: TextStyle(color: Colors.white70)),
+                ),
+                ...List.generate(5, (i) => DropdownMenuItem<int?>(value: i + 1, child: Text('Zona ${i + 1}'))),
+              ],
+              onChanged: _isSubmitting ? null : (val) => setState(() => _zona = val),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+
         // SECTION
         Row(
           children: [

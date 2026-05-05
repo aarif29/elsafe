@@ -37,6 +37,7 @@ class TemuanModel {
   // Jaringan listrik
   final String? namaPenyulang;
   final int? section;
+  final int? zona;
 
   TemuanModel({
     this.id,
@@ -67,6 +68,7 @@ class TemuanModel {
     this.ulp,
     this.namaPenyulang,
     this.section,
+    this.zona,
   });
 
   Map<String, dynamic> toJson() {
@@ -96,6 +98,7 @@ class TemuanModel {
       'ulp': ulp,
       'nama_penyulang': namaPenyulang,
       'section': section,
+      'zona': zona,
     };
   }
 
@@ -141,6 +144,7 @@ class TemuanModel {
       ulp: json['ulp']?.toString(),
       namaPenyulang: json['nama_penyulang']?.toString(),
       section: json['section'] as int?,
+      zona: json['zona'] as int?,
     );
   }
 }

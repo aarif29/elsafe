@@ -52,6 +52,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
   String? _currentUlp;
   String? _namaPenyulang;
   int? _section;
+  int? _zona;
 
   // Matriks risiko
   String? _jarakAktivitas;
@@ -292,6 +293,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
         levelRisiko: _levelRisiko,
         namaPenyulang: _namaPenyulang,
         section: _section,
+        zona: _zona,
         tglReminder: _tglReminder,
         fotoReminder: reminderUrls,
         jenisClosing: _jenisClosing,
