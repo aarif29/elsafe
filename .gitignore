@@ -51,3 +51,7 @@ app.*.map.json
 .windsurf/
 flutter_01.png
 lib/config/firebase_options.dart
+
+# Graphify (large generated files)
+graphify-out/graph.html
+graphify-out/cache/
