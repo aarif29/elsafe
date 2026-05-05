@@ -34,6 +34,10 @@ class TemuanModel {
   // ULP
   final String? ulp;
 
+  // Jaringan listrik
+  final String? namaPenyulang;
+  final int? section;
+
   TemuanModel({
     this.id,
     required this.lokasi,
@@ -61,6 +65,8 @@ class TemuanModel {
     this.tglClosing,
     this.fotoClosing,
     this.ulp,
+    this.namaPenyulang,
+    this.section,
   });
 
   Map<String, dynamic> toJson() {
@@ -88,6 +94,8 @@ class TemuanModel {
       'tgl_closing': tglClosing?.toIso8601String(),
       'foto_closing': fotoClosing,
       'ulp': ulp,
+      'nama_penyulang': namaPenyulang,
+      'section': section,
     };
   }
 
@@ -131,6 +139,8 @@ class TemuanModel {
           ? List<String>.from(json['foto_closing'])
           : null,
       ulp: json['ulp']?.toString(),
+      namaPenyulang: json['nama_penyulang']?.toString(),
+      section: json['section'] as int?,
     );
   }
 }

@@ -13,6 +13,7 @@ import '../config/sosialisasi_model.dart';
 import '../widgets/foto_picker_widget.dart';
 import '../widgets/matriks_risiko_widget.dart';
 import '../config/notification_service.dart';
+import '../config/ulp_service.dart';
 
 class EditTemuanScreen extends StatefulWidget {
   final TemuanModel temuan;
@@ -57,6 +58,11 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
   String? _lokasiObjek;
   int _skorMatriks = 0;
   String? _levelRisiko;
+
+  // Jaringan listrik
+  String? _currentUlp;
+  String? _namaPenyulang;
+  int? _section;
 
   // Step 2 - Reminder
   DateTime? _tglReminder;
@@ -109,6 +115,15 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     _jenisClosing = t.jenisClosing;
     _tglClosing = t.tglClosing;
     if (t.fotoClosing != null) _existingFotoClosing = List.from(t.fotoClosing!);
+
+    // Jaringan listrik
+    _namaPenyulang = t.namaPenyulang;
+    _section = t.section;
+    UlpService().getCurrentUserProfile().then((profile) {
+      if (profile != null && mounted) {
+        setState(() => _currentUlp = profile['ulp'] as String?);
+      }
+    });
 
     _loadSosialisasi();
   }
@@ -277,6 +292,8 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         lokasiObjek: _lokasiObjek,
         skorMatriks: _skorMatriks > 0 ? _skorMatriks : null,
         levelRisiko: _levelRisiko,
+        namaPenyulang: _namaPenyulang,
+        section: _section,
         tglReminder: _tglReminder,
         fotoReminder: allReminderUrls.isEmpty ? null : allReminderUrls,
         jenisClosing: _jenisClosing,
@@ -377,6 +394,104 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: iconColor ?? Colors.blue)),
       disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey[700]!)),
       prefixIcon: icon != null ? Icon(icon, color: iconColor ?? Colors.blue) : null,
+    );
+  }
+
+  Widget _buildPenyulangSection() {
+    final penyulangList = Penyulang.untukUlp(_currentUlp);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // NAMA PENYULANG
+        Row(
+          children: [
+            const Text('Nama Penyulang', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange),
+              ),
+              child: const Text('Opsional', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey[600]!),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String?>(
+              value: _namaPenyulang,
+              isExpanded: true,
+              dropdownColor: Colors.grey[850],
+              hint: const Text('Pilih penyulang', style: TextStyle(color: Colors.white70)),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+              items: [
+                const DropdownMenuItem<String?>(
+                  value: null,
+                  child: Text('-- Tidak dipilih --', style: TextStyle(color: Colors.white70)),
+                ),
+                ...penyulangList.map((n) => DropdownMenuItem<String?>(value: n, child: Text(n))),
+              ],
+              onChanged: _isSubmitting ? null : (val) => setState(() => _namaPenyulang = val),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // SECTION
+        Row(
+          children: [
+            const Text('Section', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange),
+              ),
+              child: const Text('Opsional', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey[600]!),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int?>(
+              value: _section,
+              isExpanded: true,
+              dropdownColor: Colors.grey[850],
+              hint: const Text('Pilih section', style: TextStyle(color: Colors.white70)),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+              items: [
+                const DropdownMenuItem<int?>(
+                  value: null,
+                  child: Text('-- Tidak dipilih --', style: TextStyle(color: Colors.white70)),
+                ),
+                ...List.generate(10, (i) => DropdownMenuItem<int?>(value: i + 1, child: Text('Section ${i + 1}'))),
+              ],
+              onChanged: _isSubmitting ? null : (val) => setState(() => _section = val),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
     );
   }
 
@@ -526,6 +641,9 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
           ),
         ),
         const SizedBox(height: 20),
+
+        // PENYULANG & SECTION
+        _buildPenyulangSection(),
 
         // Nama Pemilik
         const Text('Nama Pemilik', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),

@@ -44,7 +44,12 @@ class PanduanPenggunaanScreen extends StatelessWidget {
                 '1. Masukkan email dan password yang telah terdaftar.\n'
                 '2. Setelah login, petugas memilih ULP (Unit Layanan Pelanggan) sesuai wilayah tugas.\n'
                 '3. Data petugas akan mengikuti ULP yang dipilih.\n'
-                '4. Admin dapat melihat data lintas ULP dan meninjau data pengguna.',
+                '4. Admin dapat melihat data lintas ULP dan meninjau data pengguna.\n\n'
+                'Lupa password:\n'
+                '- Tap tombol "Lupa Password?" di halaman login\n'
+                '- Masukkan email yang terdaftar\n'
+                '- Cek email untuk tautan reset password\n'
+                '- Ikuti tautan untuk membuat password baru.',
           ),
           _buildSection(
             context,
@@ -66,11 +71,15 @@ class PanduanPenggunaanScreen extends StatelessWidget {
                 'Menu Daftar Temuan berfungsi untuk melihat dan mengelola temuan:\n'
                 '- Melihat daftar temuan yang sesuai hak akses akun\n'
                 '- Pencarian berdasarkan nama, lokasi, deskripsi, atau pembuat data\n'
-                '- Filter status Open/Close\n'
-                '- Filter tipe KMU atau ROW\n'
-                '- Filter kategori risiko Medium, High, atau Extreme\n'
+                '- Filter status Open/Close, tipe KMU/ROW, dan kategori risiko\n'
                 '- Filter ULP tersedia untuk admin\n'
-                '- Buka detail temuan, edit data, hapus data, atau buka lokasi di Google Maps.',
+                '- Tap kartu temuan untuk membuka detail\n'
+                '- Dari detail, tersedia tombol Edit, Hapus, dan buka lokasi di Google Maps\n\n'
+                'Mengubah status temuan:\n'
+                '- Buka detail temuan\n'
+                '- Tap tombol Edit\n'
+                '- Ubah field Status dari Open menjadi Close (atau sebaliknya)\n'
+                '- Simpan perubahan.',
           ),
           _buildSection(
             context,
@@ -94,7 +103,10 @@ class PanduanPenggunaanScreen extends StatelessWidget {
                 '3. Isi nama temuan dan deskripsi pendukung\n'
                 '4. Isi lokasi secara manual, gunakan lokasi GPS saat ini, atau pilih titik dari peta\n'
                 '5. Upload foto temuan sebagai bukti lapangan\n'
-                '6. Lengkapi matriks risiko untuk menentukan level Medium, High, atau Extreme\n'
+                '6. Lengkapi matriks risiko:\n'
+                '   - Pilih nilai Likelihood (kemungkinan kejadian: 1–5)\n'
+                '   - Pilih nilai Consequence (dampak/keparahan: 1–5)\n'
+                '   - Level risiko (Medium/High/Extreme) dihitung otomatis\n'
                 '7. Jika tersedia, tambahkan foto surat tanda terima, data tindak lanjut, dan foto sosialisasi\n'
                 '8. Tap Simpan Temuan untuk menyimpan data.',
           ),
@@ -116,9 +128,9 @@ class PanduanPenggunaanScreen extends StatelessWidget {
             content:
                 'Menu Profil dan Pengaturan:\n'
                 '- Profil menampilkan informasi akun seperti nama, email, role, dan ULP\n'
-                '- Mode terang/gelap dapat diganti dari tombol tema di dashboard atau pengaturan aplikasi\n'
-                '- AppDrawer menyediakan akses ke Panduan Penggunaan, Tentang Aplikasi, Hubungi Kami, dan Logout\n'
-                '- Logout digunakan untuk keluar dari akun aktif.',
+                '- Mode terang/gelap dapat diganti dari tombol tema di app bar Dashboard\n'
+                '- AppDrawer menyediakan akses ke Notifikasi, Panduan Penggunaan, Tentang Aplikasi, Hubungi Kami, dan Logout\n'
+                '- Logout akan menampilkan konfirmasi sebelum keluar dari akun aktif.',
           ),
           _buildSection(
             context,

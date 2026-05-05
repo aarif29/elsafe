@@ -157,6 +157,15 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
                       ),
                     ],
 
+                    // Penyulang & Section
+                    if (temuan.namaPenyulang != null || temuan.section != null) ...[
+                      const SizedBox(height: 12),
+                      if (temuan.namaPenyulang != null)
+                        _InfoRow(label: '⚡ Penyulang', value: temuan.namaPenyulang!),
+                      if (temuan.section != null)
+                        _InfoRow(label: '🔢 Section', value: 'Section ${temuan.section}'),
+                    ],
+
                     // Koordinat GPS
                     if (temuan.latitude != null && temuan.longitude != null) ...[
                       const SizedBox(height: 12),

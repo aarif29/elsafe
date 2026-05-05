@@ -254,7 +254,7 @@ class DashboardDrawer extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Aplikasi untuk mengelola data temuan potensi bahaya dengan sistem tracking lokasi berbasis GPS.',
+                  'Aplikasi pencatatan dan pemantauan temuan potensi bahaya listrik berbasis GPS untuk petugas K3L UP3 Malang.',
                   style: TextStyle(color: context.textSecondary, fontSize: 13),
                 ),
                 const SizedBox(height: 20),
@@ -262,8 +262,9 @@ class DashboardDrawer extends StatelessWidget {
                 const SizedBox(height: 12),
                 _aboutItem(context, 'Versi', '1.0.0'),
                 _aboutItem(context, 'Developer', 'M. Arif Trianto'),
+                _aboutItem(context, 'Instansi', 'UP3 Malang — K3L'),
                 _aboutItem(context, 'Tahun', '2026'),
-                _aboutItem(context, 'Platform', 'Android & Web App'),
+                _aboutItem(context, 'Platform', 'Android & Web'),
               ],
             ),
             actions: [
@@ -337,7 +338,7 @@ class DashboardDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Butuh bantuan? Hubungi kami melalui:',
+                  'Butuh bantuan? Hubungi tim K3L UP3 Malang melalui:',
                   style: TextStyle(color: context.textSecondary, fontSize: 13),
                 ),
                 const SizedBox(height: 20),
@@ -348,13 +349,18 @@ class DashboardDrawer extends StatelessWidget {
                   'k3ltumpang@gmail.com',
                 ),
                 const SizedBox(height: 12),
-                _contactItem(context, Icons.phone, 'Telepon', '085155177829'),
+                _contactItem(
+                  context,
+                  Icons.phone,
+                  'Telepon / WhatsApp',
+                  '085155177829',
+                ),
                 const SizedBox(height: 12),
                 _contactItem(
                   context,
                   Icons.location_on,
                   'Alamat',
-                  'Malang, Indonesia',
+                  'UP3 Malang, Jawa Timur',
                 ),
               ],
             ),

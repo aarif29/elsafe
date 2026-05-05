@@ -6,6 +6,7 @@ import '../config/app_logger.dart';
 import '../config/snackbar.dart';
 import '../config/temuan_service.dart';
 import '../config/temuan_model.dart';
+import '../config/temuan_types.dart';
 import '../config/ulp_service.dart';
 import '../widgets/daftar_temuan/temuan_list_item.dart';
 import '../widgets/daftar_temuan/temuan_detail_dialog.dart';
@@ -42,6 +43,7 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
   String _filterTipe = 'Semua'; // 'Semua', 'KMU', 'ROW'
   String _filterKategori = 'Semua'; // 'Semua', 'Medium', 'High', 'Extreme'
   String _filterUlp = 'Semua';
+  String _filterPenyulang = 'Semua';
 
   List<TemuanModel> get _filteredList {
     return _temuanList.where((t) {
@@ -51,9 +53,10 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
       final matchTipe = _filterTipe == 'Semua' || t.tipeTemuan == _filterTipe;
       final matchKategori = _filterKategori == 'Semua' || t.levelRisiko == _filterKategori;
       final matchUlp = _filterUlp == 'Semua' || t.ulp == _filterUlp;
-      if (_searchQuery.isEmpty) return matchStatus && matchTipe && matchKategori && matchUlp;
+      final matchPenyulang = _filterPenyulang == 'Semua' || t.namaPenyulang == _filterPenyulang;
+      if (_searchQuery.isEmpty) return matchStatus && matchTipe && matchKategori && matchUlp && matchPenyulang;
       final q = _searchQuery.toLowerCase();
-      return matchStatus && matchTipe && matchKategori && matchUlp &&
+      return matchStatus && matchTipe && matchKategori && matchUlp && matchPenyulang &&
           (t.namaPemilik.toLowerCase().contains(q) ||
               t.lokasi.toLowerCase().contains(q) ||
               t.deskripsiTemuan.toLowerCase().contains(q));
@@ -358,6 +361,15 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
                   value: _filterKategori,
                   items: const ['Semua', 'Medium', 'High', 'Extreme'],
                   onChanged: (v) => setState(() => _filterKategori = v!),
+                ),
+                const SizedBox(width: 8),
+                // Penyulang filter
+                _buildFilterDropdown(
+                  icon: Icons.electric_bolt,
+                  label: 'Penyulang',
+                  value: _filterPenyulang,
+                  items: ['Semua', ...Penyulang.semua],
+                  onChanged: (v) => setState(() => _filterPenyulang = v!),
                 ),
               ],
             ),

@@ -258,13 +258,11 @@ class _ProfileState extends State<Profile> {
     super.dispose();
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     final bg = context.bgColor;
     final surface = context.surfaceColor;
-    final border = context.borderColor;
     final textPrimary = context.textPrimary;
-    final textSecondary = context.textSecondary;
     final isDarkMode = context.isDark;
 
     return Scaffold(
@@ -328,7 +326,7 @@ class _ProfileState extends State<Profile> {
                         ),
                         const SizedBox(height: 20),
 
-                        _buildUlpRow(isDarkMode: isDarkMode, surface: surface, border: border, textPrimary: textPrimary, textSecondary: textSecondary),
+                        _buildUlpRow(),
                         const SizedBox(height: 20),
 
                         _buildTextField(
@@ -386,7 +384,13 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-Widget _buildUlpRow({required bool isDarkMode, required Color surface, required Color border, required Color textPrimary, required Color textSecondary}) {
+  Widget _buildUlpRow() {
+    final isDarkMode = context.isDark;
+    final surface = context.surfaceColor;
+    final border = context.borderColor;
+    final textPrimary = context.textPrimary;
+    final textSecondary = context.textSecondary;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -578,7 +582,7 @@ Widget _buildUlpRow({required bool isDarkMode, required Color surface, required 
           filled: true,
           fillColor: inputFill,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-),
+        ),
       ),
     );
   }

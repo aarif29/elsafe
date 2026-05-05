@@ -14,6 +14,7 @@ import '../config/app_logger.dart';
 import '../config/temuan_service.dart';
 import '../config/sosialisasi_model.dart';
 import '../config/notification_service.dart';
+import '../config/ulp_service.dart';
 
 class TemuanScreen extends StatefulWidget {
   final String tipeTemuan;
@@ -47,6 +48,11 @@ class _TemuanScreenState extends State<TemuanScreen> {
   List<PlatformFile> _selectedPhotos = [];
   Future<Map<String, dynamic>?>? _userProfileFuture;
 
+  // Jaringan listrik
+  String? _currentUlp;
+  String? _namaPenyulang;
+  int? _section;
+
   // Matriks risiko
   String? _jarakAktivitas;
   String? _intensitasAktivitas;
@@ -73,6 +79,11 @@ class _TemuanScreenState extends State<TemuanScreen> {
   void initState() {
     super.initState();
     _userProfileFuture = _temuanService.getCurrentUserProfile();
+    UlpService().getCurrentUserProfile().then((profile) {
+      if (profile != null && mounted) {
+        setState(() => _currentUlp = profile['ulp'] as String?);
+      }
+    });
   }
 
   @override
@@ -279,6 +290,8 @@ class _TemuanScreenState extends State<TemuanScreen> {
         lokasiObjek: _lokasiObjek,
         skorMatriks: _skorMatriks > 0 ? _skorMatriks : null,
         levelRisiko: _levelRisiko,
+        namaPenyulang: _namaPenyulang,
+        section: _section,
         tglReminder: _tglReminder,
         fotoReminder: reminderUrls,
         jenisClosing: _jenisClosing,
@@ -525,6 +538,104 @@ class _TemuanScreenState extends State<TemuanScreen> {
     );
   }
 
+  Widget _buildPenyulangSection() {
+    final penyulangList = Penyulang.untukUlp(_currentUlp);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // NAMA PENYULANG
+        Row(
+          children: [
+            const Text('Nama Penyulang', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange),
+              ),
+              child: const Text('Opsional', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey[600]!),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String?>(
+              value: _namaPenyulang,
+              isExpanded: true,
+              dropdownColor: Colors.grey[850],
+              hint: const Text('Pilih penyulang', style: TextStyle(color: Colors.white70)),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+              items: [
+                const DropdownMenuItem<String?>(
+                  value: null,
+                  child: Text('-- Tidak dipilih --', style: TextStyle(color: Colors.white70)),
+                ),
+                ...penyulangList.map((n) => DropdownMenuItem<String?>(value: n, child: Text(n))),
+              ],
+              onChanged: _isSubmitting ? null : (val) => setState(() => _namaPenyulang = val),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // SECTION
+        Row(
+          children: [
+            const Text('Section', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange),
+              ),
+              child: const Text('Opsional', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey[600]!),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int?>(
+              value: _section,
+              isExpanded: true,
+              dropdownColor: Colors.grey[850],
+              hint: const Text('Pilih section', style: TextStyle(color: Colors.white70)),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+              items: [
+                const DropdownMenuItem<int?>(
+                  value: null,
+                  child: Text('-- Tidak dipilih --', style: TextStyle(color: Colors.white70)),
+                ),
+                ...List.generate(10, (i) => DropdownMenuItem<int?>(value: i + 1, child: Text('Section ${i + 1}'))),
+              ],
+              onChanged: _isSubmitting ? null : (val) => setState(() => _section = val),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
   Widget _buildDatePicker({required String label, DateTime? value, required ValueChanged<DateTime?> onChanged, bool showError = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -617,6 +728,9 @@ class _TemuanScreenState extends State<TemuanScreen> {
         ),
         _buildMiniMapPreview(),
         const SizedBox(height: 20),
+
+        // PENYULANG & SECTION
+        _buildPenyulangSection(),
 
         // NAMA PEMILIK
         const Text('Nama Pemilik', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
