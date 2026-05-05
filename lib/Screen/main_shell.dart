@@ -11,6 +11,7 @@ import '../config/notification_service.dart';
 import '../config/temuan_service.dart';
 import '../widgets/panduan_penggunaan.dart';
 import '../widgets/dashboard/dashboard_drawer.dart';
+import 'export_temuan.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -48,6 +49,13 @@ class _MainShellState extends State<MainShell> {
       _showPanduan = false;
       _navIndex = 3;
     });
+  }
+
+  void openExport() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ExportTemuanScreen()),
+    );
   }
 
   void backToDashboard() {
@@ -148,6 +156,7 @@ class _MainShellState extends State<MainShell> {
                 onLogout: _handleLogout,
                 onOpenNotifications: openNotifications,
                 onOpenPanduan: openPanduan,
+                onOpenExport: openExport,
               )
               : null,
       body: IndexedStack(

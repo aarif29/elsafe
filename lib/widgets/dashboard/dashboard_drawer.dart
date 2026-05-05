@@ -8,6 +8,7 @@ class DashboardDrawer extends StatelessWidget {
   final VoidCallback onLogout;
   final VoidCallback onOpenNotifications;
   final VoidCallback onOpenPanduan;
+  final VoidCallback onOpenExport;
 
   const DashboardDrawer({
     super.key,
@@ -16,6 +17,7 @@ class DashboardDrawer extends StatelessWidget {
     required this.onLogout,
     required this.onOpenNotifications,
     required this.onOpenPanduan,
+    required this.onOpenExport,
   });
 
   @override
@@ -67,6 +69,30 @@ class DashboardDrawer extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+
+          // EXPORT
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
+            child: Text(
+              'EXPORT',
+              style: TextStyle(
+                color: context.textHint,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
+            ),
+          ),
+          _DrawerItem(
+            icon: Icons.picture_as_pdf,
+            title: 'Export Temuan ke PDF',
+            onTap: () {
+              Navigator.pop(context);
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                onOpenExport();
+              });
+            },
           ),
 
           // PENGATURAN
