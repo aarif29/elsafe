@@ -10,9 +10,8 @@ import '../widgets/dashboard/dashboard_info_section.dart';
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback? onLihatSemua;
-  final VoidCallback? onOpenExport;
 
-  const DashboardScreen({super.key, this.onLihatSemua, this.onOpenExport});
+  const DashboardScreen({super.key, this.onLihatSemua});
 
   @override
   State<DashboardScreen> createState() => DashboardScreenState();
@@ -129,8 +128,6 @@ class DashboardScreenState extends State<DashboardScreen> {
                         temuanBulanIni: _temuanBulanIni,
                       ),
                       const SizedBox(height: 20),
-                      _buildExportQuickAction(),
-                      const SizedBox(height: 20),
                       DashboardRecentActivity(
                         recentTemuan: _recentTemuan,
                         onLihatSemua: widget.onLihatSemua ?? () {},
@@ -142,23 +139,6 @@ class DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
-    );
-  }
-
-  Widget _buildExportQuickAction() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: widget.onOpenExport,
-        icon: const Icon(Icons.picture_as_pdf),
-        label: const Text('Export PDF'),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF1565C0),
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      ),
     );
   }
 }

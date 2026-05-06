@@ -38,21 +38,54 @@ void main() {
     // --- Status filter ---
 
     test('filters by Open status only', () {
-      final results = filterExportTemuan([
-        _temuan(id: 'open', statusTemuan: 'Open'),
-        _temuan(id: 'closed', statusTemuan: 'Closed'),
-        _temuan(id: 'progress', statusTemuan: 'On Progress'),
-      ], selectedStatuses: {'Open'});
+      final results = filterExportTemuan(
+        [
+          _temuan(id: 'open', statusTemuan: 'Open'),
+          _temuan(id: 'closed', statusTemuan: 'Closed'),
+          _temuan(id: 'progress', statusTemuan: 'On Progress'),
+        ],
+        selectedStatuses: {'Open'},
+      );
 
       expect(results.map((t) => t.id), ['open']);
     });
 
+    test('filters Open findings inside selected date range', () {
+      final results = filterExportTemuan(
+        [
+          _temuan(
+            id: 'open-in-range',
+            statusTemuan: 'Open',
+            tanggalTemuan: DateTime(2026, 5, 5, 10),
+          ),
+          _temuan(
+            id: 'open-out-range',
+            statusTemuan: 'Open',
+            tanggalTemuan: DateTime(2026, 5, 7),
+          ),
+          _temuan(
+            id: 'closed-in-range',
+            statusTemuan: 'Closed',
+            tanggalTemuan: DateTime(2026, 5, 5),
+          ),
+        ],
+        startDate: DateTime(2026, 5, 5),
+        endDate: DateTime(2026, 5, 5),
+        selectedStatuses: {'Open'},
+      );
+
+      expect(results.map((t) => t.id), ['open-in-range']);
+    });
+
     test('filters by multiple statuses', () {
-      final results = filterExportTemuan([
-        _temuan(id: 'open', statusTemuan: 'Open'),
-        _temuan(id: 'closed', statusTemuan: 'Closed'),
-        _temuan(id: 'progress', statusTemuan: 'On Progress'),
-      ], selectedStatuses: {'Open', 'Closed'});
+      final results = filterExportTemuan(
+        [
+          _temuan(id: 'open', statusTemuan: 'Open'),
+          _temuan(id: 'closed', statusTemuan: 'Closed'),
+          _temuan(id: 'progress', statusTemuan: 'On Progress'),
+        ],
+        selectedStatuses: {'Open', 'Closed'},
+      );
 
       expect(results.map((t) => t.id), containsAll(['open', 'closed']));
       expect(results.map((t) => t.id), isNot(contains('progress')));
@@ -61,23 +94,42 @@ void main() {
     // --- Level Risiko filter ---
 
     test('filters by single risiko level', () {
-      final results = filterExportTemuan([
-        _temuan(id: 'tinggi', levelRisiko: 'Tinggi'),
-        _temuan(id: 'sedang', levelRisiko: 'Sedang'),
-        _temuan(id: 'rendah', levelRisiko: 'Rendah'),
-      ], selectedRisiko: {'Sedang'});
+      final results = filterExportTemuan(
+        [
+          _temuan(id: 'tinggi', levelRisiko: 'Tinggi'),
+          _temuan(id: 'sedang', levelRisiko: 'Sedang'),
+          _temuan(id: 'rendah', levelRisiko: 'Rendah'),
+        ],
+        selectedRisiko: {'Sedang'},
+      );
 
       expect(results.map((t) => t.id), ['sedang']);
+    });
+
+    test('filters by database risk labels', () {
+      final results = filterExportTemuan(
+        [
+          _temuan(id: 'medium', levelRisiko: 'Medium'),
+          _temuan(id: 'high', levelRisiko: 'High'),
+          _temuan(id: 'extreme', levelRisiko: 'Extreme'),
+        ],
+        selectedRisiko: {'High'},
+      );
+
+      expect(results.map((t) => t.id), ['high']);
     });
 
     // --- Zona filter ---
 
     test('filters by selected zonas', () {
-      final results = filterExportTemuan([
-        _temuan(id: 'zona1', zona: 1),
-        _temuan(id: 'zona2', zona: 2),
-        _temuan(id: 'zona3', zona: 3),
-      ], selectedZonas: {1, 3});
+      final results = filterExportTemuan(
+        [
+          _temuan(id: 'zona1', zona: 1),
+          _temuan(id: 'zona2', zona: 2),
+          _temuan(id: 'zona3', zona: 3),
+        ],
+        selectedZonas: {1, 3},
+      );
 
       expect(results.map((t) => t.id), containsAll(['zona1', 'zona3']));
       expect(results.map((t) => t.id), isNot(contains('zona2')));
@@ -86,11 +138,14 @@ void main() {
     // --- Section filter ---
 
     test('filters by selected sections', () {
-      final results = filterExportTemuan([
-        _temuan(id: 'sec1', section: 1),
-        _temuan(id: 'sec5', section: 5),
-        _temuan(id: 'sec10', section: 10),
-      ], selectedSections: {5, 10});
+      final results = filterExportTemuan(
+        [
+          _temuan(id: 'sec1', section: 1),
+          _temuan(id: 'sec5', section: 5),
+          _temuan(id: 'sec10', section: 10),
+        ],
+        selectedSections: {5, 10},
+      );
 
       expect(results.map((t) => t.id), containsAll(['sec5', 'sec10']));
       expect(results.map((t) => t.id), isNot(contains('sec1')));
@@ -99,10 +154,13 @@ void main() {
     // --- ULP filter ---
 
     test('filters by selected ULPs', () {
-      final results = filterExportTemuan([
-        _temuan(id: 'ulp-a', ulp: 'ULP A'),
-        _temuan(id: 'ulp-b', ulp: 'ULP B'),
-      ], selectedUlps: {'ULP B'});
+      final results = filterExportTemuan(
+        [
+          _temuan(id: 'ulp-a', ulp: 'ULP A'),
+          _temuan(id: 'ulp-b', ulp: 'ULP B'),
+        ],
+        selectedUlps: {'ULP B'},
+      );
 
       expect(results.map((t) => t.id), ['ulp-b']);
     });
@@ -155,18 +213,20 @@ void main() {
       expect(results.map((t) => t.id), ['has-zona']);
     });
 
-    test('rejects null section independently when section filter is active',
-        () {
-      final results = filterExportTemuan(
-        [
-          _temuan(id: 'has-section', section: 5),
-          _temuan(id: 'null-section', section: null),
-        ],
-        selectedSections: {5},
-      );
+    test(
+      'rejects null section independently when section filter is active',
+      () {
+        final results = filterExportTemuan(
+          [
+            _temuan(id: 'has-section', section: 5),
+            _temuan(id: 'null-section', section: null),
+          ],
+          selectedSections: {5},
+        );
 
-      expect(results.map((t) => t.id), ['has-section']);
-    });
+        expect(results.map((t) => t.id), ['has-section']);
+      },
+    );
 
     // --- Empty filter = all pass ---
 

@@ -165,9 +165,8 @@ class _MainShellState extends State<MainShell> {
           DashboardScreen(
             key: _dashboardKey,
             onLihatSemua: () => setState(() => _navIndex = 1),
-            onOpenExport: openExport,
           ),
-          DaftarTemuanScreen(key: _daftarKey),
+          DaftarTemuanScreen(key: _daftarKey, onOpenExport: openExport),
           NotificationsScreen(onBack: backToDashboard),
           const Profile(),
           PanduanPenggunaanScreen(onBack: closePanduan),

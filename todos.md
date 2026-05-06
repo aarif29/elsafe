@@ -89,3 +89,291 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
 - User role Admin bisa filter semua ULP, user biasa hanya ULP sendiri
 - Logo sudah ada di folder assets sesuai request
 - PDF bisa di-preview sebelum didownload/share
+
+---
+
+### Phase 5: Refinement Output PDF
+
+**Eksplorasi & keputusan desain:**
+- [x] 5.0 Brainstorming output PDF tanpa coding
+- [x] 5.0.1 Cek Graphify untuk relasi export PDF:
+  - [x] `lib/utils/pdf_generator.dart`
+  - [x] `lib/Screen/export_temuan.dart`
+  - [x] `lib/config/temuan_model.dart`
+  - [x] `lib/config/temuan_service.dart`
+  - [x] `pubspec.yaml`
+- [x] 5.0.2 Cek struktur database Supabase table `temuan` secara read-only
+- [x] 5.0.3 Verifikasi asset logo:
+  - [x] `assets/Logo_HSSE_PLN.png` lama: 1920 x 2278
+  - [x] `assets/Logo_Resmi_HSSE_PLN.png` baru: 500 x 500
+  - [x] `assets/Logo_PLN.png`: 2480 x 3397
+
+**Perbaikan logo header:**
+- [x] 5.1 Ganti asset logo HSSE di PDF dari `assets/Logo_HSSE_PLN.png` ke `assets/Logo_Resmi_HSSE_PLN.png`
+- [x] 5.2 Daftarkan `assets/Logo_Resmi_HSSE_PLN.png` di `pubspec.yaml`
+- [x] 5.3 Sesuaikan ukuran box logo HSSE agar tidak terpotong:
+  - [x] Gunakan box lebih proporsional, misalnya 56 x 56 atau 64 x 64
+  - [x] Tetap gunakan fit contain agar logo tidak crop
+- [x] 5.4 Verifikasi logo HSSE dan PLN tampil rapi di preview PDF
+
+**Pengayaan kolom tabel PDF:**
+- [x] 5.5 Perkaya tabel utama dengan kolom yang lebih informatif
+- [x] 5.5.1 Kolom yang direkomendasikan:
+  - [x] No
+  - [x] Tanggal
+  - [x] ULP
+  - [x] Tipe
+  - [x] Alamat Temuan
+  - [x] Lokasi / Maps
+  - [x] Pemilik / Objek
+  - [x] Penyulang
+  - [x] Zona
+  - [x] Section
+  - [x] Risiko
+  - [x] Status
+  - [x] Tindak Lanjut
+- [x] 5.5.2 Isi kolom `Pemilik / Objek` dari kombinasi data:
+  - [x] `nama_pemilik`
+  - [x] `jenis_objek`
+  - [x] `jenis_aset`
+- [x] 5.5.3 Isi kolom `Risiko` dari ringkasan:
+  - [x] `level_risiko`
+  - [x] `skor_matriks`
+  - [x] `jarak_aktivitas`
+  - [x] `intensitas_aktivitas`
+- [x] 5.5.4 Isi kolom `Tindak Lanjut` secara ringkas:
+  - [x] Jika closed: tampilkan `Closed: <tgl_closing>`
+  - [x] Jika ada reminder: tampilkan `Reminder: <tgl_reminder>`
+  - [x] Jika kosong: tampilkan `-`
+
+**Google Maps link:**
+- [x] 5.6 Jadikan kolom `Lokasi / Maps` clickable jika `latitude` dan `longitude` tersedia
+- [x] 5.6.1 Gunakan URL format:
+  - [x] `https://www.google.com/maps/search/?api=1&query=<latitude>,<longitude>`
+- [x] 5.6.2 Tentukan tampilan link lokasi:
+  - [x] Opsi rekomendasi: teks `Buka Maps` sebagai link
+  - [x] Koordinat tetap ditampilkan kecil di bawah link agar berguna saat PDF dicetak
+- [x] 5.6.3 Fallback jika koordinat kosong:
+  - [x] Tampilkan `lokasi` sebagai teks biasa
+  - [x] Jangan buat link Google Maps
+
+**Testing & verifikasi:**
+- [x] 5.7 Update test PDF generator untuk asset logo resmi dan kolom baru
+- [x] 5.8 Tambah test link Google Maps saat koordinat tersedia
+- [x] 5.9 Render/preview PDF dan cek visual:
+  - [x] Logo tidak terpotong
+  - [x] Kolom tidak terlalu padat
+  - [x] Link Maps bisa diklik di PDF digital
+  - [x] Koordinat tetap terbaca saat dicetak
+- [x] 5.10 Jalankan `graphify update .` setelah implementasi
+- [x] 5.11 Jalankan analyzer/test sebelum commit
+
+**Catatan Phase 5:**
+- Phase 5.1 sampai 5.11 sudah diimplementasikan dan diverifikasi.
+
+---
+
+### Phase 6: Refinement UI/UX Export Data
+
+**Eksplorasi & diagnosis awal:**
+- [x] 6.0 Planning UI/UX export data tanpa coding
+- [x] 6.0.1 Cek Graphify untuk keterkaitan export, daftar temuan, dashboard, filter, dan test:
+  - [x] `lib/Screen/export_temuan.dart`
+  - [x] `lib/Screen/daftar_temuan.dart`
+  - [x] `lib/Screen/dashboard.dart`
+  - [x] `lib/Screen/main_shell.dart`
+  - [x] `lib/utils/export_temuan_filter.dart`
+  - [x] `test/export_temuan_filter_test.dart`
+  - [x] `test/main_shell_navigation_test.dart`
+- [x] 6.0.2 Identifikasi pola filter dropdown di `daftar_temuan.dart`
+- [x] 6.0.3 Identifikasi masalah awal filter export:
+  - [x] UI export masih memakai chip multi-select, bukan dropdown
+  - [x] Warna export screen masih banyak hardcoded, belum mengikuti theme context
+  - [x] Default filter memakai set nilai statis
+  - [x] Risiko export memakai nilai `Tinggi/Sedang/Rendah`, sementara data/test lama memakai juga `High/Medium/Extreme`, sehingga perlu normalisasi/dynamic options
+  - [x] Tombol export PDF masih ada di dashboard quick action
+
+**Perubahan layout filter export:**
+- [x] 6.1 Ubah filter di `ExportTemuanScreen` menjadi model dropdown seperti `DaftarTemuanScreen`
+- [x] 6.2 Buat layout filter utama 1 baris berisi 4 bidang sama rata:
+  - [x] Bidang 1: Dari Tanggal
+  - [x] Bidang 2: Sampai Tanggal
+  - [x] Bidang 3: Status
+  - [x] Bidang 4: Level Risiko atau filter prioritas lain yang paling sering dipakai
+- [x] 6.3 Pastikan layout tetap responsif:
+  - [x] Desktop/tablet: 4 bidang dalam 1 baris sama lebar
+  - [x] Mobile sempit: boleh wrap menjadi 2 baris agar teks tidak terpotong
+- [x] 6.4 Pertahankan filter tambahan tanpa membuat UI padat:
+  - [x] ULP admin-only
+  - [x] Penyulang
+  - [x] Zona
+  - [x] Section
+  - [x] Gunakan dropdown compact atau area lanjutan jika 4 filter utama sudah penuh
+
+**Filter dinamis & perilaku data:**
+- [x] 6.5 Bangun option dropdown secara dinamis dari `_allTemuan`, bukan hardcoded penuh
+- [x] 6.5.1 Status dropdown:
+  - [x] Selalu punya opsi `Semua`
+  - [x] Tambahkan status nyata dari data, misalnya `Open`, `Closed`, `Close`, `On Progress`
+  - [x] Normalisasi `Close` dan `Closed` agar hasil filter konsisten
+- [x] 6.5.2 Level Risiko dropdown:
+  - [x] Selalu punya opsi `Semua`
+  - [x] Ambil nilai nyata dari data, misalnya `Medium`, `High`, `Extreme`, `Tinggi`, `Sedang`, `Rendah`
+  - [x] Hindari filter kosong karena label UI tidak sama dengan nilai database
+- [x] 6.5.3 ULP, Penyulang, Zona, dan Section:
+  - [x] Option berasal dari data yang tersedia
+  - [x] Urutkan option agar mudah dipilih
+  - [x] Sembunyikan field jika tidak ada data relevan
+- [x] 6.6 Perbaiki alur `Terapkan Filter`:
+  - [x] Saat filter diterapkan, `_filteredTemuan` harus berubah sesuai pilihan
+  - [x] Selection checkbox harus reset mengikuti data hasil filter
+  - [x] Header jumlah harus menampilkan hasil yang benar
+  - [x] Empty state harus jelas ketika tidak ada data sesuai filter
+- [x] 6.7 Tambahkan indikator ringkas filter aktif:
+  - [x] Tampilkan jumlah hasil filter
+  - [x] Tampilkan jumlah data dipilih untuk export
+  - [x] Tambahkan reset/clear filter jika diperlukan
+
+**Perbaikan button & theme:**
+- [x] 6.8 Sesuaikan semua button di export screen agar mengikuti tema aktif
+- [x] 6.8.1 Hilangkan warna hardcoded yang membuat teks/subtitle tidak terbaca
+- [x] 6.8.2 Gunakan warna dari `context.surfaceColor`, `context.textPrimary`, `context.textSecondary`, `context.inputFillColor`, dan `context.borderColor`
+- [x] 6.8.3 Pastikan disabled state button tetap terbaca
+- [x] 6.8.4 Pastikan label, subtitle, icon, dan count tidak overflow
+- [x] 6.9 Review button yang berpotensi bermasalah:
+  - [x] `Terapkan Filter`
+  - [x] `Preview PDF`
+  - [x] `Export (...)`
+  - [x] Date picker button
+  - [x] Dropdown filter button
+
+**Perpindahan entry point export:**
+- [x] 6.10 Hilangkan button `Export PDF` dari dashboard
+- [x] 6.11 Tambahkan button `Export Data` di menu `Daftar Temuan`
+- [x] 6.11.1 Lokasi rekomendasi:
+  - [x] AppBar action di `DaftarTemuanScreen`
+  - [x] Icon export/download dengan tooltip `Export Data`
+  - [x] Tetap dekat dengan konteks daftar/filter temuan
+- [x] 6.11.2 Navigasi export:
+  - [x] Gunakan callback dari `MainShell` atau push langsung dengan pola yang paling konsisten
+  - [x] Pastikan drawer export tetap boleh ada jika masih dibutuhkan
+  - [x] Update test navigasi agar tidak lagi mengharapkan quick action dashboard
+
+**Testing & verifikasi:**
+- [x] 6.12 Update unit test `export_temuan_filter_test.dart`
+- [x] 6.12.1 Tambah test status `Open` dengan range tanggal yang berisi Open
+- [x] 6.12.2 Tambah test normalisasi `Close` vs `Closed`
+- [x] 6.12.3 Tambah test risiko dengan nilai database nyata seperti `Medium`, `High`, `Extreme`
+- [x] 6.13 Update test navigasi export:
+  - [x] Dashboard tidak lagi punya button `Export PDF`
+  - [x] Daftar Temuan punya entry point `Export Data`
+- [x] 6.14 Jalankan verifikasi setelah implementasi:
+  - [x] `graphify update .`
+  - [x] Targeted analyzer untuk file yang diubah
+  - [x] `flutter test test/export_temuan_filter_test.dart`
+  - [x] `flutter test test/main_shell_navigation_test.dart`
+  - [x] `flutter build web`
+  - [ ] Browser/manual check layout export light/dark theme
+
+**Catatan Phase 6:**
+- Phase 6 sudah diimplementasikan bersamaan dengan Phase 5 refinement.
+
+---
+
+### Phase 7: Field Alamat Temuan
+
+**Eksplorasi & keputusan desain awal:**
+- [x] 7.0 Planning field `Alamat Temuan` tanpa coding
+- [x] 7.0.1 Cek Graphify untuk keterkaitan input, edit, model, service, database, dan export PDF:
+  - [x] `lib/Screen/temuan.dart`
+  - [x] `lib/Screen/edit_temuan.dart`
+  - [x] `lib/config/temuan_model.dart`
+  - [x] `lib/config/temuan_service.dart`
+  - [x] `lib/utils/pdf_generator.dart`
+  - [x] `test/pdf_generator_test.dart`
+- [x] 7.0.2 Identifikasi posisi UI yang diminta:
+  - [x] Field baru berada di bawah `Lokasi Temuan`
+  - [x] Field baru berada di atas `Nama Penyulang`
+- [x] 7.0.3 Identifikasi posisi kolom PDF yang diminta:
+  - [x] `Tipe Temuan`
+  - [x] `Alamat Temuan`
+  - [x] `Lokasi / Maps`
+- [x] 7.0.4 Rekomendasi schema awal:
+  - [x] Tambahkan kolom nullable `alamat_temuan text` di table Supabase `temuan`
+  - [x] Nullable dipilih agar data lama tetap aman dan tidak perlu backfill wajib
+
+**Database Supabase:**
+- [x] 7.1 Update schema database Supabase table `temuan`
+- [x] 7.1.1 Jalankan SQL schema change saat implementasi disetujui:
+  - [x] `alter table public.temuan add column if not exists alamat_temuan text;`
+- [x] 7.1.2 Verifikasi kolom sudah ada via `information_schema.columns`
+- [x] 7.1.3 Pastikan RLS/policy existing tetap aman karena hanya menambah kolom di table yang sama
+- [x] 7.1.4 Cek Data API exposure setelah kolom ditambahkan
+- [ ] 7.1.5 Tentukan apakah perlu backfill dari `lokasi` untuk data lama:
+  - [ ] Rekomendasi awal: tidak backfill otomatis
+  - [ ] Data lama tampil `-` di PDF jika alamat belum diisi
+
+**Model & mapping data:**
+- [x] 7.2 Update `TemuanModel`
+- [x] 7.2.1 Tambah property `String? alamatTemuan`
+- [x] 7.2.2 Tambah constructor parameter `alamatTemuan`
+- [x] 7.2.3 Tambah mapping `alamat_temuan` di `toJson()`
+- [x] 7.2.4 Tambah parsing `alamat_temuan` di `fromJson()`
+- [x] 7.2.5 Pastikan record lama tanpa `alamat_temuan` tetap bisa dibaca
+
+**Input Temuan Baru:**
+- [x] 7.3 Update `lib/Screen/temuan.dart`
+- [x] 7.3.1 Tambah `_alamatTemuanController`
+- [x] 7.3.2 Dispose controller dengan benar
+- [x] 7.3.3 Tambah field `Alamat Temuan` di Step 1:
+  - [x] Di bawah `Lokasi Temuan`
+  - [x] Di atas `_buildPenyulangSection()`
+  - [x] Gunakan style input konsisten dengan form existing
+- [x] 7.3.4 Tentukan validasi:
+  - [x] Rekomendasi awal: opsional agar tidak menghambat input lapangan
+  - [x] Jika wajib, tambahkan validator dan update copy error
+- [x] 7.3.5 Masukkan nilai `alamatTemuan` saat membuat `TemuanModel`
+- [x] 7.3.6 Update dirty-state agar perubahan alamat terdeteksi
+- [x] 7.3.7 Pertimbangkan auto-fill dari reverse geocoding:
+  - [x] Rekomendasi awal: jangan auto-overwrite jika user sudah mengetik alamat manual
+  - [x] Jika lokasi GPS/manual menghasilkan alamat, bisa isi hanya saat field masih kosong
+
+**Edit Temuan:**
+- [x] 7.4 Update `lib/Screen/edit_temuan.dart`
+- [x] 7.4.1 Tambah `_alamatTemuanController` dari `widget.temuan.alamatTemuan`
+- [x] 7.4.2 Dispose controller dengan benar
+- [x] 7.4.3 Tambah field `Alamat Temuan` di Step 1:
+  - [x] Di bawah `Lokasi Temuan`
+  - [x] Di atas `_buildPenyulangSection()`
+- [x] 7.4.4 Masukkan nilai `alamatTemuan` saat membuat `updatedTemuan`
+- [x] 7.4.5 Update dirty-state agar perubahan alamat terdeteksi
+- [x] 7.4.6 Pastikan edit data lama dengan alamat kosong tetap aman
+
+**Export Data PDF:**
+- [x] 7.5 Update output PDF agar memuat `Alamat Temuan`
+- [x] 7.5.1 Tambah kolom `Alamat Temuan` di tabel PDF
+- [x] 7.5.2 Susunan kolom yang diminta:
+  - [x] `Tipe Temuan`
+  - [x] `Alamat Temuan`
+  - [x] `Lokasi / Maps`
+- [x] 7.5.3 Jika `alamatTemuan` kosong, tampilkan `-`
+- [x] 7.5.4 Sesuaikan lebar kolom agar PDF landscape tetap terbaca
+- [x] 7.5.5 Jika Phase 5 Google Maps diterapkan bersamaan, pastikan `Alamat Temuan` tetap teks biasa dan `Lokasi / Maps` tetap clickable
+
+**Testing & verifikasi:**
+- [x] 7.6 Tambah/update test model serialization
+- [x] 7.6.1 Test `alamat_temuan` masuk di `toJson()`
+- [x] 7.6.2 Test `alamat_temuan` terbaca di `fromJson()`
+- [x] 7.6.3 Test `fromJson()` tetap aman jika `alamat_temuan` null/tidak ada
+- [x] 7.7 Update test PDF generator untuk data alamat
+- [x] 7.8 Jalankan verifikasi setelah implementasi:
+  - [x] `graphify update .`
+  - [x] Targeted analyzer untuk file yang diubah
+  - [x] `flutter test test/pdf_generator_test.dart`
+  - [ ] Test manual input temuan baru
+  - [ ] Test manual edit temuan lama dan baru
+  - [ ] Verifikasi Supabase row tersimpan dengan `alamat_temuan`
+
+**Catatan Phase 7:**
+- Phase 7 sudah diimplementasikan. Kolom `alamat_temuan` sudah diverifikasi di Supabase sebagai nullable text.
+- Field `Alamat Temuan` bersifat opsional/nullable.

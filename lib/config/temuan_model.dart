@@ -1,6 +1,7 @@
 class TemuanModel {
   final String? id;
   final String lokasi;
+  final String? alamatTemuan;
   final String namaPemilik;
   final DateTime tanggalTemuan;
   final String deskripsiTemuan;
@@ -42,6 +43,7 @@ class TemuanModel {
   TemuanModel({
     this.id,
     required this.lokasi,
+    this.alamatTemuan,
     required this.namaPemilik,
     required this.tanggalTemuan,
     required this.deskripsiTemuan,
@@ -74,6 +76,7 @@ class TemuanModel {
   Map<String, dynamic> toJson() {
     return {
       'lokasi': lokasi,
+      'alamat_temuan': alamatTemuan,
       'nama_pemilik': namaPemilik,
       'tanggal_temuan': tanggalTemuan.toIso8601String(),
       'deskripsi_temuan': deskripsiTemuan,
@@ -106,21 +109,24 @@ class TemuanModel {
     return TemuanModel(
       id: json['id']?.toString(),
       lokasi: json['lokasi'] ?? '',
+      alamatTemuan: json['alamat_temuan']?.toString(),
       namaPemilik: json['nama_pemilik'] ?? '',
       tanggalTemuan: DateTime.parse(json['tanggal_temuan']),
       deskripsiTemuan: json['deskripsi_temuan'] ?? '',
       latitude: json['latitude']?.toDouble(),
       longitude: json['longitude']?.toDouble(),
-      fotoUrls: json['foto_urls'] != null
-          ? List<String>.from(json['foto_urls'])
-          : null,
+      fotoUrls:
+          json['foto_urls'] != null
+              ? List<String>.from(json['foto_urls'])
+              : null,
       nomorAms: json['nomor_ams']?.toString(),
       statusTemuan: json['status_temuan']?.toString() ?? 'Open',
       tipeTemuan: json['tipe_temuan']?.toString(),
       createdBy: json['created_by']?.toString(),
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : null,
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : null,
       jarakAktivitas: json['jarak_aktivitas']?.toString(),
       intensitasAktivitas: json['intensitas_aktivitas']?.toString(),
       jenisObjek: json['jenis_objek']?.toString(),
@@ -128,19 +134,23 @@ class TemuanModel {
       lokasiObjek: json['lokasi_objek']?.toString(),
       skorMatriks: json['skor_matriks'] as int?,
       levelRisiko: json['level_risiko']?.toString(),
-      tglReminder: json['tgl_reminder'] != null
-          ? DateTime.parse(json['tgl_reminder'])
-          : null,
-      fotoReminder: json['foto_reminder'] != null
-          ? List<String>.from(json['foto_reminder'])
-          : null,
+      tglReminder:
+          json['tgl_reminder'] != null
+              ? DateTime.parse(json['tgl_reminder'])
+              : null,
+      fotoReminder:
+          json['foto_reminder'] != null
+              ? List<String>.from(json['foto_reminder'])
+              : null,
       jenisClosing: json['jenis_closing']?.toString(),
-      tglClosing: json['tgl_closing'] != null
-          ? DateTime.parse(json['tgl_closing'])
-          : null,
-      fotoClosing: json['foto_closing'] != null
-          ? List<String>.from(json['foto_closing'])
-          : null,
+      tglClosing:
+          json['tgl_closing'] != null
+              ? DateTime.parse(json['tgl_closing'])
+              : null,
+      fotoClosing:
+          json['foto_closing'] != null
+              ? List<String>.from(json['foto_closing'])
+              : null,
       ulp: json['ulp']?.toString(),
       namaPenyulang: json['nama_penyulang']?.toString(),
       section: json['section'] as int?,

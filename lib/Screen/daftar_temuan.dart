@@ -13,7 +13,9 @@ import '../widgets/daftar_temuan/temuan_detail_dialog.dart';
 import 'edit_temuan.dart';
 
 class DaftarTemuanScreen extends StatefulWidget {
-  const DaftarTemuanScreen({super.key});
+  final VoidCallback? onOpenExport;
+
+  const DaftarTemuanScreen({super.key, this.onOpenExport});
 
   @override
   State<DaftarTemuanScreen> createState() => DaftarTemuanScreenState();
@@ -47,16 +49,29 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
 
   List<TemuanModel> get _filteredList {
     return _temuanList.where((t) {
-      final matchStatus = _filterStatus == 'Semua' ||
+      final matchStatus =
+          _filterStatus == 'Semua' ||
           t.statusTemuan == _filterStatus ||
           (_filterStatus == 'Close' && t.statusTemuan == 'Closed');
       final matchTipe = _filterTipe == 'Semua' || t.tipeTemuan == _filterTipe;
-      final matchKategori = _filterKategori == 'Semua' || t.levelRisiko == _filterKategori;
+      final matchKategori =
+          _filterKategori == 'Semua' || t.levelRisiko == _filterKategori;
       final matchUlp = _filterUlp == 'Semua' || t.ulp == _filterUlp;
-      final matchPenyulang = _filterPenyulang == 'Semua' || t.namaPenyulang == _filterPenyulang;
-      if (_searchQuery.isEmpty) return matchStatus && matchTipe && matchKategori && matchUlp && matchPenyulang;
+      final matchPenyulang =
+          _filterPenyulang == 'Semua' || t.namaPenyulang == _filterPenyulang;
+      if (_searchQuery.isEmpty) {
+        return matchStatus &&
+            matchTipe &&
+            matchKategori &&
+            matchUlp &&
+            matchPenyulang;
+      }
       final q = _searchQuery.toLowerCase();
-      return matchStatus && matchTipe && matchKategori && matchUlp && matchPenyulang &&
+      return matchStatus &&
+          matchTipe &&
+          matchKategori &&
+          matchUlp &&
+          matchPenyulang &&
           (t.namaPemilik.toLowerCase().contains(q) ||
               t.lokasi.toLowerCase().contains(q) ||
               t.deskripsiTemuan.toLowerCase().contains(q));
@@ -64,12 +79,13 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
   }
 
   List<String> get _ulpOptions {
-    final ulps = _temuanList
-        .map((t) => t.ulp ?? '')
-        .where((u) => u.isNotEmpty)
-        .toSet()
-        .toList()
-      ..sort();
+    final ulps =
+        _temuanList
+            .map((t) => t.ulp ?? '')
+            .where((u) => u.isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
     return ['Semua', ...ulps];
   }
 
@@ -122,7 +138,9 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
     });
 
     final result = await _temuanService.getTemuanPaginated(
-        page: 0, pageSize: _pageSize);
+      page: 0,
+      pageSize: _pageSize,
+    );
 
     if (!mounted) return;
 
@@ -144,7 +162,9 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
     setState(() => _isLoadingMore = true);
 
     final result = await _temuanService.getTemuanPaginated(
-        page: _currentPage, pageSize: _pageSize);
+      page: _currentPage,
+      pageSize: _pageSize,
+    );
 
     if (!mounted) return;
 
@@ -161,24 +181,32 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
   Future<void> _deleteTemuan(String id) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[800],
-        title: const Text('Konfirmasi Hapus',
-            style: TextStyle(color: Colors.white)),
-        content: const Text('Apakah Anda yakin ingin menghapus data ini?',
-            style: TextStyle(color: Colors.white)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Batal', style: TextStyle(color: Colors.grey)),
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: Colors.grey[800],
+            title: const Text(
+              'Konfirmasi Hapus',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: const Text(
+              'Apakah Anda yakin ingin menghapus data ini?',
+              style: TextStyle(color: Colors.white),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text(
+                  'Batal',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Hapus'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Hapus'),
-          ),
-        ],
-      ),
     );
 
     if (confirm == true) {
@@ -191,34 +219,49 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
         if (!mounted) return;
         SnackBarUtils.hide(context);
         if (result['success']) {
-          SnackBarUtils.showSuccess(context,
-              title: 'Berhasil!', message: 'Data berhasil dihapus');
+          SnackBarUtils.showSuccess(
+            context,
+            title: 'Berhasil!',
+            message: 'Data berhasil dihapus',
+          );
           _loadData();
         } else {
-          SnackBarUtils.showError(context,
-              title: 'Gagal!',
-              message: 'Gagal menghapus: ${result['message']}');
+          SnackBarUtils.showError(
+            context,
+            title: 'Gagal!',
+            message: 'Gagal menghapus: ${result['message']}',
+          );
         }
       } catch (e) {
         if (!mounted) return;
         SnackBarUtils.hide(context);
-        SnackBarUtils.showError(context,
-            title: 'Error!', message: e.toString());
+        SnackBarUtils.showError(
+          context,
+          title: 'Error!',
+          message: e.toString(),
+        );
       }
     }
   }
 
   Future<void> _openGoogleMaps(
-      double latitude, double longitude, String lokasi) async {
+    double latitude,
+    double longitude,
+    String lokasi,
+  ) async {
     try {
       final uri = Uri.parse(
-          'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude&query_place_id=$lokasi');
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude&query_place_id=$lokasi',
+      );
 
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
         if (mounted) {
-          SnackBarUtils.showInfo(context,
-              title: 'Maps', message: 'Membuka lokasi di Google Maps...');
+          SnackBarUtils.showInfo(
+            context,
+            title: 'Maps',
+            message: 'Membuka lokasi di Google Maps...',
+          );
         }
       } else {
         throw Exception('Tidak dapat membuka Google Maps');
@@ -226,8 +269,11 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
     } catch (e) {
       appLog.e('❌ Error membuka Google Maps', error: e);
       if (mounted) {
-        SnackBarUtils.showError(context,
-            title: 'Error!', message: 'Gagal membuka Google Maps: ${e.toString()}');
+        SnackBarUtils.showError(
+          context,
+          title: 'Error!',
+          message: 'Gagal membuka Google Maps: ${e.toString()}',
+        );
       }
     }
   }
@@ -237,31 +283,39 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
       final coordinates = '$latitude, $longitude';
       await Clipboard.setData(ClipboardData(text: coordinates));
       if (!mounted) return;
-      SnackBarUtils.showSuccess(context,
-          title: 'Disalin!', message: 'Koordinat: $coordinates');
+      SnackBarUtils.showSuccess(
+        context,
+        title: 'Disalin!',
+        message: 'Koordinat: $coordinates',
+      );
     } catch (e) {
       if (!mounted) return;
-      SnackBarUtils.showError(context,
-          title: 'Error!', message: 'Gagal menyalin koordinat');
+      SnackBarUtils.showError(
+        context,
+        title: 'Error!',
+        message: 'Gagal menyalin koordinat',
+      );
     }
   }
 
   void _showDetailDialog(TemuanModel temuan) {
     showDialog(
       context: context,
-      builder: (context) => TemuanDetailDialog(
-        temuan: temuan,
-        onOpenMaps: _openGoogleMaps,
-        onCopyCoordinates: _copyCoordinates,
-        onEdit: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => EditTemuanScreen(temuan: temuan)),
-          );
-          if (result == true) _loadData();
-        },
-      ),
+      builder:
+          (context) => TemuanDetailDialog(
+            temuan: temuan,
+            onOpenMaps: _openGoogleMaps,
+            onCopyCoordinates: _copyCoordinates,
+            onEdit: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditTemuanScreen(temuan: temuan),
+                ),
+              );
+              if (result == true) _loadData();
+            },
+          ),
     );
   }
 
@@ -271,14 +325,16 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
       appBar: AppBar(
         title: const Text('Daftar Temuan'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.file_download_outlined),
+            tooltip: 'Export Data',
+            onPressed: widget.onOpenExport,
+          ),
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadData),
         ],
       ),
       body: Column(
-        children: [
-          _buildSearchAndFilter(),
-          Expanded(child: _buildBody()),
-        ],
+        children: [_buildSearchAndFilter(), Expanded(child: _buildBody())],
       ),
     );
   }
@@ -298,15 +354,20 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
               hintText: 'Cari nama, lokasi, deskripsi...',
               hintStyle: TextStyle(color: context.textHint),
               prefixIcon: Icon(Icons.search, color: context.textHint, size: 20),
-              suffixIcon: _searchQuery.isNotEmpty
-                  ? IconButton(
-                      icon: Icon(Icons.clear, color: context.textHint, size: 18),
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() => _searchQuery = '');
-                      },
-                    )
-                  : null,
+              suffixIcon:
+                  _searchQuery.isNotEmpty
+                      ? IconButton(
+                        icon: Icon(
+                          Icons.clear,
+                          color: context.textHint,
+                          size: 18,
+                        ),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        },
+                      )
+                      : null,
               filled: true,
               fillColor: context.inputFillColor,
               contentPadding: const EdgeInsets.symmetric(vertical: 0),
@@ -420,14 +481,26 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
             underline: const SizedBox(),
             dropdownColor: context.surfaceColor,
             style: TextStyle(color: context.textPrimary, fontSize: 12),
-            icon: Icon(Icons.arrow_drop_down, size: 18, color: context.textHint),
-            items: items.map((item) {
-              final displayText = itemBuilder != null ? itemBuilder(item) : item;
-              return DropdownMenuItem(
-                value: item,
-                child: Text(displayText, style: TextStyle(color: context.textPrimary, fontSize: 12)),
-              );
-            }).toList(),
+            icon: Icon(
+              Icons.arrow_drop_down,
+              size: 18,
+              color: context.textHint,
+            ),
+            items:
+                items.map((item) {
+                  final displayText =
+                      itemBuilder != null ? itemBuilder(item) : item;
+                  return DropdownMenuItem(
+                    value: item,
+                    child: Text(
+                      displayText,
+                      style: TextStyle(
+                        color: context.textPrimary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  );
+                }).toList(),
             onChanged: onChanged,
           ),
         ),
@@ -451,18 +524,25 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text('Terjadi Kesalahan',
-                style: TextStyle(
-                    color: context.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              'Terjadi Kesalahan',
+              style: TextStyle(
+                color: context.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(_errorMessage!,
-                style: TextStyle(color: context.textSecondary),
-                textAlign: TextAlign.center),
+            Text(
+              _errorMessage!,
+              style: TextStyle(color: context.textSecondary),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
-                onPressed: _loadData, child: const Text('Coba Lagi')),
+              onPressed: _loadData,
+              child: const Text('Coba Lagi'),
+            ),
           ],
         ),
       );
@@ -475,14 +555,19 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
           children: [
             const Icon(Icons.inbox_outlined, size: 64, color: Colors.grey),
             const SizedBox(height: 16),
-            const Text('Belum Ada Data Temuan',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
+            const Text(
+              'Belum Ada Data Temuan',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text('Tambahkan temuan pertama Anda',
-                style: TextStyle(color: Colors.grey[400])),
+            Text(
+              'Tambahkan temuan pertama Anda',
+              style: TextStyle(color: Colors.grey[400]),
+            ),
           ],
         ),
       );
@@ -497,11 +582,19 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
           children: [
             const Icon(Icons.search_off, size: 64, color: Colors.grey),
             const SizedBox(height: 16),
-            const Text('Tidak Ada Hasil',
-                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Tidak Ada Hasil',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text('Coba kata kunci atau filter lain',
-                style: TextStyle(color: Colors.grey[400])),
+            Text(
+              'Coba kata kunci atau filter lain',
+              style: TextStyle(color: Colors.grey[400]),
+            ),
           ],
         ),
       );
@@ -517,8 +610,11 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                  child: CircularProgressIndicator(
-                      color: Colors.blue, strokeWidth: 2)),
+                child: CircularProgressIndicator(
+                  color: Colors.blue,
+                  strokeWidth: 2,
+                ),
+              ),
             );
           }
           if (!_hasMoreData && filtered.isNotEmpty) {
@@ -543,7 +639,8 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
             final result = await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => EditTemuanScreen(temuan: temuan)),
+                builder: (context) => EditTemuanScreen(temuan: temuan),
+              ),
             );
             if (result == true) _loadData();
           },
@@ -573,9 +670,10 @@ class _SkeletonListItemState extends State<_SkeletonListItem>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.3, end: 0.7).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.3,
+      end: 0.7,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

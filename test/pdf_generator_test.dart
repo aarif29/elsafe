@@ -14,26 +14,43 @@ void main() {
     });
 
     test('generates a valid PDF document for selected findings', () async {
+      final loadedAssetPaths = <String>[];
+
       final bytes = await ExportTemuanPdfGenerator.generate(
         temuan: [
           TemuanModel(
             id: '1',
             lokasi: 'Gardu Induk A',
+            alamatTemuan: 'Jl. Raya Tumpang No. 1',
             namaPemilik: 'PLN',
             tanggalTemuan: DateTime(2026, 5, 5),
             statusTemuan: 'Open',
+            tipeTemuan: 'ROW',
             levelRisiko: 'Tinggi',
+            skorMatriks: 9,
+            jarakAktivitas: '< 1 meter',
+            intensitasAktivitas: 'Tinggi',
+            jenisObjek: 'Pohon',
+            jenisAset: 'Jaringan',
             namaPenyulang: 'Penyulang A',
             zona: 1,
             section: 2,
             ulp: 'ULP A',
+            latitude: -7.974328,
+            longitude: 112.629752,
             deskripsiTemuan: 'ROW terlalu dekat',
+            tglReminder: DateTime(2026, 5, 10),
           ),
         ],
         generatedAt: DateTime(2026, 5, 6, 10, 30),
-        logoAssetLoader: (_) async => ByteData(0),
+        logoAssetLoader: (path) async {
+          loadedAssetPaths.add(path);
+          return ByteData(0);
+        },
       );
 
+      expect(loadedAssetPaths, contains('assets/Logo_Resmi_HSSE_PLN.png'));
+      expect(loadedAssetPaths, contains('assets/Logo_PLN.png'));
       expect(bytes.length, greaterThan(1000));
       expect(String.fromCharCodes(bytes.take(5)), '%PDF-');
     });

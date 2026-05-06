@@ -29,21 +29,23 @@ void main() {
     expect(drawerSource, isNot(contains('const NotificationsScreen()')));
   });
 
-  test('Export PDF can be opened from drawer and dashboard quick action', () {
+  test('Export Data can be opened from drawer and daftar temuan action', () {
     final shellSource = File('lib/Screen/main_shell.dart').readAsStringSync();
     final dashboardSource =
         File('lib/Screen/dashboard.dart').readAsStringSync();
+    final daftarSource =
+        File('lib/Screen/daftar_temuan.dart').readAsStringSync();
     final drawerSource =
         File('lib/widgets/dashboard/dashboard_drawer.dart').readAsStringSync();
 
     expect(shellSource, contains('void openExport()'));
     expect(shellSource, contains('const ExportTemuanScreen()'));
     expect(shellSource, contains('onOpenExport: openExport,'));
-    expect(dashboardSource, contains('final VoidCallback? onOpenExport;'));
-    expect(dashboardSource, contains('this.onOpenExport'));
-    expect(dashboardSource, contains('widget.onOpenExport'));
-    expect(dashboardSource, contains('Icons.picture_as_pdf'));
-    expect(dashboardSource, contains('Export PDF'));
+    expect(dashboardSource, isNot(contains('Export PDF')));
+    expect(daftarSource, contains('final VoidCallback? onOpenExport;'));
+    expect(daftarSource, contains('widget.onOpenExport'));
+    expect(daftarSource, contains('Icons.file_download_outlined'));
+    expect(daftarSource, contains('Export Data'));
     expect(drawerSource, contains('Export Temuan ke PDF'));
   });
 }

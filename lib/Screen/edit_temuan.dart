@@ -27,6 +27,7 @@ class EditTemuanScreen extends StatefulWidget {
 class _EditTemuanScreenState extends State<EditTemuanScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _lokasiController;
+  late TextEditingController _alamatTemuanController;
   late TextEditingController _namaPemilikController;
   late TextEditingController _deskripsiController;
   late TextEditingController _nomorAmsController;
@@ -89,6 +90,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     super.initState();
     final t = widget.temuan;
     _lokasiController = TextEditingController(text: t.lokasi);
+    _alamatTemuanController = TextEditingController(text: t.alamatTemuan ?? '');
     _namaPemilikController = TextEditingController(text: t.namaPemilik);
     _deskripsiController = TextEditingController(text: t.deskripsiTemuan);
     _nomorAmsController = TextEditingController(text: t.nomorAms ?? '');
@@ -110,7 +112,8 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
 
     // Reminder
     _tglReminder = t.tglReminder;
-    if (t.fotoReminder != null) _existingFotoReminder = List.from(t.fotoReminder!);
+    if (t.fotoReminder != null)
+      _existingFotoReminder = List.from(t.fotoReminder!);
 
     // Closing
     _jenisClosing = t.jenisClosing;
@@ -133,6 +136,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
   @override
   void dispose() {
     _lokasiController.dispose();
+    _alamatTemuanController.dispose();
     _namaPemilikController.dispose();
     _deskripsiController.dispose();
     _nomorAmsController.dispose();
@@ -143,7 +147,9 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
   Future<void> _loadSosialisasi() async {
     if (widget.temuan.id == null) return;
     setState(() => _isLoadingSosialisasi = true);
-    final result = await _temuanService.getSosialisasiByTemuan(widget.temuan.id!);
+    final result = await _temuanService.getSosialisasiByTemuan(
+      widget.temuan.id!,
+    );
     if (mounted) {
       setState(() {
         _riwayatSosialisasi = result['data'] as List<SosialisasiModel>? ?? [];
@@ -157,54 +163,89 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     if (_currentStep == 0 && step > 0) {
       setState(() => _showDateError = _selectedDate == null);
       if (!_formKey.currentState!.validate() || _selectedDate == null) {
-        SnackBarUtils.showWarning(context,
-            title: 'Peringatan!', message: 'Lengkapi data temuan di Step 1 terlebih dahulu');
+        SnackBarUtils.showWarning(
+          context,
+          title: 'Peringatan!',
+          message: 'Lengkapi data temuan di Step 1 terlebih dahulu',
+        );
         return;
       }
     }
     setState(() => _currentStep = step);
-    _pageController.animateToPage(step,
-        duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    _pageController.animateToPage(
+      step,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   Future<void> _getCurrentLocation() async {
     setState(() => _isLoadingLocation = true);
     try {
       if (kIsWeb) {
-        SnackBarUtils.showWarning(context, title: 'Peringatan!', message: 'Gunakan "Pilih Lokasi dari Peta".');
+        SnackBarUtils.showWarning(
+          context,
+          title: 'Peringatan!',
+          message: 'Gunakan "Pilih Lokasi dari Peta".',
+        );
         setState(() => _isLoadingLocation = false);
         return;
       }
       var permission = await Permission.location.request();
       if (permission.isDenied) throw Exception('Izin lokasi ditolak.');
 
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
       setState(() {
         _currentLatitude = position.latitude;
         _currentLongitude = position.longitude;
-        _lokasiController.text = 'Lat: ${position.latitude.toStringAsFixed(6)}, Long: ${position.longitude.toStringAsFixed(6)}';
+        _lokasiController.text =
+            'Lat: ${position.latitude.toStringAsFixed(6)}, Long: ${position.longitude.toStringAsFixed(6)}';
       });
-      if (mounted) SnackBarUtils.showSuccess(context, title: 'Berhasil!', message: 'Lokasi berhasil didapatkan');
+      if (mounted)
+        SnackBarUtils.showSuccess(
+          context,
+          title: 'Berhasil!',
+          message: 'Lokasi berhasil didapatkan',
+        );
     } catch (e) {
-      if (mounted) SnackBarUtils.showError(context, title: 'Error!', message: e.toString());
+      if (mounted)
+        SnackBarUtils.showError(
+          context,
+          title: 'Error!',
+          message: e.toString(),
+        );
     } finally {
       setState(() => _isLoadingLocation = false);
     }
   }
 
   Future<void> _pickLocationManually() async {
-    LatLng initialPosition = LatLng(_currentLatitude ?? -6.2088, _currentLongitude ?? 106.8456);
+    LatLng initialPosition = LatLng(
+      _currentLatitude ?? -6.2088,
+      _currentLongitude ?? 106.8456,
+    );
     final LatLng? result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => _MapPickerScreen(initialPosition: initialPosition)),
+      MaterialPageRoute(
+        builder:
+            (context) => _MapPickerScreen(initialPosition: initialPosition),
+      ),
     );
     if (result != null) {
       setState(() {
         _currentLatitude = result.latitude;
         _currentLongitude = result.longitude;
-        _lokasiController.text = 'Lat: ${result.latitude.toStringAsFixed(6)}, Long: ${result.longitude.toStringAsFixed(6)}';
+        _lokasiController.text =
+            'Lat: ${result.latitude.toStringAsFixed(6)}, Long: ${result.longitude.toStringAsFixed(6)}';
       });
-      if (mounted) SnackBarUtils.showSuccess(context, title: 'Berhasil!', message: 'Lokasi berhasil dipilih dari peta');
+      if (mounted)
+        SnackBarUtils.showSuccess(
+          context,
+          title: 'Berhasil!',
+          message: 'Lokasi berhasil dipilih dari peta',
+        );
     }
   }
 
@@ -217,7 +258,12 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(primary: Colors.blue, onPrimary: Colors.white, surface: Color(0xFF1E1E1E), onSurface: Colors.white),
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              surface: Color(0xFF1E1E1E),
+              onSurface: Colors.white,
+            ),
           ),
           child: child!,
         );
@@ -225,11 +271,17 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     );
   }
 
-  Future<List<String>> _uploadFiles(List<PlatformFile> files, String label) async {
+  Future<List<String>> _uploadFiles(
+    List<PlatformFile> files,
+    String label,
+  ) async {
     List<String> urls = [];
     for (int i = 0; i < files.length; i++) {
       SnackBarUtils.hide(context);
-      SnackBarUtils.showLoading(context, message: 'Mengupload $label ${i + 1}/${files.length}...');
+      SnackBarUtils.showLoading(
+        context,
+        message: 'Mengupload $label ${i + 1}/${files.length}...',
+      );
       final result = await _temuanService.uploadFoto(files[i]);
       if (result['success']) {
         urls.add(result['url']);
@@ -240,11 +292,20 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     return urls;
   }
 
+  String? _emptyToNull(String value) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
   Future<void> _submitForm() async {
     setState(() => _showDateError = _selectedDate == null);
     if (!_formKey.currentState!.validate() || _selectedDate == null) {
       _goToStep(0);
-      SnackBarUtils.showWarning(context, title: 'Peringatan!', message: 'Mohon lengkapi data temuan di Step 1');
+      SnackBarUtils.showWarning(
+        context,
+        title: 'Peringatan!',
+        message: 'Mohon lengkapi data temuan di Step 1',
+      );
       return;
     }
 
@@ -278,13 +339,15 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       final updatedTemuan = TemuanModel(
         id: widget.temuan.id,
         lokasi: _lokasiController.text,
+        alamatTemuan: _emptyToNull(_alamatTemuanController.text),
         namaPemilik: _namaPemilikController.text,
         tanggalTemuan: _selectedDate!,
         deskripsiTemuan: _deskripsiController.text,
         latitude: _currentLatitude,
         longitude: _currentLongitude,
         fotoUrls: allFotoUrls.isEmpty ? null : allFotoUrls,
-        nomorAms: _nomorAmsController.text.isEmpty ? null : _nomorAmsController.text,
+        nomorAms:
+            _nomorAmsController.text.isEmpty ? null : _nomorAmsController.text,
         statusTemuan: widget.temuan.statusTemuan ?? 'Open',
         tipeTemuan: _tipeTemuan,
         jarakAktivitas: _jarakAktivitas,
@@ -304,24 +367,38 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         fotoClosing: allClosingUrls.isEmpty ? null : allClosingUrls,
       );
 
-      final result = await _temuanService.updateTemuan(widget.temuan.id!, updatedTemuan);
+      final result = await _temuanService.updateTemuan(
+        widget.temuan.id!,
+        updatedTemuan,
+      );
 
       // Delete removed photos
-      for (var url in [..._deletedFotoUrls, ..._deletedFotoReminder, ..._deletedFotoClosing]) {
-        try { await _temuanService.deleteFoto(url); } catch (_) {}
+      for (var url in [
+        ..._deletedFotoUrls,
+        ..._deletedFotoReminder,
+        ..._deletedFotoClosing,
+      ]) {
+        try {
+          await _temuanService.deleteFoto(url);
+        } catch (_) {}
       }
 
       // Save new sosialisasi if filled
       if (_tglSosialisasiBaru != null) {
         List<String>? sosUrls;
         if (_fotoSosialisasiBaru.isNotEmpty) {
-          sosUrls = await _uploadFiles(_fotoSosialisasiBaru, 'foto sosialisasi');
+          sosUrls = await _uploadFiles(
+            _fotoSosialisasiBaru,
+            'foto sosialisasi',
+          );
         }
-        await _temuanService.addSosialisasi(SosialisasiModel(
-          temuanId: widget.temuan.id!,
-          tglSosialisasi: _tglSosialisasiBaru!,
-          fotoUrls: sosUrls,
-        ));
+        await _temuanService.addSosialisasi(
+          SosialisasiModel(
+            temuanId: widget.temuan.id!,
+            tglSosialisasi: _tglSosialisasiBaru!,
+            fotoUrls: sosUrls,
+          ),
+        );
       }
 
       if (!mounted) return;
@@ -342,11 +419,19 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
           );
         }
 
-        SnackBarUtils.showSuccess(context, title: 'Berhasil!', message: 'Data temuan berhasil diperbarui');
+        SnackBarUtils.showSuccess(
+          context,
+          title: 'Berhasil!',
+          message: 'Data temuan berhasil diperbarui',
+        );
         await Future.delayed(const Duration(milliseconds: 800));
         if (mounted) Navigator.of(context).pop(true);
       } else {
-        SnackBarUtils.showError(context, title: 'Gagal!', message: result['message'] ?? 'Terjadi kesalahan');
+        SnackBarUtils.showError(
+          context,
+          title: 'Gagal!',
+          message: result['message'] ?? 'Terjadi kesalahan',
+        );
       }
     } catch (e) {
       if (!mounted) return;
@@ -359,6 +444,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
 
   bool get _isFormDirty =>
       _lokasiController.text != widget.temuan.lokasi ||
+      _alamatTemuanController.text != (widget.temuan.alamatTemuan ?? '') ||
       _namaPemilikController.text != widget.temuan.namaPemilik ||
       _deskripsiController.text != widget.temuan.deskripsiTemuan ||
       _selectedDate != widget.temuan.tanggalTemuan ||
@@ -369,22 +455,44 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     if (!_isFormDirty) return true;
     final result = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text('Keluar tanpa menyimpan?', style: TextStyle(color: Colors.white)),
-        content: const Text('Perubahan yang belum disimpan akan hilang.', style: TextStyle(color: Colors.white70)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal', style: TextStyle(color: Colors.grey))),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text('Keluar')),
-        ],
-      ),
+      builder:
+          (ctx) => AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: const Text(
+              'Keluar tanpa menyimpan?',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: const Text(
+              'Perubahan yang belum disimpan akan hilang.',
+              style: TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text(
+                  'Batal',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Keluar'),
+              ),
+            ],
+          ),
     );
     return result ?? false;
   }
 
   // ==================== BUILD HELPERS ====================
 
-  InputDecoration _inputDecoration({required String hint, String? label, IconData? icon, Color? iconColor}) {
+  InputDecoration _inputDecoration({
+    required String hint,
+    String? label,
+    IconData? icon,
+    Color? iconColor,
+  }) {
     return InputDecoration(
       labelText: label,
       labelStyle: const TextStyle(color: Colors.white),
@@ -392,11 +500,24 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       hintStyle: const TextStyle(color: Colors.white70),
       filled: true,
       fillColor: Colors.grey[800],
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey[600]!)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: iconColor ?? Colors.blue)),
-      disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey[700]!)),
-      prefixIcon: icon != null ? Icon(icon, color: iconColor ?? Colors.blue) : null,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: Colors.grey[600]!),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: iconColor ?? Colors.blue),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: Colors.grey[700]!),
+      ),
+      prefixIcon:
+          icon != null ? Icon(icon, color: iconColor ?? Colors.blue) : null,
     );
   }
 
@@ -408,7 +529,14 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         // NAMA PENYULANG
         Row(
           children: [
-            const Text('Nama Penyulang', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            const Text(
+              'Nama Penyulang',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -417,7 +545,14 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.orange),
               ),
-              child: const Text('Opsional', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Opsional',
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),
@@ -434,17 +569,28 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
               value: _namaPenyulang,
               isExpanded: true,
               dropdownColor: Colors.grey[850],
-              hint: const Text('Pilih penyulang', style: TextStyle(color: Colors.white70)),
+              hint: const Text(
+                'Pilih penyulang',
+                style: TextStyle(color: Colors.white70),
+              ),
               icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
               style: const TextStyle(color: Colors.white, fontSize: 15),
               items: [
                 const DropdownMenuItem<String?>(
                   value: null,
-                  child: Text('-- Tidak dipilih --', style: TextStyle(color: Colors.white70)),
+                  child: Text(
+                    '-- Tidak dipilih --',
+                    style: TextStyle(color: Colors.white70),
+                  ),
                 ),
-                ...penyulangList.map((n) => DropdownMenuItem<String?>(value: n, child: Text(n))),
+                ...penyulangList.map(
+                  (n) => DropdownMenuItem<String?>(value: n, child: Text(n)),
+                ),
               ],
-              onChanged: _isSubmitting ? null : (val) => setState(() => _namaPenyulang = val),
+              onChanged:
+                  _isSubmitting
+                      ? null
+                      : (val) => setState(() => _namaPenyulang = val),
             ),
           ),
         ),
@@ -453,7 +599,14 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         // ZONA
         Row(
           children: [
-            const Text('Zona', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            const Text(
+              'Zona',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -462,7 +615,14 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.orange),
               ),
-              child: const Text('Opsional', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Opsional',
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),
@@ -479,17 +639,30 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
               value: _zona,
               isExpanded: true,
               dropdownColor: Colors.grey[850],
-              hint: const Text('Pilih zona (1-5)', style: TextStyle(color: Colors.white70)),
+              hint: const Text(
+                'Pilih zona (1-5)',
+                style: TextStyle(color: Colors.white70),
+              ),
               icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
               style: const TextStyle(color: Colors.white, fontSize: 15),
               items: [
                 const DropdownMenuItem<int?>(
                   value: null,
-                  child: Text('-- Tidak dipilih --', style: TextStyle(color: Colors.white70)),
+                  child: Text(
+                    '-- Tidak dipilih --',
+                    style: TextStyle(color: Colors.white70),
+                  ),
                 ),
-                ...List.generate(5, (i) => DropdownMenuItem<int?>(value: i + 1, child: Text('Zona ${i + 1}'))),
+                ...List.generate(
+                  5,
+                  (i) => DropdownMenuItem<int?>(
+                    value: i + 1,
+                    child: Text('Zona ${i + 1}'),
+                  ),
+                ),
               ],
-              onChanged: _isSubmitting ? null : (val) => setState(() => _zona = val),
+              onChanged:
+                  _isSubmitting ? null : (val) => setState(() => _zona = val),
             ),
           ),
         ),
@@ -498,7 +671,14 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         // SECTION
         Row(
           children: [
-            const Text('Section', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            const Text(
+              'Section',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -507,7 +687,14 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.orange),
               ),
-              child: const Text('Opsional', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Opsional',
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),
@@ -524,17 +711,32 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
               value: _section,
               isExpanded: true,
               dropdownColor: Colors.grey[850],
-              hint: const Text('Pilih section', style: TextStyle(color: Colors.white70)),
+              hint: const Text(
+                'Pilih section',
+                style: TextStyle(color: Colors.white70),
+              ),
               icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
               style: const TextStyle(color: Colors.white, fontSize: 15),
               items: [
                 const DropdownMenuItem<int?>(
                   value: null,
-                  child: Text('-- Tidak dipilih --', style: TextStyle(color: Colors.white70)),
+                  child: Text(
+                    '-- Tidak dipilih --',
+                    style: TextStyle(color: Colors.white70),
+                  ),
                 ),
-                ...List.generate(10, (i) => DropdownMenuItem<int?>(value: i + 1, child: Text('Section ${i + 1}'))),
+                ...List.generate(
+                  10,
+                  (i) => DropdownMenuItem<int?>(
+                    value: i + 1,
+                    child: Text('Section ${i + 1}'),
+                  ),
+                ),
               ],
-              onChanged: _isSubmitting ? null : (val) => setState(() => _section = val),
+              onChanged:
+                  _isSubmitting
+                      ? null
+                      : (val) => setState(() => _section = val),
             ),
           ),
         ),
@@ -543,24 +745,44 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     );
   }
 
-  Widget _buildDatePicker({required String label, DateTime? value, required ValueChanged<DateTime?> onChanged, bool showError = false}) {
+  Widget _buildDatePicker({
+    required String label,
+    DateTime? value,
+    required ValueChanged<DateTime?> onChanged,
+    bool showError = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         InkWell(
-          onTap: _isSubmitting ? null : () async {
-            final picked = await _pickDate(initial: value);
-            if (picked != null) onChanged(picked);
-          },
+          onTap:
+              _isSubmitting
+                  ? null
+                  : () async {
+                    final picked = await _pickDate(initial: value);
+                    if (picked != null) onChanged(picked);
+                  },
           borderRadius: BorderRadius.circular(16),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.grey[800],
-              border: Border.all(color: showError && value == null ? Colors.red.withValues(alpha: 0.5) : Colors.grey[600]!),
+              border: Border.all(
+                color:
+                    showError && value == null
+                        ? Colors.red.withValues(alpha: 0.5)
+                        : Colors.grey[600]!,
+              ),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -578,7 +800,13 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
           ),
         ),
         if (showError && value == null)
-          const Padding(padding: EdgeInsets.only(top: 8, left: 12), child: Text('Tanggal harus dipilih', style: TextStyle(color: Colors.red, fontSize: 12))),
+          const Padding(
+            padding: EdgeInsets.only(top: 8, left: 12),
+            child: Text(
+              'Tanggal harus dipilih',
+              style: TextStyle(color: Colors.red, fontSize: 12),
+            ),
+          ),
       ],
     );
   }
@@ -597,19 +825,45 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
               child: Column(
                 children: [
                   Container(
-                    width: 28, height: 28,
+                    width: 28,
+                    height: 28,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isActive ? Colors.blue : isDone ? Colors.green : Colors.grey[700],
+                      color:
+                          isActive
+                              ? Colors.blue
+                              : isDone
+                              ? Colors.green
+                              : Colors.grey[700],
                     ),
                     child: Center(
-                      child: isDone
-                          ? const Icon(Icons.check, size: 16, color: Colors.white)
-                          : Text('${i + 1}', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                      child:
+                          isDone
+                              ? const Icon(
+                                Icons.check,
+                                size: 16,
+                                color: Colors.white,
+                              )
+                              : Text(
+                                '${i + 1}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(labels[i], style: TextStyle(fontSize: 10, color: isActive ? Colors.blue : Colors.white70, fontWeight: isActive ? FontWeight.bold : FontWeight.normal)),
+                  Text(
+                    labels[i],
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: isActive ? Colors.blue : Colors.white70,
+                      fontWeight:
+                          isActive ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -638,7 +892,16 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
             children: [
               const Icon(Icons.edit_note, color: Colors.blue, size: 20),
               const SizedBox(width: 8),
-              Expanded(child: Text('Mengedit data: ${widget.temuan.namaPemilik}', style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500))),
+              Expanded(
+                child: Text(
+                  'Mengedit data: ${widget.temuan.namaPemilik}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -650,32 +913,72 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         FotoPickerWidget(
           existingUrls: _existingFotoUrls,
           isEnabled: !_isSubmitting,
-          onNewFilesChanged: (files) { _newFotoFiles..clear()..addAll(files); },
-          onExistingUrlsChanged: (urls) => setState(() => _existingFotoUrls = urls),
-          onDeletedUrlsChanged: (deleted) => setState(() => _deletedFotoUrls = deleted),
+          onNewFilesChanged: (files) {
+            _newFotoFiles
+              ..clear()
+              ..addAll(files);
+          },
+          onExistingUrlsChanged:
+              (urls) => setState(() => _existingFotoUrls = urls),
+          onDeletedUrlsChanged:
+              (deleted) => setState(() => _deletedFotoUrls = deleted),
         ),
         const SizedBox(height: 16),
 
         // Lokasi
-        const Text('Lokasi Temuan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Lokasi Temuan',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _lokasiController,
           style: const TextStyle(color: Colors.white),
           enabled: !_isSubmitting,
-          decoration: _inputDecoration(hint: 'Masukkan lokasi atau gunakan GPS', icon: Icons.location_on),
-          validator: (v) => (v == null || v.isEmpty) ? 'Lokasi harus diisi' : null,
+          decoration: _inputDecoration(
+            hint: 'Masukkan lokasi atau gunakan GPS',
+            icon: Icons.location_on,
+          ),
+          validator:
+              (v) => (v == null || v.isEmpty) ? 'Lokasi harus diisi' : null,
         ),
         const SizedBox(height: 12),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: _isLoadingLocation || _isSubmitting ? null : _getCurrentLocation,
-            icon: _isLoadingLocation
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Icon(Icons.my_location, size: 20),
-            label: Text(_isLoadingLocation ? 'Mengambil Lokasi...' : kIsWeb ? 'Pilih lokasi sekarang' : 'Gunakan Lokasi Sekarang'),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+            onPressed:
+                _isLoadingLocation || _isSubmitting
+                    ? null
+                    : _getCurrentLocation,
+            icon:
+                _isLoadingLocation
+                    ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                    : const Icon(Icons.my_location, size: 20),
+            label: Text(
+              _isLoadingLocation
+                  ? 'Mengambil Lokasi...'
+                  : kIsWeb
+                  ? 'Pilih lokasi sekarang'
+                  : 'Gunakan Lokasi Sekarang',
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -684,8 +987,39 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
           child: OutlinedButton.icon(
             onPressed: _isSubmitting ? null : _pickLocationManually,
             icon: const Icon(Icons.map, color: Colors.blue, size: 20),
-            label: const Text('Pilih Lokasi dari Peta', style: TextStyle(color: Colors.white)),
-            style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.blue), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+            label: const Text(
+              'Pilih Lokasi dari Peta',
+              style: TextStyle(color: Colors.white),
+            ),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.blue),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Alamat Temuan
+        const Text(
+          'Alamat Temuan',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _alamatTemuanController,
+          maxLines: 2,
+          style: const TextStyle(color: Colors.white),
+          enabled: !_isSubmitting,
+          decoration: _inputDecoration(
+            hint: 'Masukkan alamat detail temuan',
+            label: 'Alamat Temuan',
+            icon: Icons.home_work_outlined,
           ),
         ),
         const SizedBox(height: 20),
@@ -694,14 +1028,27 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         _buildPenyulangSection(),
 
         // Nama Pemilik
-        const Text('Nama Pemilik', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Nama Pemilik',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _namaPemilikController,
           style: const TextStyle(color: Colors.white),
           enabled: !_isSubmitting,
-          decoration: _inputDecoration(hint: 'Masukkan nama pemilik', label: 'Nama Pemilik', icon: Icons.person),
-          validator: (v) => (v == null || v.isEmpty) ? 'Nama pemilik harus diisi' : null,
+          decoration: _inputDecoration(
+            hint: 'Masukkan nama pemilik',
+            label: 'Nama Pemilik',
+            icon: Icons.person,
+          ),
+          validator:
+              (v) =>
+                  (v == null || v.isEmpty) ? 'Nama pemilik harus diisi' : null,
         ),
         const SizedBox(height: 20),
 
@@ -709,40 +1056,80 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         _buildDatePicker(
           label: 'Tanggal Temuan',
           value: _selectedDate,
-          onChanged: (d) => setState(() { _selectedDate = d; _showDateError = false; }),
+          onChanged:
+              (d) => setState(() {
+                _selectedDate = d;
+                _showDateError = false;
+              }),
           showError: _showDateError,
         ),
         const SizedBox(height: 20),
 
         // Deskripsi
-        const Text('Deskripsi Temuan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Deskripsi Temuan',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _deskripsiController,
           maxLines: 4,
           style: const TextStyle(color: Colors.white),
           enabled: !_isSubmitting,
-          decoration: _inputDecoration(hint: 'Jelaskan detail temuan', label: 'Deskripsi Temuan', icon: Icons.description),
-          validator: (v) => (v == null || v.isEmpty) ? 'Deskripsi harus diisi' : null,
+          decoration: _inputDecoration(
+            hint: 'Jelaskan detail temuan',
+            label: 'Deskripsi Temuan',
+            icon: Icons.description,
+          ),
+          validator:
+              (v) => (v == null || v.isEmpty) ? 'Deskripsi harus diisi' : null,
         ),
         const SizedBox(height: 20),
 
         // Nomor AMS
-        Row(children: [
-          const Text('Nomor AMS', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.orange)),
-            child: const Text('Opsional', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
-          ),
-        ]),
+        Row(
+          children: [
+            const Text(
+              'Nomor AMS',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange),
+              ),
+              child: const Text(
+                'Opsional',
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _nomorAmsController,
           style: const TextStyle(color: Colors.white),
           enabled: !_isSubmitting,
-          decoration: _inputDecoration(hint: 'Masukkan nomor AMS (jika ada)', icon: Icons.confirmation_number, iconColor: Colors.orange),
+          decoration: _inputDecoration(
+            hint: 'Masukkan nomor AMS (jika ada)',
+            icon: Icons.confirmation_number,
+            iconColor: Colors.orange,
+          ),
         ),
         const SizedBox(height: 24),
 
@@ -753,7 +1140,15 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
           initialObjek: _jenisObjek,
           initialAset: _jenisAset,
           initialLokasi: _lokasiObjek,
-          onChanged: (level, skor, {required jarak, required intensitas, required objek, required aset, required lokasi}) {
+          onChanged: (
+            level,
+            skor, {
+            required jarak,
+            required intensitas,
+            required objek,
+            required aset,
+            required lokasi,
+          }) {
             setState(() {
               _jarakAktivitas = jarak;
               _intensitasAktivitas = intensitas;
@@ -774,22 +1169,45 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const Text('Step 2: Reminder', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Step 2: Reminder',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
-        const Text('Opsional — isi jika sudah melakukan reminder ke pemilik.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+        const Text(
+          'Opsional — isi jika sudah melakukan reminder ke pemilik.',
+          style: TextStyle(color: Colors.white70, fontSize: 13),
+        ),
         const SizedBox(height: 24),
 
-        _buildDatePicker(label: 'Tanggal Reminder', value: _tglReminder, onChanged: (d) => setState(() => _tglReminder = d)),
+        _buildDatePicker(
+          label: 'Tanggal Reminder',
+          value: _tglReminder,
+          onChanged: (d) => setState(() => _tglReminder = d),
+        ),
         const SizedBox(height: 20),
 
-        const Text('Foto Surat Tanda Terima', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Foto Surat Tanda Terima',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         FotoPickerWidget(
           existingUrls: _existingFotoReminder,
           isEnabled: !_isSubmitting,
           onNewFilesChanged: (files) => _newFotoReminder = files,
-          onExistingUrlsChanged: (urls) => setState(() => _existingFotoReminder = urls),
-          onDeletedUrlsChanged: (deleted) => setState(() => _deletedFotoReminder = deleted),
+          onExistingUrlsChanged:
+              (urls) => setState(() => _existingFotoReminder = urls),
+          onDeletedUrlsChanged:
+              (deleted) => setState(() => _deletedFotoReminder = deleted),
         ),
         const SizedBox(height: 24),
       ],
@@ -800,7 +1218,14 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const Text('Step 3: Closing', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Step 3: Closing',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(12),
@@ -809,48 +1234,85 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
           ),
-          child: const Row(children: [
-            Icon(Icons.warning_amber, color: Colors.orange),
-            SizedBox(width: 8),
-            Expanded(child: Text('Mengisi closing akan menutup temuan ini secara otomatis.', style: TextStyle(color: Colors.orange, fontSize: 13))),
-          ]),
+          child: const Row(
+            children: [
+              Icon(Icons.warning_amber, color: Colors.orange),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Mengisi closing akan menutup temuan ini secara otomatis.',
+                  style: TextStyle(color: Colors.orange, fontSize: 13),
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 24),
 
-        const Text('Jenis Closing', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Jenis Closing',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(color: Colors.grey[800], borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey[600]!)),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey[600]!),
+          ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: _jenisClosing,
               isExpanded: true,
               dropdownColor: Colors.grey[850],
-              hint: const Text('Pilih jenis closing', style: TextStyle(color: Colors.white70)),
+              hint: const Text(
+                'Pilih jenis closing',
+                style: TextStyle(color: Colors.white70),
+              ),
               icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
               style: const TextStyle(color: Colors.white, fontSize: 16),
               items: const [
                 DropdownMenuItem(value: 'pfk', child: Text('PFK')),
                 DropdownMenuItem(value: 'preventif', child: Text('Preventif')),
               ],
-              onChanged: _isSubmitting ? null : (val) => setState(() => _jenisClosing = val),
+              onChanged:
+                  _isSubmitting
+                      ? null
+                      : (val) => setState(() => _jenisClosing = val),
             ),
           ),
         ),
         const SizedBox(height: 20),
 
-        _buildDatePicker(label: 'Tanggal Closing', value: _tglClosing, onChanged: (d) => setState(() => _tglClosing = d)),
+        _buildDatePicker(
+          label: 'Tanggal Closing',
+          value: _tglClosing,
+          onChanged: (d) => setState(() => _tglClosing = d),
+        ),
         const SizedBox(height: 20),
 
-        const Text('Foto Tindaklanjut', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Foto Tindaklanjut',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         FotoPickerWidget(
           existingUrls: _existingFotoClosing,
           isEnabled: !_isSubmitting,
           onNewFilesChanged: (files) => _newFotoClosing = files,
-          onExistingUrlsChanged: (urls) => setState(() => _existingFotoClosing = urls),
-          onDeletedUrlsChanged: (deleted) => setState(() => _deletedFotoClosing = deleted),
+          onExistingUrlsChanged:
+              (urls) => setState(() => _existingFotoClosing = urls),
+          onDeletedUrlsChanged:
+              (deleted) => setState(() => _deletedFotoClosing = deleted),
         ),
         const SizedBox(height: 24),
       ],
@@ -861,73 +1323,146 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const Text('Step 4: Sosialisasi', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Step 4: Sosialisasi',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
-        const Text('Riwayat sosialisasi dan tambah entri baru.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+        const Text(
+          'Riwayat sosialisasi dan tambah entri baru.',
+          style: TextStyle(color: Colors.white70, fontSize: 13),
+        ),
         const SizedBox(height: 24),
 
         // Riwayat
-        const Text('Riwayat Sosialisasi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Riwayat Sosialisasi',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         if (_isLoadingSosialisasi)
           const Center(child: CircularProgressIndicator())
         else if (_riwayatSosialisasi.isEmpty)
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.grey[850], borderRadius: BorderRadius.circular(12)),
-            child: const Text('Belum ada riwayat sosialisasi.', style: TextStyle(color: Colors.white70), textAlign: TextAlign.center),
+            decoration: BoxDecoration(
+              color: Colors.grey[850],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text(
+              'Belum ada riwayat sosialisasi.',
+              style: TextStyle(color: Colors.white70),
+              textAlign: TextAlign.center,
+            ),
           )
         else
-          ..._riwayatSosialisasi.map((s) => Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.grey[850], borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey[700]!)),
-            child: Row(
-              children: [
-                const Icon(Icons.event, color: Colors.blue, size: 18),
-                const SizedBox(width: 8),
-                Expanded(child: Text(
-                  '${s.tglSosialisasi.day.toString().padLeft(2, '0')}/${s.tglSosialisasi.month.toString().padLeft(2, '0')}/${s.tglSosialisasi.year}',
-                  style: const TextStyle(color: Colors.white),
-                )),
-                if (s.fotoUrls != null && s.fotoUrls!.isNotEmpty)
-                  Text('${s.fotoUrls!.length} foto', style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                  onPressed: () async {
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        backgroundColor: Colors.grey[900],
-                        title: const Text('Hapus sosialisasi?', style: TextStyle(color: Colors.white)),
-                        actions: [
-                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
-                          TextButton(onPressed: () => Navigator.pop(ctx, true), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text('Hapus')),
-                        ],
+          ..._riwayatSosialisasi.map(
+            (s) => Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[850],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[700]!),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.event, color: Colors.blue, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${s.tglSosialisasi.day.toString().padLeft(2, '0')}/${s.tglSosialisasi.month.toString().padLeft(2, '0')}/${s.tglSosialisasi.year}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  if (s.fotoUrls != null && s.fotoUrls!.isNotEmpty)
+                    Text(
+                      '${s.fotoUrls!.length} foto',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
                       ),
-                    );
-                    if (confirm == true && s.id != null) {
-                      await _temuanService.deleteSosialisasi(s.id!);
-                      _loadSosialisasi();
-                    }
-                  },
-                ),
-              ],
+                    ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.red,
+                      size: 20,
+                    ),
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder:
+                            (ctx) => AlertDialog(
+                              backgroundColor: Colors.grey[900],
+                              title: const Text(
+                                'Hapus sosialisasi?',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: const Text('Batal'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.red,
+                                  ),
+                                  child: const Text('Hapus'),
+                                ),
+                              ],
+                            ),
+                      );
+                      if (confirm == true && s.id != null) {
+                        await _temuanService.deleteSosialisasi(s.id!);
+                        _loadSosialisasi();
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-          )),
+          ),
 
         const SizedBox(height: 24),
         const Divider(color: Colors.grey),
         const SizedBox(height: 16),
 
         // Tambah baru
-        const Text('Tambah Sosialisasi Baru', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          'Tambah Sosialisasi Baru',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 12),
 
-        _buildDatePicker(label: 'Tanggal Sosialisasi', value: _tglSosialisasiBaru, onChanged: (d) => setState(() => _tglSosialisasiBaru = d)),
+        _buildDatePicker(
+          label: 'Tanggal Sosialisasi',
+          value: _tglSosialisasiBaru,
+          onChanged: (d) => setState(() => _tglSosialisasiBaru = d),
+        ),
         const SizedBox(height: 16),
 
-        const Text('Foto Sosialisasi', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white)),
+        const Text(
+          'Foto Sosialisasi',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         FotoPickerWidget(
           isEnabled: !_isSubmitting,
@@ -944,13 +1479,30 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Tipe Temuan', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          Text(
+            'Tipe Temuan',
+            style: TextStyle(color: Colors.grey[400], fontSize: 12),
+          ),
           const SizedBox(height: 8),
-          Row(children: [
-            _TipeOption(label: 'KMU', icon: Icons.bolt, color: Colors.red, selected: _tipeTemuan == TipeTemuan.kmu, onTap: () => setState(() => _tipeTemuan = TipeTemuan.kmu)),
-            const SizedBox(width: 12),
-            _TipeOption(label: 'ROW', icon: Icons.nature, color: Colors.green, selected: _tipeTemuan == TipeTemuan.row, onTap: () => setState(() => _tipeTemuan = TipeTemuan.row)),
-          ]),
+          Row(
+            children: [
+              _TipeOption(
+                label: 'KMU',
+                icon: Icons.bolt,
+                color: Colors.red,
+                selected: _tipeTemuan == TipeTemuan.kmu,
+                onTap: () => setState(() => _tipeTemuan = TipeTemuan.kmu),
+              ),
+              const SizedBox(width: 12),
+              _TipeOption(
+                label: 'ROW',
+                icon: Icons.nature,
+                color: Colors.green,
+                selected: _tipeTemuan == TipeTemuan.row,
+                onTap: () => setState(() => _tipeTemuan = TipeTemuan.row),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -962,7 +1514,8 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
-        if (await _confirmDiscard() && context.mounted) Navigator.of(context).pop();
+        if (await _confirmDiscard() && context.mounted)
+          Navigator.of(context).pop();
       },
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -991,30 +1544,65 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
             ),
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: Colors.grey[900], border: Border(top: BorderSide(color: Colors.grey[800]!))),
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                border: Border(top: BorderSide(color: Colors.grey[800]!)),
+              ),
               child: Row(
                 children: [
                   if (_currentStep > 0)
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => _goToStep(_currentStep - 1),
-                        style: OutlinedButton.styleFrom(foregroundColor: Colors.white, side: const BorderSide(color: Colors.grey), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.symmetric(vertical: 14)),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.grey),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
                         child: const Text('Sebelumnya'),
                       ),
                     ),
                   if (_currentStep > 0) const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _isSubmitting ? null : _currentStep < _totalSteps - 1 ? () => _goToStep(_currentStep + 1) : _submitForm,
+                      onPressed:
+                          _isSubmitting
+                              ? null
+                              : _currentStep < _totalSteps - 1
+                              ? () => _goToStep(_currentStep + 1)
+                              : _submitForm,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _currentStep < _totalSteps - 1 ? Colors.blue : Colors.green,
+                        backgroundColor:
+                            _currentStep < _totalSteps - 1
+                                ? Colors.blue
+                                : Colors.green,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: _isSubmitting
-                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : Text(_currentStep < _totalSteps - 1 ? 'Selanjutnya' : 'Perbarui Temuan', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      child:
+                          _isSubmitting
+                              ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                              : Text(
+                                _currentStep < _totalSteps - 1
+                                    ? 'Selanjutnya'
+                                    : 'Perbarui Temuan',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                     ),
                   ),
                 ],
@@ -1060,27 +1648,67 @@ class _MapPickerScreenState extends State<_MapPickerScreen> {
         title: const Text('Pilih Lokasi Temuan'),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
-        actions: [IconButton(icon: const Icon(Icons.check_circle, color: Colors.green), onPressed: _confirmLocation)],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check_circle, color: Colors.green),
+            onPressed: _confirmLocation,
+          ),
+        ],
       ),
       body: Stack(
         children: [
           FlutterMap(
             mapController: _mapController,
-            options: MapOptions(initialCenter: _selectedPosition, initialZoom: 15.0, onTap: _onMapTap, interactionOptions: const InteractionOptions(flags: InteractiveFlag.all)),
+            options: MapOptions(
+              initialCenter: _selectedPosition,
+              initialZoom: 15.0,
+              onTap: _onMapTap,
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all,
+              ),
+            ),
             children: [
-              TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.example.elsafe', maxZoom: 19),
-              MarkerLayer(markers: [Marker(point: _selectedPosition, width: 50, height: 50, child: const Icon(Icons.location_on, color: Colors.red, size: 50))]),
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.example.elsafe',
+                maxZoom: 19,
+              ),
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: _selectedPosition,
+                    width: 50,
+                    height: 50,
+                    child: const Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                      size: 50,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           Positioned(
-            bottom: 20, left: 20, right: 20,
+            bottom: 20,
+            left: 20,
+            right: 20,
             child: Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: Colors.grey[900], borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Lat: ${_selectedPosition.latitude.toStringAsFixed(6)}, Long: ${_selectedPosition.longitude.toStringAsFixed(6)}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  Text(
+                    'Lat: ${_selectedPosition.latitude.toStringAsFixed(6)}, Long: ${_selectedPosition.longitude.toStringAsFixed(6)}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
@@ -1088,7 +1716,13 @@ class _MapPickerScreenState extends State<_MapPickerScreen> {
                       onPressed: _confirmLocation,
                       icon: const Icon(Icons.check_circle),
                       label: const Text('Gunakan Lokasi Ini'),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -1108,7 +1742,13 @@ class _TipeOption extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _TipeOption({required this.label, required this.icon, required this.color, required this.selected, required this.onTap});
+  const _TipeOption({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1121,14 +1761,24 @@ class _TipeOption extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected ? color.withValues(alpha: 0.2) : Colors.grey[800],
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: selected ? color : Colors.grey[600]!, width: selected ? 2 : 1),
+            border: Border.all(
+              color: selected ? color : Colors.grey[600]!,
+              width: selected ? 2 : 1,
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, color: selected ? color : Colors.grey[400], size: 18),
               const SizedBox(width: 6),
-              Text(label, style: TextStyle(color: selected ? color : Colors.grey[400], fontWeight: selected ? FontWeight.bold : FontWeight.normal, fontSize: 14)),
+              Text(
+                label,
+                style: TextStyle(
+                  color: selected ? color : Colors.grey[400],
+                  fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 14,
+                ),
+              ),
             ],
           ),
         ),
