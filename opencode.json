@@ -1,23 +1,20 @@
 {
-  "$schema": "https://opencode.ai",
+  "$schema": "https://opencode.ai/config.json",
   "plugin": [
     ".opencode/plugins/graphify.js"
   ],
   "mcp": {
-    "enabled": true,
-    "servers": {
-      "supabase": {
-        "type": "local",
-        "command": "npx",
-        "args": [
-          "-y",
-          "@modelcontextprotocol/server-supabase"
-        ],
-        "env": {
-          "SUPABASE_URL": "https://garlimmkvdmhfifqdkgb.supabase.co",
-          "SUPABASE_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhcmxpbW1rdmRtaGZpZnFka2diIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTUxMzc5MSwiZXhwIjoyMDY3MDg5NzkxfQ.8BocQOzl4q9nUGA6uiE3yI9KsjUUGv6rpU-2-vV_8YA"
-        }
-      }
+    "supabase": {
+      "name": "supabase",
+      "enabled": true,
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@supabase/mcp-server-supabase",
+        "--access-token",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhcmxpbW1rdmRtaGZpZnFka2diIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTUxMzc5MSwiZXhwIjoyMDY3MDg5NzkxfQ.8BocQOzl4q9nUGA6uiE3yI9KsjUUGv6rpU-2-vV_8YA"
+      ]
     }
   }
 }

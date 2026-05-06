@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Struktur Aplikasi Elsafe — graphify tree viewer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      margin: 20px 0 0 24px;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #1e3a56;
+    }
+    .controls {
+      margin: 20px 0 15px 24px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 8px 18px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button:active {
+      background: #004085;
+    }
+    #tree-container {
+      width: calc(100vw - 48px); /* Adjust for body margin/padding */
+      height: 85vh;
+      overflow: auto;
+      border-radius: 8px;
+      background: #fff;
+      margin-left: 24px;
+      margin-right: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #ddd;
+    }
+    svg {
+      background: #fff;
+      border-radius: 8px;
+      display: block; /* Important for D3 */
+    }
+    .node circle {
+      stroke-width: 2.5px;
+    }
+    .node text { /* Base style for the <text> container */
+      font: 13px 'Segoe UI', sans-serif;
+      paint-order: stroke fill; /* Ensures text is readable over lines */
+      stroke: #fff; /* White halo */
+      stroke-width: 3px; /* Halo thickness */
+      stroke-linejoin: round;
+      stroke-opacity: 0.85; /* Halo opacity */
+    }
+    .link {
+      fill: none;
+      stroke-opacity: 0.7;
+      stroke-width: 2px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Struktur Aplikasi Elsafe — Knowledge Graph</h1>
+  <div class="controls">
+    <button onclick="expandAll()">Expand All</button>
+    <button onclick="collapseAll()">Collapse All</button>
+    <button onclick="resetView()">Reset View</button>
+  </div>
+  <div id="tree-container">
+    <svg id="tree-svg" width="6000" height="8000"></svg>
+  </div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    const initialJsonData = {"name":"Struktur Aplikasi Elsafe","total_count":649,"children":[{"name":"android","total_count":9,"children":[{"name":"app","total_count":7,"children":[{"name":"src","total_count":6,"children":[{"name":"main","total_count":6,"children":[{"name":"java","total_count":2,"children":[{"name":"io","total_count":2,"children":[{"name":"flutter","total_count":2,"children":[{"name":"plugins","total_count":2,"children":[{"name":"GeneratedPluginRegistrant.java","total_count":2,"children":[{"name":".registerWith()","total_count":1,"children":[]},{"name":"GeneratedPluginRegistrant","total_count":1,"children":[]}]}]}]}]}]},{"name":"kotlin","total_count":1,"children":[{"name":"com","total_count":1,"children":[{"name":"example","total_count":1,"children":[{"name":"elsafe","total_count":1,"children":[{"name":"MainActivity.kt","total_count":1,"children":[{"name":"MainActivity","total_count":1,"children":[]}]}]}]}]}]},{"name":"res","total_count":3,"children":[{"name":"mipmap-hdpi","total_count":1,"children":[{"name":"ic_launcher.png","total_count":1,"children":[{"name":"Android App Icon Set","total_count":1,"children":[]}]}]},{"name":"mipmap-xhdpi","total_count":2,"children":[{"name":"ic_launcher.png","total_count":2,"children":[{"name":"Android App Icons","total_count":1,"children":[]},{"name":"Multi-Platform Icon Assets","total_count":1,"children":[]}]}]}]}]}]},{"name":"build.gradle.kts","total_count":1,"children":[]}]},{"name":"build.gradle.kts","total_count":1,"children":[]},{"name":"settings.gradle.kts","total_count":1,"children":[]}]},{"name":"assets","total_count":3,"children":[{"name":"logo_google.png","total_count":3,"children":[{"name":"App Branding Assets","total_count":1,"children":[]},{"name":"Google Auth Integration","total_count":1,"children":[]},{"name":"Google Logo Brand","total_count":1,"children":[]}]}]},{"name":"docs","total_count":2,"children":[{"name":"superpowers","total_count":2,"children":[{"name":"plans","total_count":1,"children":[{"name":"2026-04-20-temuan-lifecycle-plan.md","total_count":1,"children":[{"name":"Temuan Lifecycle Management","total_count":1,"children":[]}]}]},{"name":"specs","total_count":1,"children":[{"name":"2026-04-20-temuan-lifecycle-design.md","total_count":1,"children":[{"name":"Temuan State Machine","total_count":1,"children":[]}]}]}]}]},{"name":"flutter_01.png","total_count":2,"children":[{"name":"Flutter App Screenshot","total_count":1,"children":[]},{"name":"Flutter Dashboard UI","total_count":1,"children":[]}]},{"name":"ios","total_count":16,"children":[{"name":"Runner","total_count":15,"children":[{"name":"AppDelegate.swift","total_count":1,"children":[{"name":".application()","total_count":1,"children":[]}]},{"name":"Assets.xcassets","total_count":10,"children":[{"name":"AppIcon.appiconset","total_count":9,"children":[{"name":"Icon-App-1024x1024@1x.png","total_count":2,"children":[{"name":"iOS App Icon 1024px","total_count":1,"children":[]},{"name":"iOS App Icons Set","total_count":1,"children":[]}]},{"name":"Icon-App-20x20@1x.png","total_count":1,"children":[{"name":"iOS App Icon 20px","total_count":1,"children":[]}]},{"name":"Icon-App-40x40@1x.png","total_count":1,"children":[{"name":"iOS App Icon 40px","total_count":1,"children":[]}]},{"name":"Icon-App-60x60@2x.png","total_count":1,"children":[{"name":"iOS App Icon 60px","total_count":1,"children":[]}]},{"name":"Icon-App-76x76@1x.png","total_count":1,"children":[{"name":"iOS App Icon 76px","total_count":1,"children":[]}]},{"name":"Icon-App-76x76@2x.png","total_count":3,"children":[{"name":"elsafe Brand Identity","total_count":1,"children":[]},{"name":"iOS App Icons","total_count":1,"children":[]},{"name":"Shield Logo Design","total_count":1,"children":[]}]}]},{"name":"LaunchImage.imageset","total_count":1,"children":[{"name":"LaunchImage.png","total_count":1,"children":[{"name":"iOS Launch Screens","total_count":1,"children":[]}]}]}]},{"name":"GeneratedPluginRegistrant.m","total_count":2,"children":[{"name":"-registerWithRegistry","total_count":1,"children":[]},{"name":"GeneratedPluginRegistrant","total_count":1,"children":[]}]},{"name":"GeneratedPluginRegistrant.h","total_count":1,"children":[]},{"name":"Runner-Bridging-Header.h","total_count":1,"children":[]}]},{"name":"RunnerTests","total_count":1,"children":[{"name":"RunnerTests.swift","total_count":1,"children":[]}]}]},{"name":"lib","total_count":537,"children":[{"name":"config","total_count":44,"children":[{"name":"app_logger.dart","total_count":1,"children":[{"name":"package:logger/logger.dart","total_count":1,"children":[]}]},{"name":"app_theme.dart","total_count":4,"children":[{"name":"dark","total_count":1,"children":[]},{"name":"light","total_count":1,"children":[]},{"name":"package:shared_preferences/shared_preferences.dart","total_count":1,"children":[]},{"name":"ThemeService","total_count":1,"children":[]}]},{"name":"firebase_options.dart","total_count":2,"children":[{"name":"DefaultFirebaseOptions","total_count":1,"children":[]},{"name":"package:firebase_core/firebase_core.dart","total_count":1,"children":[]}]},{"name":"location_service.dart","total_count":1,"children":[{"name":"LocationService","total_count":1,"children":[]}]},{"name":"notification_service.dart","total_count":4,"children":[{"name":"_subscribeRealtime","total_count":1,"children":[]},{"name":"NotificationService","total_count":1,"children":[]},{"name":"refreshUnreadCount","total_count":1,"children":[]},{"name":"reset","total_count":1,"children":[]}]},{"name":"snackbar.dart","total_count":12,"children":[{"name":"_showAnimatedSnackBar","total_count":1,"children":[]},{"name":"clearAll","total_count":1,"children":[]},{"name":"hide","total_count":1,"children":[]},{"name":"showCustom","total_count":1,"children":[]},{"name":"showError","total_count":1,"children":[]},{"name":"showInfo","total_count":1,"children":[]},{"name":"showLoading","total_count":1,"children":[]},{"name":"showSimple","total_count":1,"children":[]},{"name":"showSuccess","total_count":1,"children":[]},{"name":"showWarning","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"SnackBarUtils","total_count":1,"children":[]}]},{"name":"sosialisasi_model.dart","total_count":1,"children":[{"name":"SosialisasiModel","total_count":1,"children":[]}]},{"name":"supabase_config.dart","total_count":1,"children":[{"name":"SupabaseConfig","total_count":1,"children":[]}]},{"name":"temuan_model.dart","total_count":1,"children":[{"name":"TemuanModel","total_count":1,"children":[]}]},{"name":"temuan_service.dart","total_count":8,"children":[{"name":"_getContentType","total_count":1,"children":[]},{"name":"deleteFoto","total_count":1,"children":[]},{"name":"deleteFotos","total_count":1,"children":[]},{"name":"Exception","total_count":1,"children":[]},{"name":"sosialisasi_model.dart","total_count":1,"children":[]},{"name":"temuan_model.dart","total_count":1,"children":[]},{"name":"TemuanService","total_count":1,"children":[]},{"name":"ulp_service.dart","total_count":1,"children":[]}]},{"name":"temuan_types.dart","total_count":6,"children":[{"name":"hitungSkor","total_count":1,"children":[]},{"name":"label","total_count":1,"children":[]},{"name":"MatriksRisiko","total_count":1,"children":[]},{"name":"Penyulang","total_count":1,"children":[]},{"name":"skorDariNilai","total_count":1,"children":[]},{"name":"TipeTemuan","total_count":1,"children":[]}]},{"name":"ulp_service.dart","total_count":2,"children":[{"name":"app_logger.dart","total_count":1,"children":[]},{"name":"UlpService","total_count":1,"children":[]}]},{"name":"ulp_list.dart","total_count":1,"children":[]}]},{"name":"main.dart","total_count":16,"children":[{"name":"_MyAppState","total_count":1,"children":[]},{"name":"_navigateAfterLogin","total_count":1,"children":[]},{"name":"_redirect","total_count":1,"children":[]},{"name":"_setupAuthListener","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"config/new_password.dart","total_count":1,"children":[]},{"name":"config/supabase_config.dart","total_count":1,"children":[]},{"name":"dispose","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"main","total_count":1,"children":[]},{"name":"MaterialApp","total_count":1,"children":[]},{"name":"MyApp","total_count":1,"children":[]},{"name":"profil/loginscreen.dart","total_count":1,"children":[]},{"name":"Screen/main_shell.dart","total_count":1,"children":[]},{"name":"Screen/splashscreen.dart","total_count":1,"children":[]},{"name":"Screen/ulp_selection_screen.dart","total_count":1,"children":[]}]},{"name":"profil","total_count":37,"children":[{"name":"loginscreen.dart","total_count":11,"children":[{"name":"../config/lupa_password.dart","total_count":1,"children":[]},{"name":"_LoginPageState","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"LoginPage","total_count":1,"children":[]},{"name":"register.dart","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SingleChildScrollView","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"SnackBar","total_count":1,"children":[]},{"name":"Spacer","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]}]},{"name":"profil.dart","total_count":14,"children":[{"name":"../Screen/admin/admin_approval_screen.dart","total_count":1,"children":[]},{"name":"_buildTextField","total_count":1,"children":[]},{"name":"_buildUlpRow","total_count":1,"children":[]},{"name":"_ProfileState","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"dispose","total_count":1,"children":[]},{"name":"Expanded","total_count":1,"children":[]},{"name":"Icon","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"Profile","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]}]},{"name":"register.dart","total_count":12,"children":[{"name":"_buildInputField","total_count":1,"children":[]},{"name":"_buildRegisterButton","total_count":1,"children":[]},{"name":"_RegisterPageState","total_count":1,"children":[]},{"name":"AuthException","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"dispose","total_count":1,"children":[]},{"name":"Function","total_count":1,"children":[]},{"name":"package:elsafe/config/snackbar.dart","total_count":1,"children":[]},{"name":"RegisterPage","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]}]}]},{"name":"Screen","total_count":293,"children":[{"name":"admin","total_count":15,"children":[{"name":"admin_approval_screen.dart","total_count":15,"children":[{"name":"../../config/ulp_service.dart","total_count":1,"children":[]},{"name":"_AdminApprovalScreenState","total_count":1,"children":[]},{"name":"_buildEmpty","total_count":1,"children":[]},{"name":"_RequestCard","total_count":1,"children":[]},{"name":"_showLoading","total_count":1,"children":[]},{"name":"_showResultSnackbar","total_count":1,"children":[]},{"name":"AdminApprovalScreen","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Center","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"Divider","total_count":1,"children":[]},{"name":"Icon","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]}]}]},{"name":"daftar_temuan.dart","total_count":31,"children":[{"name":"../widgets/daftar_temuan/temuan_detail_dialog.dart","total_count":1,"children":[]},{"name":"../widgets/daftar_temuan/temuan_list_item.dart","total_count":1,"children":[]},{"name":"_buildBody","total_count":1,"children":[]},{"name":"_buildFilterDropdown","total_count":1,"children":[]},{"name":"_buildSearchAndFilter","total_count":1,"children":[]},{"name":"_onScroll","total_count":1,"children":[]},{"name":"_showDetailDialog","total_count":1,"children":[]},{"name":"_SkeletonListItem","total_count":1,"children":[]},{"name":"_SkeletonListItemState","total_count":1,"children":[]},{"name":"AnimatedBuilder","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Card","total_count":1,"children":[]},{"name":"Center","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"DaftarTemuanScreen","total_count":1,"children":[]},{"name":"DaftarTemuanScreenState","total_count":1,"children":[]},{"name":"didChangeDependencies","total_count":1,"children":[]},{"name":"dispose","total_count":1,"children":[]},{"name":"DropdownMenuItem","total_count":1,"children":[]},{"name":"Exception","total_count":1,"children":[]},{"name":"Function","total_count":1,"children":[]},{"name":"Icon","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"launchUrl","total_count":1,"children":[]},{"name":"loadData","total_count":1,"children":[]},{"name":"Padding","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"TemuanListItem","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]}]},{"name":"dashboard.dart","total_count":16,"children":[{"name":"../config/app_logger.dart","total_count":1,"children":[]},{"name":"../widgets/dashboard/dashboard_info_section.dart","total_count":1,"children":[]},{"name":"../widgets/dashboard/dashboard_recent_activity.dart","total_count":1,"children":[]},{"name":"../widgets/dashboard/dashboard_stats_section.dart","total_count":1,"children":[]},{"name":"../widgets/dashboard/dashboard_welcome_card.dart","total_count":1,"children":[]},{"name":"_buildExportQuickAction","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"DashboardInfoSection","total_count":1,"children":[]},{"name":"DashboardScreen","total_count":1,"children":[]},{"name":"DashboardScreenState","total_count":1,"children":[]},{"name":"IconButton","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"loadData","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]}]},{"name":"edit_temuan.dart","total_count":35,"children":[{"name":"_buildDatePicker","total_count":1,"children":[]},{"name":"_buildPenyulangSection","total_count":1,"children":[]},{"name":"_buildStep1Temuan","total_count":1,"children":[]},{"name":"_buildStep2Reminder","total_count":1,"children":[]},{"name":"_buildStep3Closing","total_count":1,"children":[]},{"name":"_buildStep4Sosialisasi","total_count":1,"children":[]},{"name":"_buildStepIndicator","total_count":1,"children":[]},{"name":"_buildTipePicker","total_count":1,"children":[]},{"name":"_confirmLocation","total_count":1,"children":[]},{"name":"_EditTemuanScreenState","total_count":1,"children":[]},{"name":"_goToStep","total_count":1,"children":[]},{"name":"_inputDecoration","total_count":1,"children":[]},{"name":"_MapPickerScreen","total_count":1,"children":[]},{"name":"_MapPickerScreenState","total_count":1,"children":[]},{"name":"_onMapTap","total_count":1,"children":[]},{"name":"_TipeOption","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Center","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"dispose","total_count":1,"children":[]},{"name":"Divider","total_count":1,"children":[]},{"name":"EditTemuanScreen","total_count":1,"children":[]},{"name":"Exception","total_count":1,"children":[]},{"name":"Expanded","total_count":1,"children":[]},{"name":"Icon","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"ListView","total_count":1,"children":[]},{"name":"Padding","total_count":1,"children":[]},{"name":"PopScope","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"showDatePicker","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]},{"name":"Theme","total_count":1,"children":[]}]},{"name":"export_temuan.dart","total_count":45,"children":[{"name":"../utils/export_temuan_filter.dart","total_count":1,"children":[]},{"name":"../utils/pdf_generator.dart","total_count":1,"children":[]},{"name":"_applyFilters","total_count":1,"children":[]},{"name":"_buildActionButtons","total_count":1,"children":[]},{"name":"_buildAdvancedFilters","total_count":1,"children":[]},{"name":"_buildDateButton","total_count":1,"children":[]},{"name":"_buildDateField","total_count":1,"children":[]},{"name":"_buildDropdownField","total_count":1,"children":[]},{"name":"_buildFilterSection","total_count":1,"children":[]},{"name":"_buildMultiSelectChip","total_count":1,"children":[]},{"name":"_buildSelectionHeader","total_count":1,"children":[]},{"name":"_buildTemuanList","total_count":1,"children":[]},{"name":"_exportFileName","total_count":1,"children":[]},{"name":"_exportPdf","total_count":1,"children":[]},{"name":"_ExportTemuanScreenState","total_count":1,"children":[]},{"name":"_fieldDecoration","total_count":1,"children":[]},{"name":"_fieldLabel","total_count":1,"children":[]},{"name":"_formatDate","total_count":1,"children":[]},{"name":"_pdfUlpLabel","total_count":1,"children":[]},{"name":"_previewPdf","total_count":1,"children":[]},{"name":"_resetFilters","total_count":1,"children":[]},{"name":"_selectAllFiltered","total_count":1,"children":[]},{"name":"_toggleSelectAll","total_count":1,"children":[]},{"name":"_toggleTemuan","total_count":1,"children":[]},{"name":"_valueOrDash","total_count":1,"children":[]},{"name":"BoxDecoration","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Center","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"Divider","total_count":1,"children":[]},{"name":"ExportTemuanScreen","total_count":1,"children":[]},{"name":"FilterChip","total_count":1,"children":[]},{"name":"Function","total_count":1,"children":[]},{"name":"Icon","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"InkWell","total_count":1,"children":[]},{"name":"LayoutBuilder","total_count":1,"children":[]},{"name":"package:printing/printing.dart","total_count":1,"children":[]},{"name":"Row","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"SnackBar","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]},{"name":"Wrap","total_count":1,"children":[]}]},{"name":"main_shell.dart","total_count":33,"children":[{"name":"../profil/profil.dart","total_count":1,"children":[]},{"name":"../widgets/dashboard/dashboard_drawer.dart","total_count":1,"children":[]},{"name":"../widgets/panduan_penggunaan.dart","total_count":1,"children":[]},{"name":"../widgets/tipe_temuan_picker.dart","total_count":1,"children":[]},{"name":"_buildBottomNav","total_count":1,"children":[]},{"name":"_buildFab","total_count":1,"children":[]},{"name":"_buildNotifIcon","total_count":1,"children":[]},{"name":"_MainShellState","total_count":1,"children":[]},{"name":"_onNavTap","total_count":1,"children":[]},{"name":"_showMapsView","total_count":1,"children":[]},{"name":"backToDashboard","total_count":1,"children":[]},{"name":"BottomNavigationBar","total_count":1,"children":[]},{"name":"BottomNavigationBarItem","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"closePanduan","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"daftar_temuan.dart","total_count":1,"children":[]},{"name":"dashboard.dart","total_count":1,"children":[]},{"name":"dispose","total_count":1,"children":[]},{"name":"export_temuan.dart","total_count":1,"children":[]},{"name":"Icon","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"MainShell","total_count":1,"children":[]},{"name":"maps_view.dart","total_count":1,"children":[]},{"name":"notifications_screen.dart","total_count":1,"children":[]},{"name":"openExport","total_count":1,"children":[]},{"name":"openNotifications","total_count":1,"children":[]},{"name":"openPanduan","total_count":1,"children":[]},{"name":"package:supabase_flutter/supabase_flutter.dart","total_count":1,"children":[]},{"name":"Profile","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"Stack","total_count":1,"children":[]},{"name":"temuan.dart","total_count":1,"children":[]}]},{"name":"maps_view.dart","total_count":30,"children":[{"name":"../config/location_service.dart","total_count":1,"children":[]},{"name":"../widgets/maps_control_button.dart","total_count":1,"children":[]},{"name":"_buildMap","total_count":1,"children":[]},{"name":"_createMarkers","total_count":1,"children":[]},{"name":"_fitAllMarkers","total_count":1,"children":[]},{"name":"_labelBgColor","total_count":1,"children":[]},{"name":"_labelBorderColor","total_count":1,"children":[]},{"name":"_LegendItem","total_count":1,"children":[]},{"name":"_MapsViewWidgetState","total_count":1,"children":[]},{"name":"_pinColor","total_count":1,"children":[]},{"name":"_pinIcon","total_count":1,"children":[]},{"name":"_showMarkerInfo","total_count":1,"children":[]},{"name":"_showSnack","total_count":1,"children":[]},{"name":"_toggleLabels","total_count":1,"children":[]},{"name":"_zoomIn","total_count":1,"children":[]},{"name":"_zoomOut","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"DropdownMenuItem","total_count":1,"children":[]},{"name":"Exception","total_count":1,"children":[]},{"name":"Icon","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"launchUrl","total_count":1,"children":[]},{"name":"MapsViewWidget","total_count":1,"children":[]},{"name":"Marker","total_count":1,"children":[]},{"name":"package:url_launcher/url_launcher.dart","total_count":1,"children":[]},{"name":"Row","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"Stack","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]}]},{"name":"notifications_screen.dart","total_count":19,"children":[{"name":"_buildEmpty","total_count":1,"children":[]},{"name":"_formatDate","total_count":1,"children":[]},{"name":"_iconBgColor","total_count":1,"children":[]},{"name":"_iconColor","total_count":1,"children":[]},{"name":"_iconData","total_count":1,"children":[]},{"name":"_NotifCard","total_count":1,"children":[]},{"name":"_NotificationsScreenState","total_count":1,"children":[]},{"name":"_onNewNotif","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Center","total_count":1,"children":[]},{"name":"dispose","total_count":1,"children":[]},{"name":"edit_temuan.dart","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"InkWell","total_count":1,"children":[]},{"name":"NotificationsScreen","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"SnackBar","total_count":1,"children":[]},{"name":"Spacer","total_count":1,"children":[]}]},{"name":"settings_screen.dart","total_count":7,"children":[{"name":"_ThemeOption","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"InkWell","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SettingsScreen","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]}]},{"name":"splashscreen.dart","total_count":14,"children":[{"name":"_ElsafeSplashScreenState","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"CircularProgressIndicator","total_count":1,"children":[]},{"name":"dispose","total_count":1,"children":[]},{"name":"ElsafeApp","total_count":1,"children":[]},{"name":"ElsafeSplashScreen","total_count":1,"children":[]},{"name":"FadeTransition","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"main","total_count":1,"children":[]},{"name":"MaterialApp","total_count":1,"children":[]},{"name":"package:elsafe/profil/loginscreen.dart","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]}]},{"name":"temuan.dart","total_count":38,"children":[{"name":"../widgets/foto_picker_widget.dart","total_count":1,"children":[]},{"name":"../widgets/matriks_risiko_widget.dart","total_count":1,"children":[]},{"name":"_buildDatePicker","total_count":1,"children":[]},{"name":"_buildMiniMapPreview","total_count":1,"children":[]},{"name":"_buildPenyulangSection","total_count":1,"children":[]},{"name":"_buildStep1Temuan","total_count":1,"children":[]},{"name":"_buildStep2Reminder","total_count":1,"children":[]},{"name":"_buildStep3Closing","total_count":1,"children":[]},{"name":"_buildStep4Sosialisasi","total_count":1,"children":[]},{"name":"_buildStepIndicator","total_count":1,"children":[]},{"name":"_buildTipeBadge","total_count":1,"children":[]},{"name":"_buildUserInfo","total_count":1,"children":[]},{"name":"_confirmLocation","total_count":1,"children":[]},{"name":"_goToStep","total_count":1,"children":[]},{"name":"_inputDecoration","total_count":1,"children":[]},{"name":"_MapPickerScreenState","total_count":1,"children":[]},{"name":"_onMapTap","total_count":1,"children":[]},{"name":"_TemuanScreenState","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"dispose","total_count":1,"children":[]},{"name":"Exception","total_count":1,"children":[]},{"name":"Expanded","total_count":1,"children":[]},{"name":"Icon","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"ListView","total_count":1,"children":[]},{"name":"MapPickerScreen","total_count":1,"children":[]},{"name":"package:geocoding/geocoding.dart","total_count":1,"children":[]},{"name":"package:geolocator/geolocator.dart","total_count":1,"children":[]},{"name":"package:permission_handler/permission_handler.dart","total_count":1,"children":[]},{"name":"Padding","total_count":1,"children":[]},{"name":"PopScope","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"TemuanScreen","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]},{"name":"Theme","total_count":1,"children":[]}]},{"name":"ulp_selection_screen.dart","total_count":10,"children":[{"name":"../config/ulp_list.dart","total_count":1,"children":[]},{"name":"_UlpSelectionScreenState","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"DropdownMenuItem","total_count":1,"children":[]},{"name":"main_shell.dart","total_count":1,"children":[]},{"name":"PopScope","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"SnackBar","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]},{"name":"UlpSelectionScreen","total_count":1,"children":[]}]}]},{"name":"utils","total_count":20,"children":[{"name":"export_temuan_filter.dart","total_count":4,"children":[{"name":"_dateOnly","total_count":1,"children":[]},{"name":"_matchesIntFilter","total_count":1,"children":[]},{"name":"_matchesStringFilter","total_count":1,"children":[]},{"name":"DateTime","total_count":1,"children":[]}]},{"name":"maps_utils.dart","total_count":3,"children":[{"name":"MapUtils","total_count":1,"children":[]},{"name":"package:flutter_map/flutter_map.dart","total_count":1,"children":[]},{"name":"package:latlong2/latlong.dart","total_count":1,"children":[]}]},{"name":"pdf_generator.dart","total_count":13,"children":[{"name":"_bodyCell","total_count":1,"children":[]},{"name":"_formatDate","total_count":1,"children":[]},{"name":"_formatDateTime","total_count":1,"children":[]},{"name":"_joinNonEmpty","total_count":1,"children":[]},{"name":"_pemilikObjekLabel","total_count":1,"children":[]},{"name":"_periodLabel","total_count":1,"children":[]},{"name":"_risikoLabel","total_count":1,"children":[]},{"name":"_tindakLanjutLabel","total_count":1,"children":[]},{"name":"_valueOrDash","total_count":1,"children":[]},{"name":"ExportTemuanPdfGenerator","total_count":1,"children":[]},{"name":"package:flutter/services.dart","total_count":1,"children":[]},{"name":"package:pdf/pdf.dart","total_count":1,"children":[]},{"name":"package:pdf/widgets.dart","total_count":1,"children":[]}]}]},{"name":"widgets","total_count":127,"children":[{"name":"daftar_temuan","total_count":26,"children":[{"name":"temuan_detail_dialog.dart","total_count":21,"children":[{"name":"../../config/sosialisasi_model.dart","total_count":1,"children":[]},{"name":"../../config/temuan_service.dart","total_count":1,"children":[]},{"name":"../foto_grid_widget.dart","total_count":1,"children":[]},{"name":"_formatDate","total_count":1,"children":[]},{"name":"_InfoRow","total_count":1,"children":[]},{"name":"_levelRisikoColor","total_count":1,"children":[]},{"name":"_MatriksRow","total_count":1,"children":[]},{"name":"_SectionHeader","total_count":1,"children":[]},{"name":"_TemuanDetailDialogState","total_count":1,"children":[]},{"name":"_TipeBadgeRow","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Center","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"Dialog","total_count":1,"children":[]},{"name":"Function","total_count":1,"children":[]},{"name":"Icon","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"Padding","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"TemuanDetailDialog","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]}]},{"name":"temuan_list_item.dart","total_count":5,"children":[{"name":"../../config/temuan_types.dart","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"TemuanListItem","total_count":1,"children":[]}]}]},{"name":"dashboard","total_count":44,"children":[{"name":"dashboard_drawer.dart","total_count":15,"children":[{"name":"../../config/notification_service.dart","total_count":1,"children":[]},{"name":"_aboutItem","total_count":1,"children":[]},{"name":"_contactItem","total_count":1,"children":[]},{"name":"_DrawerItem","total_count":1,"children":[]},{"name":"_showAboutDialog","total_count":1,"children":[]},{"name":"_showContactDialog","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"CircleAvatar","total_count":1,"children":[]},{"name":"DashboardDrawer","total_count":1,"children":[]},{"name":"Drawer","total_count":1,"children":[]},{"name":"ListTile","total_count":1,"children":[]},{"name":"Padding","total_count":1,"children":[]},{"name":"Row","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"SnackBar","total_count":1,"children":[]}]},{"name":"dashboard_info_section.dart","total_count":8,"children":[{"name":"_DashboardInfoSectionState","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"dart:async","total_count":1,"children":[]},{"name":"DashboardInfoSection","total_count":1,"children":[]},{"name":"dispose","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]}]},{"name":"dashboard_recent_activity.dart","total_count":8,"children":[{"name":"../../config/temuan_model.dart","total_count":1,"children":[]},{"name":"_EmptyState","total_count":1,"children":[]},{"name":"_RecentTemuanCard","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"DashboardRecentActivity","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]}]},{"name":"dashboard_stats_section.dart","total_count":7,"children":[{"name":"../../config/app_theme.dart","total_count":1,"children":[]},{"name":"_StatCard","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"DashboardStatsSection","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]}]},{"name":"dashboard_welcome_card.dart","total_count":6,"children":[{"name":"build","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"DashboardWelcomeCard","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]},{"name":"TextStyle","total_count":1,"children":[]}]}]},{"name":"foto_grid_widget.dart","total_count":9,"children":[{"name":"_buildFotoItem","total_count":1,"children":[]},{"name":"_confirmDelete","total_count":1,"children":[]},{"name":"_showFullImage","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Center","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"FotoGridWidget","total_count":1,"children":[]},{"name":"Function","total_count":1,"children":[]},{"name":"Stack","total_count":1,"children":[]}]},{"name":"foto_picker_widget.dart","total_count":20,"children":[{"name":"../config/snackbar.dart","total_count":1,"children":[]},{"name":"_buildNewFileItem","total_count":1,"children":[]},{"name":"_FotoPickerWidgetState","total_count":1,"children":[]},{"name":"_pickFromGallery","total_count":1,"children":[]},{"name":"_removeExistingUrl","total_count":1,"children":[]},{"name":"_removeNewFile","total_count":1,"children":[]},{"name":"_sectionLabel","total_count":1,"children":[]},{"name":"_showSourceDialog","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"FotoPickerWidget","total_count":1,"children":[]},{"name":"Function","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"package:file_picker/file_picker.dart","total_count":1,"children":[]},{"name":"package:flutter/foundation.dart","total_count":1,"children":[]},{"name":"Padding","total_count":1,"children":[]},{"name":"Row","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"Stack","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]}]},{"name":"maps_control_button.dart","total_count":3,"children":[{"name":"build","total_count":1,"children":[]},{"name":"MapControlButton","total_count":1,"children":[]},{"name":"Tooltip","total_count":1,"children":[]}]},{"name":"matriks_risiko_widget.dart","total_count":12,"children":[{"name":"_buildDropdown","total_count":1,"children":[]},{"name":"_levelColor","total_count":1,"children":[]},{"name":"_MatriksRisikoWidgetState","total_count":1,"children":[]},{"name":"_recalculate","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Column","total_count":1,"children":[]},{"name":"Function","total_count":1,"children":[]},{"name":"initState","total_count":1,"children":[]},{"name":"MatriksRisikoWidget","total_count":1,"children":[]},{"name":"Padding","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]}]},{"name":"panduan_penggunaan.dart","total_count":6,"children":[{"name":"_buildSection","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"PanduanPenggunaanScreen","total_count":1,"children":[]},{"name":"Scaffold","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]}]},{"name":"tipe_temuan_picker.dart","total_count":7,"children":[{"name":"_TipeCard","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"Container","total_count":1,"children":[]},{"name":"InkWell","total_count":1,"children":[]},{"name":"SizedBox","total_count":1,"children":[]},{"name":"Text","total_count":1,"children":[]},{"name":"TipeTemuanPicker","total_count":1,"children":[]}]}]}]},{"name":"linux","total_count":12,"children":[{"name":"flutter","total_count":2,"children":[{"name":"generated_plugin_registrant.cc","total_count":1,"children":[{"name":"fl_register_plugins()","total_count":1,"children":[]}]},{"name":"generated_plugin_registrant.h","total_count":1,"children":[]}]},{"name":"runner","total_count":10,"children":[{"name":"main.cc","total_count":1,"children":[{"name":"main()","total_count":1,"children":[]}]},{"name":"my_application.cc","total_count":8,"children":[{"name":"my_application_activate()","total_count":1,"children":[]},{"name":"my_application_class_init()","total_count":1,"children":[]},{"name":"my_application_dispose()","total_count":1,"children":[]},{"name":"my_application_init()","total_count":1,"children":[]},{"name":"my_application_local_command_line()","total_count":1,"children":[]},{"name":"my_application_new()","total_count":1,"children":[]},{"name":"my_application_shutdown()","total_count":1,"children":[]},{"name":"my_application_startup()","total_count":1,"children":[]}]},{"name":"my_application.h","total_count":1,"children":[]}]}]},{"name":"macos","total_count":9,"children":[{"name":"Flutter","total_count":1,"children":[{"name":"GeneratedPluginRegistrant.swift","total_count":1,"children":[{"name":"RegisterGeneratedPlugins()","total_count":1,"children":[]}]}]},{"name":"Runner","total_count":6,"children":[{"name":"AppDelegate.swift","total_count":3,"children":[{"name":".applicationShouldTerminateAfterLastWindowClosed()","total_count":1,"children":[]},{"name":".applicationSupportsSecureRestorableState()","total_count":1,"children":[]},{"name":"AppDelegate","total_count":1,"children":[]}]},{"name":"Assets.xcassets","total_count":1,"children":[{"name":"AppIcon.appiconset","total_count":1,"children":[{"name":"app_icon_1024.png","total_count":1,"children":[{"name":"macOS App Icons","total_count":1,"children":[]}]}]}]},{"name":"MainFlutterWindow.swift","total_count":2,"children":[{"name":".awakeFromNib()","total_count":1,"children":[]},{"name":"MainFlutterWindow","total_count":1,"children":[]}]}]},{"name":"RunnerTests","total_count":2,"children":[{"name":"RunnerTests.swift","total_count":2,"children":[{"name":".testExample()","total_count":1,"children":[]},{"name":"RunnerTests","total_count":1,"children":[]}]}]}]},{"name":"pubspec.yaml","total_count":4,"children":[{"name":"elsafe App Identity","total_count":1,"children":[]},{"name":"Flutter Dependencies","total_count":1,"children":[]},{"name":"Flutter Dev Dependencies","total_count":1,"children":[]},{"name":"Flutter Project Configuration","total_count":1,"children":[]}]},{"name":"supabase","total_count":1,"children":[{"name":"functions","total_count":1,"children":[{"name":"check-reminders","total_count":1,"children":[{"name":"index.ts","total_count":1,"children":[]}]}]}]},{"name":"test","total_count":19,"children":[{"name":"export_temuan_filter_test.dart","total_count":4,"children":[{"name":"_temuan","total_count":1,"children":[]},{"name":"main","total_count":1,"children":[]},{"name":"package:elsafe/utils/export_temuan_filter.dart","total_count":1,"children":[]},{"name":"TemuanModel","total_count":1,"children":[]}]},{"name":"main_shell_navigation_test.dart","total_count":2,"children":[{"name":"dart:io","total_count":1,"children":[]},{"name":"main","total_count":1,"children":[]}]},{"name":"pdf_generator_test.dart","total_count":4,"children":[{"name":"ByteData","total_count":1,"children":[]},{"name":"dart:typed_data","total_count":1,"children":[]},{"name":"main","total_count":1,"children":[]},{"name":"package:elsafe/utils/pdf_generator.dart","total_count":1,"children":[]}]},{"name":"temuan_model_test.dart","total_count":4,"children":[{"name":"_temuan","total_count":1,"children":[]},{"name":"main","total_count":1,"children":[]},{"name":"package:elsafe/config/temuan_model.dart","total_count":1,"children":[]},{"name":"TemuanModel","total_count":1,"children":[]}]},{"name":"widget_test.dart","total_count":5,"children":[{"name":"main","total_count":1,"children":[]},{"name":"package:elsafe/config/app_theme.dart","total_count":1,"children":[]},{"name":"package:elsafe/widgets/panduan_penggunaan.dart","total_count":1,"children":[]},{"name":"package:flutter/material.dart","total_count":1,"children":[]},{"name":"package:flutter_test/flutter_test.dart","total_count":1,"children":[]}]}]},{"name":"web","total_count":2,"children":[{"name":"favicon.png","total_count":1,"children":[{"name":"Web Favicon and Icons","total_count":1,"children":[]}]},{"name":"firebase-messaging-sw.js","total_count":1,"children":[]}]},{"name":"windows","total_count":33,"children":[{"name":"flutter","total_count":2,"children":[{"name":"generated_plugin_registrant.cc","total_count":1,"children":[{"name":"RegisterPlugins()","total_count":1,"children":[]}]},{"name":"generated_plugin_registrant.h","total_count":1,"children":[]}]},{"name":"runner","total_count":31,"children":[{"name":"flutter_window.cpp","total_count":3,"children":[{"name":"MessageHandler()","total_count":1,"children":[]},{"name":"OnCreate()","total_count":1,"children":[]},{"name":"OnDestroy()","total_count":1,"children":[]}]},{"name":"flutter_window.h","total_count":1,"children":[{"name":"FlutterWindow()","total_count":1,"children":[]}]},{"name":"main.cpp","total_count":1,"children":[{"name":"wWinMain()","total_count":1,"children":[]}]},{"name":"utils.cpp","total_count":3,"children":[{"name":"CreateAndAttachConsole()","total_count":1,"children":[]},{"name":"GetCommandLineArguments()","total_count":1,"children":[]},{"name":"Utf8FromUtf16()","total_count":1,"children":[]}]},{"name":"win32_window.cpp","total_count":20,"children":[{"name":".WindowClassRegistrar()","total_count":1,"children":[]},{"name":"Create()","total_count":1,"children":[]},{"name":"Destroy()","total_count":1,"children":[]},{"name":"EnableFullDpiSupportIfAvailable()","total_count":1,"children":[]},{"name":"GetClientArea()","total_count":1,"children":[]},{"name":"GetHandle()","total_count":1,"children":[]},{"name":"GetThisFromHandle()","total_count":1,"children":[]},{"name":"GetWindowClass()","total_count":1,"children":[]},{"name":"MessageHandler()","total_count":1,"children":[]},{"name":"OnCreate()","total_count":1,"children":[]},{"name":"OnDestroy()","total_count":1,"children":[]},{"name":"Scale()","total_count":1,"children":[]},{"name":"SetChildContent()","total_count":1,"children":[]},{"name":"SetQuitOnClose()","total_count":1,"children":[]},{"name":"Show()","total_count":1,"children":[]},{"name":"UnregisterWindowClass()","total_count":1,"children":[]},{"name":"UpdateTheme()","total_count":1,"children":[]},{"name":"Win32Window()","total_count":1,"children":[]},{"name":"WindowClassRegistrar","total_count":1,"children":[]},{"name":"WndProc()","total_count":1,"children":[]}]},{"name":"resource.h","total_count":1,"children":[]},{"name":"utils.h","total_count":1,"children":[]},{"name":"win32_window.h","total_count":1,"children":[]}]}]}]};
+
+    function transformData(jsonData) {
+        // Helper function to recursively build the children structure
+        function processNode(node, parentL1StageName) {
+            let displayName = node.name;
+            // Append total_count if it exists and is not already in the name
+            if (node.total_count !== undefined) {
+                if (!/\(Total Count: \d+\)$/.test(displayName)) {
+                    displayName += ` (Total Count: ${node.total_count})`;
+                }
+            }
+
+            const newNode = { name: displayName };
+
+            if (parentL1StageName === "Root") {
+                 newNode.originalStageName = node.name;
+            } else {
+                newNode.originalStageName = parentL1StageName;
+            }
+
+            if (node.children && node.children.length > 0) {
+                const stageNameToPass = (parentL1StageName === "Root") ? node.name : parentL1StageName;
+                newNode.children = node.children.map(child => processNode(child, stageNameToPass));
+            }
+
+            return newNode;
+        }
+
+        let rootDisplayName = jsonData.name;
+        if (jsonData.total_count !== undefined && !/\(Total Count: \d+\)$/.test(rootDisplayName)) {
+            rootDisplayName += ` (Total Count: ${jsonData.total_count})`;
+        }
+
+        return {
+            name: rootDisplayName,
+            originalStageName: "Root",
+            children: (jsonData.children || []).map(child => processNode(child, "Root"))
+        };
+    }
+
+    const treeData = transformData(initialJsonData);
+
+    // Auto-populated phaseColors: every depth-1 child of the root gets
+    // a stable colour from a bigger palette so all top-level dirs are
+    // distinguishable.
+    const PALETTE = [
+      ["#3498DB","#2980B9","#AED6F1"], ["#2ECC71","#27AE60","#A9DFBF"],
+      ["#E74C3C","#C0392B","#F5B7B1"], ["#9B59B6","#8E44AD","#D7BDE2"],
+      ["#F39C12","#D68910","#FAD7A0"], ["#1ABC9C","#117864","#A2D9CE"],
+      ["#34495E","#1B2631","#ABB2B9"], ["#E67E22","#BA4A00","#F5CBA7"],
+      ["#16A085","#0E6655","#A2D9CE"], ["#D35400","#A04000","#EDBB99"],
+      ["#7F8C8D","#566573","#D5DBDB"], ["#C0392B","#7B241C","#F5B7B1"],
+      ["#2E86C1","#1B4F72","#A9CCE3"], ["#28B463","#196F3D","#A9DFBF"],
+      ["#AF7AC5","#6C3483","#D2B4DE"],
+    ];
+    const phaseColors = { "Root": { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+                          "Default": { fill: "#BDC3C7", stroke: "#95A5A6", collapsedFill: "#ECF0F1" } };
+    (initialJsonData.children || []).forEach((c, i) => {
+      const pal = PALETTE[i % PALETTE.length];
+      phaseColors[c.name] = { fill: pal[0], stroke: pal[1], collapsedFill: pal[2] };
+    });
+
+    const levelSpecificPalettes = {
+      0: { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+      2: { fill: "#6ab04c", stroke: "#508a38", collapsedFill: "#a3d391" },
+      3: { fill: "#f0932b", stroke: "#d0730f", collapsedFill: "#f6c07e" },
+      4: { fill: "#be2edd", stroke: "#a01cb3", collapsedFill: "#e08bf2" },
+      5: { fill: "#00a8ff", stroke: "#007ac1", collapsedFill: "#74d2ff" },
+      6: { fill: "#e55039", stroke: "#c23620", collapsedFill: "#f09a8d" },
+      default: { fill: "#747d8c", stroke: "#57606f", collapsedFill: "#a4b0be" }
+    };
+
+    const svgElement = d3.select("#tree-svg");
+    const initialSvgWidth = +svgElement.attr("width");
+    const initialSvgHeight = +svgElement.attr("height");
+    const margin = { top: 40, right: 120, bottom: 80, left: 450 };
+    let width = initialSvgWidth - margin.left - margin.right;
+    let height = initialSvgHeight - margin.top - margin.bottom;
+    const duration = 500;
+    let nodeCounter = 0;
+    const g = svgElement.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    const treemap = d3.tree().nodeSize([40, 0]);
+    let rootNode = d3.hierarchy(treeData, d => d.children);
+    rootNode.x0 = 0;
+    rootNode.y0 = 0;
+
+    if (rootNode.children) {
+      rootNode.children.forEach(d_child => {
+        if (d_child.children) { collapseBranch(d_child); }
+      });
+    }
+    updateTree(rootNode);
+
+    function collapseBranch(d) { if (d.children) { d._children = d.children; d._children.forEach(collapseBranch); d.children = null; } }
+    function expandBranch(d) { if (d._children) { d.children = d._children; d._children = null; } if (d.children) { d.children.forEach(expandBranch); } }
+    window.expandAll = () => { expandBranch(rootNode); updateTree(rootNode); };
+    window.collapseAll = () => { if (rootNode.children) { rootNode.children.forEach(collapseBranch); } updateTree(rootNode); };
+    window.resetView = () => { if (rootNode.children) { rootNode.children.forEach(d_child => { if (d_child.children || d_child._children) { collapseBranch(d_child); } }); } if (rootNode._children && !rootNode.children) { rootNode.children = rootNode._children; rootNode._children = null; } updateTree(rootNode); };
+
+    function updateTree(source) {
+      const treeLayoutData = treemap(rootNode);
+      let nodes = treeLayoutData.descendants();
+      let links = treeLayoutData.descendants().slice(1);
+
+      let minX = 0;
+      let maxX = 0;
+      if (nodes.length > 0) {
+        minX = d3.min(nodes, d => d.x);
+        maxX = d3.max(nodes, d => d.x);
+      }
+
+      let neededHeight = Math.max(initialSvgHeight, maxX - minX + margin.top + margin.bottom + 100);
+      svgElement.transition().duration(duration / 2).attr("height", neededHeight);
+      g.transition().duration(duration / 2).attr("transform", `translate(${margin.left},${margin.top - minX + 40})`);
+
+      nodes.forEach(d => { d.y = d.depth * 400; }); // Adjust horizontal separation if needed
+
+      const node = g.selectAll('g.node').data(nodes, d => d.id || (d.id = ++nodeCounter));
+      const nodeEnter = node.enter().append('g')
+        .attr('class', d => "node" + (d.children || d._children ? " node--internal" : " node--leaf") + (d._children ? " _children" : ""))
+        .attr('transform', d => `translate(${source.y0},${source.x0})`)
+        .on('click', (event, d) => { if (d.children) { d._children = d.children; d.children = null; } else if (d._children) { d.children = d._children; d._children = null; } updateTree(d); })
+        .style('cursor', d => (d.children || d._children) ? 'pointer' : 'default');
+
+      nodeEnter.append('circle').attr('r', 1e-6);
+
+      nodeEnter.append('text')
+        .attr('dy', '.35em')
+        .attr('x', d => d.children || d._children ? -14 : 14)
+        .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
+        .style("fill-opacity", 1e-6)
+        .call(wrapText, 380);
+
+      const nodeUpdate = nodeEnter.merge(node);
+      nodeUpdate.transition().duration(duration)
+        .attr('transform', d => `translate(${d.y},${d.x})`)
+        .attr('class', d => "node" + (d.children ? " node--internal" : " node--leaf") + (d._children ? " node--internal _children" : ""));
+
+      nodeUpdate.select('circle').attr('r', 8.5)
+        .style('fill', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            if (d._children) return palette.collapsedFill;
+            if (d.children) return palette.fill;
+            return "#fff";
+        })
+        .style('stroke', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            return palette.stroke;
+        });
+      nodeUpdate.select('text').style("fill-opacity", 1).call(wrapText, 380);
+
+      const nodeExit = node.exit().transition().duration(duration).attr('transform', d => `translate(${source.y},${source.x})`).remove();
+      nodeExit.select('circle').attr('r', 1e-6);
+      nodeExit.select('text').style('fill-opacity', 1e-6);
+
+      const link = g.selectAll('path.link').data(links, d => d.id);
+      const linkEnter = link.enter().insert('path', "g").attr('class', 'link').attr('d', d => { const o = { x: source.x0, y: source.y0 }; return diagonal(o, o); });
+
+      linkEnter.merge(link).transition().duration(duration).attr('d', d => diagonal(d, d.parent))
+        .style('stroke', d => {
+            const sourceNode = d.parent;
+            if (!sourceNode) return phaseColors.Default.stroke;
+            const l1AncestorName = sourceNode.data.originalStageName;
+            const colorPalette = phaseColors[l1AncestorName] || phaseColors.Default;
+            return colorPalette.stroke;
+        });
+      link.exit().transition().duration(duration).attr('d', d => { const o = { x: source.x, y: source.y }; return diagonal(o, o); }).remove();
+      nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+    }
+
+    function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+
+    function wrapText(textElements, maxWidth) {
+        const textPartColors = {
+            name: '#343a40',
+            count: '#0056b3'
+        };
+        const countRegex = /(\s\(Total Count: \d+\))$/;
+
+        textElements.each(function () {
+            const textD3 = d3.select(this);
+            const originalNodeText = textD3.datum().data.name;
+            const x = parseFloat(textD3.attr("x") || 0);
+            const initialDy = textD3.attr("dy");
+            const textAnchor = textD3.attr("text-anchor");
+            const lineHeight = 1.1;
+
+            textD3.text(null);
+
+            let namePart = originalNodeText;
+            let countPartText = "";
+
+            const countMatch = originalNodeText.match(countRegex);
+            if (countMatch && originalNodeText.endsWith(countMatch[0])) {
+                namePart = originalNodeText.substring(0, originalNodeText.length - countMatch[0].length).trim();
+                countPartText = countMatch[0].trim();
+            }
+
+            const tokens = [];
+            namePart.split(/\s+/).filter(Boolean).forEach(word => {
+                tokens.push({ text: word, type: 'name' });
+            });
+            if (countPartText) {
+                tokens.push({ text: countPartText, type: 'count' });
+            }
+
+            if (tokens.length === 0 && originalNodeText) {
+                tokens.push({ text: originalNodeText, type: 'name' });
+            }
+
+            let currentTspan = textD3.append("tspan").attr("x", x).attr("dy", initialDy);
+            if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+
+            let lineTokens = [];
+
+            for (let i = 0; i < tokens.length; i++) {
+                const tokenObj = tokens[i];
+
+                lineTokens.push(tokenObj);
+                currentTspan.text(lineTokens.map(t => t.text).join(" "));
+
+                if (currentTspan.node().getComputedTextLength() > maxWidth && lineTokens.length > 1) {
+                    lineTokens.pop();
+
+                    currentTspan.text(null);
+                    lineTokens.forEach((prevToken, idx) => {
+                        currentTspan.append("tspan")
+                            .text((idx > 0 ? " " : "") + prevToken.text)
+                            .style("fill", textPartColors[prevToken.type] || textPartColors.name)
+                            .style("font-weight", prevToken.type === 'count' ? "bold" : "normal");
+                    });
+
+                    lineTokens = [tokenObj];
+                    currentTspan = textD3.append("tspan").attr("x", x).attr("dy", lineHeight + "em");
+                    if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+                }
+            }
+
+            currentTspan.text(null);
+            lineTokens.forEach((token, idx) => {
+                currentTspan.append("tspan")
+                    .text((idx > 0 ? " " : "") + token.text)
+                    .style("fill", textPartColors[token.type] || textPartColors.name)
+                    .style("font-weight", token.type === 'count' ? "bold" : "normal");
+            });
+
+            if (textD3.selectAll("tspan > tspan").empty() && textD3.select("tspan").text().length === 0 && originalNodeText) {
+                let t = textD3.select("tspan");
+                let displayText = originalNodeText;
+                t.text(displayText).style("fill", textPartColors.name);
+                if (t.node() && t.node().getComputedTextLength() > maxWidth && displayText.length > 20) {
+                    let estimatedChars = Math.floor(maxWidth / (t.node().getComputedTextLength()/displayText.length) );
+                    displayText = displayText.substring(0, Math.max(0, estimatedChars - 3)) + "...";
+                    t.text(displayText);
+                }
+            }
+        });
+    }
+  </script>
+</body>
+</html>

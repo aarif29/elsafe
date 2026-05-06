@@ -1,0 +1,589 @@
+{
+  "nodes": [
+    {
+      "id": "flutter_project",
+      "label": "Flutter Project Configuration",
+      "file_type": "document",
+      "source_file": "pubspec.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "elsafe_app",
+      "label": "elsafe App Identity",
+      "file_type": "document",
+      "source_file": "pubspec.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dependencies",
+      "label": "Flutter Dependencies",
+      "file_type": "document",
+      "source_file": "pubspec.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dev_dependencies",
+      "label": "Flutter Dev Dependencies",
+      "file_type": "document",
+      "source_file": "pubspec.yaml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "temuan_lifecycle",
+      "label": "Temuan Lifecycle Management",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-04-20-temuan-lifecycle-plan.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "temuan_state_machine",
+      "label": "Temuan State Machine",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-temuan-lifecycle-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flutter_dashboard",
+      "label": "Flutter Dashboard UI",
+      "file_type": "document",
+      "source_file": "flutter_01.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_icon_set",
+      "label": "Android App Icon Set",
+      "file_type": "image",
+      "source_file": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "android_app_icons",
+      "label": "Android App Icons",
+      "file_type": "image",
+      "source_file": "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "google_logo",
+      "label": "Google Logo Brand",
+      "file_type": "image",
+      "source_file": "assets/logo_google.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ios_app_icons_1024",
+      "label": "iOS App Icon 1024px",
+      "file_type": "image",
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ios_app_icon_20",
+      "label": "iOS App Icon 20px",
+      "file_type": "image",
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ios_app_icon_40",
+      "label": "iOS App Icon 40px",
+      "file_type": "image",
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ios_app_icon_60",
+      "label": "iOS App Icon 60px",
+      "file_type": "image",
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ios_app_icon_76",
+      "label": "iOS App Icon 76px",
+      "file_type": "image",
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ios_app_icons_set",
+      "label": "iOS App Icons Set",
+      "file_type": "image",
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flutter_01_screenshot",
+      "label": "Flutter App Screenshot",
+      "file_type": "image",
+      "source_file": "flutter_01.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_branding",
+      "label": "App Branding Assets",
+      "file_type": "document",
+      "source_file": "assets/logo_google.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "multiplatform_icons",
+      "label": "Multi-Platform Icon Assets",
+      "file_type": "document",
+      "source_file": "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_integration",
+      "label": "Google Auth Integration",
+      "file_type": "document",
+      "source_file": "assets/logo_google.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "elsafe_brand",
+      "label": "elsafe Brand Identity",
+      "image": "rationale",
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shield_logo",
+      "label": "Shield Logo Design",
+      "image": "rationale",
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ios_app_icons",
+      "label": "iOS App Icons",
+      "image": "rationale",
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "macos_app_icons",
+      "label": "macOS App Icons",
+      "image": "rationale",
+      "source_file": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ios_launch_images",
+      "label": "iOS Launch Screens",
+      "image": "rationale",
+      "source_file": "ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "web_favicon_and_icons",
+      "label": "Web Favicon and Icons",
+      "image": "rationale",
+      "source_file": "web/favicon.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "elsafe_app",
+      "target": "flutter_project",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pubspec.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dependencies",
+      "target": "flutter_project",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pubspec.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dev_dependencies",
+      "target": "flutter_project",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pubspec.yaml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "temuan_lifecycle",
+      "target": "temuan_state_machine",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-temuan-lifecycle-plan.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flutter_dashboard",
+      "target": "elsafe_app",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "flutter_01.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "app_icon_set",
+      "target": "elsafe_app",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "app_icon_set",
+      "target": "flutter_project",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_icons",
+      "target": "multiplatform_icons",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "google_logo",
+      "target": "auth_integration",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "assets/logo_google.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_app_icon_20",
+      "target": "ios_app_icons_set",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_app_icon_40",
+      "target": "ios_app_icons_set",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_app_icon_60",
+      "target": "ios_app_icons_set",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_app_icon_76",
+      "target": "ios_app_icons_set",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_app_icons_1024",
+      "target": "ios_app_icons_set",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flutter_01_screenshot",
+      "target": "app_branding",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "flutter_01.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "flutter_01_screenshot",
+      "target": "multiplatform_icons",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "flutter_01.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "google_logo",
+      "target": "app_branding",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "assets/logo_google.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_app_icons_set",
+      "target": "multiplatform_icons",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shield_logo",
+      "target": "elsafe_brand",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_app_icons",
+      "target": "elsafe_brand",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "macos_app_icons",
+      "target": "elsafe_brand",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_launch_images",
+      "target": "elsafe_brand",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "web_favicon_and_icons",
+      "target": "elsafe_brand",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/favicon.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_app_icons",
+      "target": "macos_app_icons",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_app_icons",
+      "target": "ios_launch_images",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ios_app_icons",
+      "target": "web_favicon_and_icons",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "mobile_app_icons",
+      "label": "Mobile App Icon Assets",
+      "nodes": [
+        "android_app_icons",
+        "ios_app_icons_set",
+        "ios_app_icon_20",
+        "ios_app_icon_40",
+        "ios_app_icon_60",
+        "ios_app_icon_76",
+        "ios_app_icons_1024"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+      "id": "brand_visual_identity",
+      "label": "elsafe Brand Visual Identity",
+      "nodes": [
+        "elsafe_brand",
+        "shield_logo",
+        "ios_app_icons",
+        "macos_app_icons",
+        "ios_launch_images",
+        "web_favicon_and_icons"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
