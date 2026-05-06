@@ -379,3 +379,22 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
 - Field `Alamat Temuan` bersifat opsional/nullable.
 - Backfill otomatis tidak dilakukan karena `lokasi` lama bisa berisi koordinat, bukan alamat manusiawi. Data lama tetap aman dan PDF menampilkan `-` sampai alamat diisi manual.
 - Browser QA di `https://elsafe.vercel.app` pada 06/05/2026 terblokir di halaman login. Workflow authenticated masih perlu dicek setelah ada sesi login yang valid.
+
+---
+
+### Phase 8: Vercel Deployment QA
+
+- [x] 8.1 Cek production domain setelah push ke `main`
+- [x] 8.2 Identifikasi root cause 404 Vercel:
+  - [x] Git deployment `READY`, tetapi build hanya berjalan sangat singkat dan output web tidak disiapkan
+  - [x] Vercel belum punya build command Flutter web dari Git integration
+- [x] 8.3 Tambahkan konfigurasi build Flutter web untuk Vercel:
+  - [x] `vercel.json` memakai `buildCommand`
+  - [x] `vercel.json` memakai `outputDirectory: build/web`
+  - [x] SPA rewrite tetap diarahkan ke `/index.html`
+  - [x] Build script memakai dart-define Supabase hanya jika env tersedia
+- [ ] 8.4 Push ulang ke `main` dan tunggu deployment baru `READY`
+- [ ] 8.5 Browser check production:
+  - [ ] `https://elsafe.vercel.app/#/login` load halaman login ELSAFE, bukan Vercel 404
+  - [ ] Console tidak ada error aplikasi awal
+  - [ ] Workflow authenticated export/input/edit dicek setelah sesi login valid tersedia
