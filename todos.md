@@ -393,8 +393,8 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
   - [x] `vercel.json` memakai `outputDirectory: build/web`
   - [x] SPA rewrite tetap diarahkan ke `/index.html`
   - [x] Build script memakai dart-define Supabase hanya jika env tersedia
-- [ ] 8.4 Push ulang ke `main` dan tunggu deployment baru `READY`
+- [x] 8.4 Push ulang ke `main` dan tunggu deployment baru `READY`
 - [ ] 8.5 Browser check production:
-  - [ ] `https://elsafe.vercel.app/#/login` load halaman login ELSAFE, bukan Vercel 404
-  - [ ] Console tidak ada error aplikasi awal
+  - [x] `https://elsafe.vercel.app/#/login` load halaman login ELSAFE, bukan Vercel 404
+  - [x] Console tidak ada error aplikasi awal
   - [ ] Workflow authenticated export/input/edit dicek setelah sesi login valid tersedia
