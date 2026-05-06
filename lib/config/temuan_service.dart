@@ -364,6 +364,7 @@ class TemuanService {
         'success': true,
         'message': 'Data berhasil dimuat',
         'data': temuanList,
+        'isAdmin': isAdmin,
       };
     } catch (e) {
       appLog.e('❌ Error get temuan', error: e);
@@ -371,6 +372,7 @@ class TemuanService {
         'success': false,
         'message': 'Gagal memuat data: ${e.toString()}',
         'data': <TemuanModel>[],
+        'isAdmin': false,
       };
     }
   }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:printing/printing.dart';
 import '../config/temuan_model.dart';
 import '../config/temuan_service.dart';
-import '../config/ulp_service.dart';
+import '../utils/export_temuan_filter.dart';
+import '../utils/pdf_generator.dart';
 
 class ExportTemuanScreen extends StatefulWidget {
   const ExportTemuanScreen({super.key});
@@ -13,11 +14,11 @@ class ExportTemuanScreen extends StatefulWidget {
 
 class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   final _temuanService = TemuanService();
-  final _ulpService = UlpService();
 
   List<TemuanModel> _allTemuan = [];
   List<TemuanModel> _filteredTemuan = [];
   bool _isLoading = true;
+  String? _errorMessage;
 
   // Filters
   DateTime? _startDate;
@@ -26,8 +27,8 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   Set<String> _selectedRisiko = {'Tinggi', 'Sedang', 'Rendah'};
   Set<int> _selectedZonas = {1, 2, 3, 4, 5};
   Set<int> _selectedSections = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  Set<String> _selectedUlps = {};
   String? _selectedPenyulang;
-  String? _currentUlp;
   bool _isAdmin = false;
 
   // Selection
@@ -40,71 +41,64 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   }
 
   Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-
-    final profile = await _ulpService.getCurrentUserProfile();
     setState(() {
-      _currentUlp = profile?['ulp'] as String?;
-      _isAdmin = profile?['role'] == 'admin';
+      _isLoading = true;
+      _errorMessage = null;
     });
 
     final result = await _temuanService.getAllTemuanSilent();
-    if (result['success']) {
+    if (!mounted) return;
+
+    if (result['success'] == true) {
+      final loadedTemuan = List<TemuanModel>.from(result['data']);
+      final isAdmin = result['isAdmin'] as bool? ?? false;
+      final ulps = _uniqueUlps(loadedTemuan).toSet();
+
       setState(() {
-        _allTemuan = result['data'];
+        _isAdmin = isAdmin;
+        _allTemuan = loadedTemuan;
         _filteredTemuan = _allTemuan;
+        _selectedUlps = isAdmin ? ulps : {};
         _isLoading = false;
-        _selectedTemuanIds.addAll(_filteredTemuan.map((t) => t.id!));
+        _selectedTemuanIds.addAll(
+          _filteredTemuan.where((t) => t.id != null).map((t) => t.id!),
+        );
       });
     } else {
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+        _errorMessage = result['message'] as String? ?? 'Gagal memuat data';
+      });
     }
   }
 
   void _applyFilters() {
     setState(() {
-      _filteredTemuan = _allTemuan.where((t) {
-        // Date filter
-        if (_startDate != null && t.tanggalTemuan.isBefore(_startDate!)) return false;
-        if (_endDate != null && t.tanggalTemuan.isAfter(_endDate!)) return false;
-
-        // Status filter
-        if (_selectedStatuses.isNotEmpty && t.statusTemuan != null) {
-          if (!_selectedStatuses.contains(t.statusTemuan)) return false;
-        }
-
-        // Risiko filter
-        if (_selectedRisiko.isNotEmpty && t.levelRisiko != null) {
-          if (!_selectedRisiko.contains(t.levelRisiko)) return false;
-        }
-
-        // Zona filter
-        if (_selectedZonas.isNotEmpty && t.zona != null) {
-          if (!_selectedZonas.contains(t.zona)) return false;
-        }
-
-        // Section filter
-        if (_selectedSections.isNotEmpty && t.section != null) {
-          if (!_selectedSections.contains(t.section)) return false;
-        }
-
-        // Penyulang filter
-        if (_selectedPenyulang != null && t.namaPenyulang != null) {
-          if (t.namaPenyulang != _selectedPenyulang) return false;
-        }
-
-        return true;
-      }).toList();
+      _filteredTemuan = filterExportTemuan(
+        _allTemuan,
+        startDate: _startDate,
+        endDate: _endDate,
+        selectedStatuses: _selectedStatuses,
+        selectedRisiko: _selectedRisiko,
+        selectedZonas: _selectedZonas,
+        selectedSections: _selectedSections,
+        selectedUlps: _isAdmin ? _selectedUlps : const {},
+        selectedPenyulang: _selectedPenyulang,
+      );
 
       _selectedTemuanIds.clear();
-      _selectedTemuanIds.addAll(_filteredTemuan.map((t) => t.id!));
+      _selectedTemuanIds.addAll(
+        _filteredTemuan.where((t) => t.id != null).map((t) => t.id!),
+      );
     });
   }
 
   void _toggleSelectAll(bool? value) {
     setState(() {
       if (value == true) {
-        _selectedTemuanIds.addAll(_filteredTemuan.map((t) => t.id!));
+        _selectedTemuanIds.addAll(
+          _filteredTemuan.where((t) => t.id != null).map((t) => t.id!),
+        );
       } else {
         _selectedTemuanIds.clear();
       }
@@ -122,13 +116,33 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   }
 
   List<String> get _penyulangList {
-    final penyulangs = _allTemuan
-        .where((t) => t.namaPenyulang != null)
-        .map((t) => t.namaPenyulang!)
-        .toSet()
-        .toList();
+    final penyulangs =
+        _allTemuan
+            .where((t) => t.namaPenyulang != null)
+            .map((t) => t.namaPenyulang!)
+            .toSet()
+            .toList();
     penyulangs.sort();
     return penyulangs;
+  }
+
+  List<String> get _ulpList => _uniqueUlps(_allTemuan);
+
+  List<TemuanModel> get _selectedTemuan {
+    return _filteredTemuan
+        .where((t) => t.id != null && _selectedTemuanIds.contains(t.id))
+        .toList();
+  }
+
+  List<String> _uniqueUlps(List<TemuanModel> source) {
+    final ulps =
+        source
+            .where((t) => t.ulp != null && t.ulp!.isNotEmpty)
+            .map((t) => t.ulp!)
+            .toSet()
+            .toList();
+    ulps.sort();
+    return ulps;
   }
 
   @override
@@ -139,17 +153,18 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
         title: const Text('Export Temuan'),
         backgroundColor: const Color(0xFF2D2D3D),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                _buildFilterSection(),
-                const Divider(color: Colors.grey),
-                _buildSelectionHeader(),
-                Expanded(child: _buildTemuanList()),
-                _buildActionButtons(),
-              ],
-            ),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                children: [
+                  _buildFilterSection(),
+                  const Divider(color: Colors.grey),
+                  _buildSelectionHeader(),
+                  Expanded(child: _buildTemuanList()),
+                  _buildActionButtons(),
+                ],
+              ),
     );
   }
 
@@ -160,7 +175,14 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Filter Data', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            'Filter Data',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 12),
 
           // Tanggal
@@ -188,7 +210,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
           // Status
           _buildMultiSelectChip(
             label: 'Status',
-            values: {'Open', 'Closed', 'On Progress'},
+            values: const ['Open', 'Closed', 'On Progress'],
             selected: _selectedStatuses,
             onChanged: (val) => setState(() => _selectedStatuses = val),
           ),
@@ -197,7 +219,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
           // Level Risiko
           _buildMultiSelectChip(
             label: 'Level Risiko',
-            values: {'Tinggi', 'Sedang', 'Rendah'},
+            values: const ['Tinggi', 'Sedang', 'Rendah'],
             selected: _selectedRisiko,
             onChanged: (val) => setState(() => _selectedRisiko = val),
           ),
@@ -206,21 +228,38 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
           // Zona
           _buildMultiSelectChip(
             label: 'Zona',
-            values: {'1', '2', '3', '4', '5'},
+            values: const ['1', '2', '3', '4', '5'],
             selected: _selectedZonas.map((i) => i.toString()).toSet(),
-            onChanged: (val) => setState(() => _selectedZonas = val.map((s) => int.parse(s)).toSet()),
-            isNumeric: true,
+            onChanged:
+                (val) => setState(
+                  () => _selectedZonas = val.map((s) => int.parse(s)).toSet(),
+                ),
+            itemPrefix: 'Zona',
           ),
           const SizedBox(height: 8),
 
           // Section
           _buildMultiSelectChip(
             label: 'Section',
-            values: Set.from(List.generate(10, (i) => (i + 1).toString())),
+            values: List.generate(10, (i) => (i + 1).toString()),
             selected: _selectedSections.map((i) => i.toString()).toSet(),
-            onChanged: (val) => setState(() => _selectedSections = val.map((s) => int.parse(s)).toSet()),
-            isNumeric: true,
+            onChanged:
+                (val) => setState(
+                  () =>
+                      _selectedSections = val.map((s) => int.parse(s)).toSet(),
+                ),
+            itemPrefix: 'Section',
           ),
+
+          if (_isAdmin && _ulpList.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            _buildMultiSelectChip(
+              label: 'ULP',
+              values: _ulpList,
+              selected: _selectedUlps,
+              onChanged: (val) => setState(() => _selectedUlps = val),
+            ),
+          ],
 
           // Penyulang
           if (_penyulangList.isNotEmpty) ...[
@@ -234,13 +273,22 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String?>(
                   value: _selectedPenyulang,
-                  hint: const Text('Pilih Penyulang (Opsional)', style: TextStyle(color: Colors.white70)),
+                  hint: const Text(
+                    'Pilih Penyulang (Opsional)',
+                    style: TextStyle(color: Colors.white70),
+                  ),
                   isExpanded: true,
                   dropdownColor: Colors.grey[850],
                   style: const TextStyle(color: Colors.white),
                   items: [
-                    const DropdownMenuItem<String?>(value: null, child: Text('Semua')),
-                    ..._penyulangList.map((p) => DropdownMenuItem<String?>(value: p, child: Text(p))),
+                    const DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text('Semua'),
+                    ),
+                    ..._penyulangList.map(
+                      (p) =>
+                          DropdownMenuItem<String?>(value: p, child: Text(p)),
+                    ),
                   ],
                   onChanged: (val) => setState(() => _selectedPenyulang = val),
                 ),
@@ -253,7 +301,9 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _applyFilters,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue[700]),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue[700],
+              ),
               child: const Text('Terapkan Filter'),
             ),
           ),
@@ -262,7 +312,11 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
     );
   }
 
-  Widget _buildDateButton({required String label, required DateTime? date, required VoidCallback onTap}) {
+  Widget _buildDateButton({
+    required String label,
+    required DateTime? date,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -276,8 +330,10 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
             const Icon(Icons.calendar_today, color: Colors.white70, size: 18),
             const SizedBox(width: 8),
             Text(
-              date != null ? '${date.day}/${date.month}/${date.year}' : label,
-              style: TextStyle(color: date != null ? Colors.white : Colors.white70),
+              date != null ? _formatDate(date) : label,
+              style: TextStyle(
+                color: date != null ? Colors.white : Colors.white70,
+              ),
             ),
           ],
         ),
@@ -288,9 +344,12 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   Future<void> _pickDate(bool isStart) async {
     final date = await showDatePicker(
       context: context,
-      initialDate: isStart ? (_startDate ?? DateTime.now()) : (_endDate ?? DateTime.now()),
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+      initialDate:
+          isStart
+              ? (_startDate ?? DateTime.now())
+              : (_endDate ?? DateTime.now()),
+      firstDate: isStart ? DateTime(2020) : (_startDate ?? DateTime(2020)),
+      lastDate: isStart ? (_endDate ?? DateTime.now()) : DateTime.now(),
     );
     if (date != null) {
       setState(() {
@@ -305,38 +364,45 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
 
   Widget _buildMultiSelectChip({
     required String label,
-    required Set<String> values,
+    required List<String> values,
     required Set<String> selected,
     required Function(Set<String>) onChanged,
-    bool isNumeric = false,
+    String? itemPrefix,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white70, fontSize: 12),
+        ),
         const SizedBox(height: 4),
         Wrap(
           spacing: 8,
           runSpacing: 4,
-          children: values.map((v) {
-            final isSelected = selected.contains(v);
-            return FilterChip(
-              label: Text(isNumeric ? 'Zona $v' : v),
-              selected: isSelected,
-              onSelected: (sel) {
-                final newSet = Set<String>.from(selected);
-                if (sel) {
-                  newSet.add(v);
-                } else {
-                  newSet.remove(v);
-                }
-                onChanged(newSet);
-              },
-              selectedColor: Colors.blue.withValues(alpha: 0.3),
-              checkmarkColor: Colors.blue,
-              labelStyle: TextStyle(color: isSelected ? Colors.blue : Colors.white70, fontSize: 12),
-            );
-          }).toList(),
+          children:
+              values.map((v) {
+                final isSelected = selected.contains(v);
+                return FilterChip(
+                  label: Text(itemPrefix == null ? v : '$itemPrefix $v'),
+                  selected: isSelected,
+                  onSelected: (sel) {
+                    final newSet = Set<String>.from(selected);
+                    if (sel) {
+                      newSet.add(v);
+                    } else {
+                      newSet.remove(v);
+                    }
+                    onChanged(newSet);
+                  },
+                  selectedColor: Colors.blue.withValues(alpha: 0.3),
+                  checkmarkColor: Colors.blue,
+                  labelStyle: TextStyle(
+                    color: isSelected ? Colors.blue : Colors.white70,
+                    fontSize: 12,
+                  ),
+                );
+              }).toList(),
         ),
       ],
     );
@@ -345,7 +411,6 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   Widget _buildSelectionHeader() {
     final selectedCount = _selectedTemuanIds.length;
     final totalCount = _filteredTemuan.length;
-    final allSelected = selectedCount == totalCount && totalCount > 0;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -353,13 +418,19 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
       child: Row(
         children: [
           Checkbox(
-            value: allSelected,
-            tristate: selectedCount > 0 && selectedCount < totalCount,
-            onChanged: _toggleSelectAll,
+            value:
+                totalCount > 0 && selectedCount == totalCount
+                    ? true
+                    : (selectedCount == 0 ? false : null),
+            tristate: true,
+            onChanged: (val) => _toggleSelectAll(val ?? true),
           ),
           Text(
             'Pilih Semua ($selectedCount/$totalCount)',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
@@ -367,9 +438,34 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   }
 
   Widget _buildTemuanList() {
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 48),
+            const SizedBox(height: 12),
+            Text(
+              _errorMessage!,
+              style: const TextStyle(color: Colors.red),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: _loadData,
+              child: const Text('Coba Lagi'),
+            ),
+          ],
+        ),
+      );
+    }
+
     if (_filteredTemuan.isEmpty) {
       return const Center(
-        child: Text('Tidak ada data temuan', style: TextStyle(color: Colors.white70)),
+        child: Text(
+          'Tidak ada data temuan',
+          style: TextStyle(color: Colors.white70),
+        ),
       );
     }
 
@@ -388,19 +484,24 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
           child: ListTile(
             leading: Checkbox(
               value: isSelected,
-              onChanged: (val) => _toggleTemuan(t.id!, val),
+              onChanged:
+                  t.id != null ? (val) => _toggleTemuan(t.id!, val) : null,
             ),
             title: Text(
               t.lokasi,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             subtitle: Text(
               '${_formatDate(t.tanggalTemuan)} • ${t.statusTemuan ?? "-"} • ${t.levelRisiko ?? "-"}',
               style: const TextStyle(color: Colors.white70, fontSize: 12),
             ),
-            trailing: t.fotoUrls != null && t.fotoUrls!.isNotEmpty
-                ? const Icon(Icons.image, color: Colors.white70)
-                : null,
+            trailing:
+                t.fotoUrls != null && t.fotoUrls!.isNotEmpty
+                    ? const Icon(Icons.image, color: Colors.white70)
+                    : null,
           ),
         );
       },
@@ -408,7 +509,9 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   }
 
   String _formatDate(DateTime d) {
-    return '${d.day}/${d.month}/${d.year}';
+    final day = d.day.toString().padLeft(2, '0');
+    final month = d.month.toString().padLeft(2, '0');
+    return '$day/$month/${d.year}';
   }
 
   Widget _buildActionButtons() {
@@ -424,7 +527,9 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
               onPressed: selectedCount > 0 ? () => _previewPdf() : null,
               icon: const Icon(Icons.preview),
               label: const Text('Preview PDF'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange[700]),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange[700],
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -433,7 +538,9 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
               onPressed: selectedCount > 0 ? () => _exportPdf() : null,
               icon: const Icon(Icons.share),
               label: Text('Export ($selectedCount)'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green[700]),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[700],
+              ),
             ),
           ),
         ],
@@ -441,15 +548,59 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
     );
   }
 
-  void _previewPdf() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Preview PDF - implementasikan di Phase 3')),
+  Future<void> _previewPdf() async {
+    final selectedTemuan = _selectedTemuan;
+    if (selectedTemuan.isEmpty) return;
+
+    await Printing.layoutPdf(
+      name: _exportFileName(),
+      onLayout:
+          (_) => ExportTemuanPdfGenerator.generate(
+            temuan: selectedTemuan,
+            startDate: _startDate,
+            endDate: _endDate,
+            ulpLabel: _pdfUlpLabel(selectedTemuan),
+          ),
     );
   }
 
-  void _exportPdf() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Export PDF - implementasikan di Phase 3')),
+  Future<void> _exportPdf() async {
+    final selectedTemuan = _selectedTemuan;
+    if (selectedTemuan.isEmpty) return;
+
+    final bytes = await ExportTemuanPdfGenerator.generate(
+      temuan: selectedTemuan,
+      startDate: _startDate,
+      endDate: _endDate,
+      ulpLabel: _pdfUlpLabel(selectedTemuan),
     );
+
+    await Printing.sharePdf(bytes: bytes, filename: _exportFileName());
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('PDF berhasil dibuat (${selectedTemuan.length})')),
+    );
+  }
+
+  String _pdfUlpLabel(List<TemuanModel> selectedTemuan) {
+    if (_isAdmin) {
+      if (_selectedUlps.isEmpty) return 'Semua ULP';
+      return _selectedUlps.join(', ');
+    }
+
+    final ulps = _uniqueUlps(selectedTemuan);
+    if (ulps.isEmpty) return '-';
+    return ulps.join(', ');
+  }
+
+  String _exportFileName() {
+    final now = DateTime.now();
+    final year = now.year.toString();
+    final month = now.month.toString().padLeft(2, '0');
+    final day = now.day.toString().padLeft(2, '0');
+    final hour = now.hour.toString().padLeft(2, '0');
+    final minute = now.minute.toString().padLeft(2, '0');
+    return 'temuan-elsafe-$year$month$day-$hour$minute.pdf';
   }
 }
