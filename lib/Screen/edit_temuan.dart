@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:file_picker/file_picker.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -197,11 +198,22 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
+      final lokasiText =
+          'Lat: ${position.latitude.toStringAsFixed(6)}, '
+          'Long: ${position.longitude.toStringAsFixed(6)}';
+      final alamatText = await _addressFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
       setState(() {
         _currentLatitude = position.latitude;
         _currentLongitude = position.longitude;
-        _lokasiController.text =
-            'Lat: ${position.latitude.toStringAsFixed(6)}, Long: ${position.longitude.toStringAsFixed(6)}';
+        _lokasiController.text = lokasiText;
+        if (_alamatTemuanController.text.trim().isEmpty &&
+            alamatText.isNotEmpty) {
+          _alamatTemuanController.text = alamatText;
+        }
       });
       if (mounted)
         SnackBarUtils.showSuccess(
@@ -234,11 +246,22 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       ),
     );
     if (result != null) {
+      final lokasiText =
+          'Lat: ${result.latitude.toStringAsFixed(6)}, '
+          'Long: ${result.longitude.toStringAsFixed(6)}';
+      final alamatText = await _addressFromCoordinates(
+        result.latitude,
+        result.longitude,
+      );
+
       setState(() {
         _currentLatitude = result.latitude;
         _currentLongitude = result.longitude;
-        _lokasiController.text =
-            'Lat: ${result.latitude.toStringAsFixed(6)}, Long: ${result.longitude.toStringAsFixed(6)}';
+        _lokasiController.text = lokasiText;
+        if (_alamatTemuanController.text.trim().isEmpty &&
+            alamatText.isNotEmpty) {
+          _alamatTemuanController.text = alamatText;
+        }
       });
       if (mounted)
         SnackBarUtils.showSuccess(
@@ -246,6 +269,27 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
           title: 'Berhasil!',
           message: 'Lokasi berhasil dipilih dari peta',
         );
+    }
+  }
+
+  Future<String> _addressFromCoordinates(
+    double latitude,
+    double longitude,
+  ) async {
+    try {
+      final placemarks = await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks.isEmpty) return '';
+      final p = placemarks.first;
+      final parts =
+          [
+            p.street,
+            p.subLocality,
+            p.locality,
+            p.administrativeArea,
+          ].where((s) => s != null && s.isNotEmpty).cast<String>().toList();
+      return parts.join(', ');
+    } catch (_) {
+      return '';
     }
   }
 

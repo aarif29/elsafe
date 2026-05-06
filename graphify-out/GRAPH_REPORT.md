@@ -1,16 +1,16 @@
 # Graph Report - elsafe  (2026-05-06)
 
 ## Corpus Check
-- 82 files · ~73,935 words
+- 82 files · ~74,172 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 718 nodes · 806 edges · 54 communities (46 shown, 8 thin omitted)
+- 718 nodes · 807 edges · 54 communities (46 shown, 8 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 18 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `26a5cb8d`
+- Built from commit: `67986b0a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -215,7 +215,7 @@ Cohesion: 0.53
 Nodes (6): elsafe Brand Identity, iOS App Icons, iOS Launch Screens, macOS App Icons, Shield Logo Design, Web Favicon and Icons
 
 ## Knowledge Gaps
-- **539 isolated node(s):** `MainActivity`, `-registerWithRegistry`, `MyApp`, `_MyAppState`, `main` (+534 more)
+- **538 isolated node(s):** `MainActivity`, `-registerWithRegistry`, `MyApp`, `_MyAppState`, `main` (+533 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -227,9 +227,9 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `../../config/temuan_model.dart` connect `Community 4` to `Community 0`, `Community 1`, `Community 3`, `Community 6`, `Community 7`, `Community 9`, `Community 15`?**
   _High betweenness centrality (0.060) - this node is a cross-community bridge._
 - **Why does `package:supabase_flutter/supabase_flutter.dart` connect `Community 22` to `Community 0`, `Community 4`, `Community 8`, `Community 11`, `Community 12`, `Community 18`, `Community 19`, `Community 23`?**
-  _High betweenness centrality (0.046) - this node is a cross-community bridge._
+  _High betweenness centrality (0.045) - this node is a cross-community bridge._
 - **What connects `MainActivity`, `-registerWithRegistry`, `MyApp` to the rest of the system?**
-  _539 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _538 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.04 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**

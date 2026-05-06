@@ -309,9 +309,9 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
 - [x] 7.1.2 Verifikasi kolom sudah ada via `information_schema.columns`
 - [x] 7.1.3 Pastikan RLS/policy existing tetap aman karena hanya menambah kolom di table yang sama
 - [x] 7.1.4 Cek Data API exposure setelah kolom ditambahkan
-- [ ] 7.1.5 Tentukan apakah perlu backfill dari `lokasi` untuk data lama:
-  - [ ] Rekomendasi awal: tidak backfill otomatis
-  - [ ] Data lama tampil `-` di PDF jika alamat belum diisi
+- [x] 7.1.5 Tentukan apakah perlu backfill dari `lokasi` untuk data lama:
+  - [x] Rekomendasi: tidak backfill otomatis
+  - [x] Data lama tampil `-` di PDF jika alamat belum diisi
 
 **Model & mapping data:**
 - [x] 7.2 Update `TemuanModel`
@@ -377,3 +377,5 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
 **Catatan Phase 7:**
 - Phase 7 sudah diimplementasikan. Kolom `alamat_temuan` sudah diverifikasi di Supabase sebagai nullable text.
 - Field `Alamat Temuan` bersifat opsional/nullable.
+- Backfill otomatis tidak dilakukan karena `lokasi` lama bisa berisi koordinat, bukan alamat manusiawi. Data lama tetap aman dan PDF menampilkan `-` sampai alamat diisi manual.
+- Browser QA di `https://elsafe.vercel.app` pada 06/05/2026 terblokir di halaman login. Workflow authenticated masih perlu dicek setelah ada sesi login yang valid.
