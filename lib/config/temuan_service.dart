@@ -385,14 +385,27 @@ class TemuanService {
         return {'success': false, 'message': 'User tidak terautentikasi'};
       }
 
+      final profile = await _ulpService.getCurrentUserProfile();
+      final isAdmin = profile?['role'] == 'admin';
+      final currentUlp = profile?['ulp'] as String?;
+
       // Get temuan data first to delete photos
       final temuanResponse = await _supabase
           .from('temuan')
-          .select('user_id, foto_urls')
+          .select('user_id, ulp, foto_urls')
           .eq('id', id)
           .single();
 
-      if (temuanResponse['user_id'] != currentUserId) {
+      final recordUserId = temuanResponse['user_id'] as String?;
+      final recordUlp = temuanResponse['ulp'] as String?;
+
+      final isOwner = recordUserId == currentUserId;
+      final isUlpMatch =
+          recordUlp != null && currentUlp != null && recordUlp == currentUlp;
+      final hasPermission =
+          isAdmin || isOwner || (recordUserId == null && isUlpMatch);
+
+      if (!hasPermission) {
         return {
           'success': false,
           'message': 'Anda tidak memiliki akses untuk menghapus data ini',
@@ -407,11 +420,15 @@ class TemuanService {
       }
 
       // Delete temuan record
-      await _supabase
-          .from('temuan')
-          .delete()
-          .eq('id', id)
-          .eq('user_id', currentUserId!);
+      if (isAdmin || (recordUserId == null && isUlpMatch)) {
+        await _supabase.from('temuan').delete().eq('id', id);
+      } else {
+        await _supabase
+            .from('temuan')
+            .delete()
+            .eq('id', id)
+            .eq('user_id', currentUserId!);
+      }
 
       appLog.d('✅ Temuan $id berhasil dihapus');
 
@@ -436,13 +453,27 @@ class TemuanService {
         return {'success': false, 'message': 'User tidak terautentikasi'};
       }
 
+      final profile = await _ulpService.getCurrentUserProfile();
+      final isAdmin = profile?['role'] == 'admin';
+      final currentUlp = profile?['ulp'] as String?;
+
       final checkResponse = await _supabase
           .from('temuan')
-          .select('user_id')
+          .select('user_id, ulp')
           .eq('id', id)
           .single();
 
-      if (checkResponse['user_id'] != currentUserId) {
+      final recordUserId = checkResponse['user_id'] as String?;
+      final recordUlp = checkResponse['ulp'] as String?;
+
+      final isOwner = recordUserId == currentUserId;
+      final isUlpMatch =
+          recordUlp != null && currentUlp != null && recordUlp == currentUlp;
+      // Data lama tanpa owner (user_id null): izinkan jika ULP match
+      final hasPermission =
+          isAdmin || isOwner || (recordUserId == null && isUlpMatch);
+
+      if (!hasPermission) {
         return {
           'success': false,
           'message': 'Anda tidak memiliki akses untuk mengubah data ini',
@@ -457,13 +488,23 @@ class TemuanService {
         temuanData['status_temuan'] = 'Closed';
       }
 
-      final response = await _supabase
-          .from('temuan')
-          .update(temuanData)
-          .eq('id', id)
-          .eq('user_id', currentUserId!)
-          .select()
-          .single();
+      late Map<String, dynamic> response;
+      if (isAdmin || (recordUserId == null && isUlpMatch)) {
+        response = await _supabase
+            .from('temuan')
+            .update(temuanData)
+            .eq('id', id)
+            .select()
+            .single();
+      } else {
+        response = await _supabase
+            .from('temuan')
+            .update(temuanData)
+            .eq('id', id)
+            .eq('user_id', currentUserId!)
+            .select()
+            .single();
+      }
 
       appLog.d('✅ Temuan $id berhasil diupdate');
 

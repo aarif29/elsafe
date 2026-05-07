@@ -4,6 +4,7 @@ import 'package:printing/printing.dart';
 import '../config/app_theme.dart';
 import '../config/temuan_model.dart';
 import '../config/temuan_service.dart';
+import '../config/temuan_types.dart';
 import '../utils/export_temuan_filter.dart';
 import '../utils/pdf_generator.dart';
 
@@ -30,6 +31,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   String _selectedPenyulang = _allValue;
   String _selectedZona = _allValue;
   String _selectedSection = _allValue;
+  String _selectedTipe = _allValue;
   bool _isAdmin = false;
 
   final Set<String> _selectedTemuanIds = {};
@@ -84,6 +86,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
         selectedUlps: _isAdmin ? _stringFilterValue(_selectedUlp) : const {},
         selectedPenyulang:
             _selectedPenyulang == _allValue ? null : _selectedPenyulang,
+        selectedTipe: _stringFilterValue(_selectedTipe),
       );
       _selectAllFiltered();
     });
@@ -99,6 +102,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
       _selectedPenyulang = _allValue;
       _selectedZona = _allValue;
       _selectedSection = _allValue;
+      _selectedTipe = _allValue;
       _filteredTemuan = _allTemuan;
       _selectAllFiltered();
     });
@@ -148,25 +152,27 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
     });
   }
 
-  List<String> get _statusOptions => [
-    _allValue,
-    ..._uniqueStrings(_allTemuan.map((t) => t.statusTemuan)),
-  ];
+  List<String> get _statusOptions => [_allValue, 'Open', 'Closed'];
 
-  List<String> get _risikoOptions => [
-    _allValue,
-    ..._uniqueStrings(_allTemuan.map((t) => t.levelRisiko)),
-  ];
+  List<String> get _risikoOptions => [_allValue, 'Medium', 'High', 'Extreme'];
 
   List<String> get _ulpOptions => [
     _allValue,
     ..._uniqueStrings(_allTemuan.map((t) => t.ulp)),
   ];
 
-  List<String> get _penyulangOptions => [
-    _allValue,
-    ..._uniqueStrings(_allTemuan.map((t) => t.namaPenyulang)),
-  ];
+  List<String> get _penyulangOptions {
+    if (_isAdmin) return [_allValue, ...Penyulang.semua];
+    final ulps = _uniqueStrings(_allTemuan.map((t) => t.ulp));
+    final penyulangList =
+        ulps.isEmpty
+            ? Penyulang.semua
+            : ulps.expand((u) => Penyulang.untukUlp(u)).toSet().toList()
+              ..sort();
+    return [_allValue, ...penyulangList];
+  }
+
+  List<String> get _tipeOptions => [_allValue, TipeTemuan.kmu, TipeTemuan.row];
 
   List<String> get _zonaOptions => [
     _allValue,
@@ -278,6 +284,15 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
                       (value) =>
                           setState(() => _selectedRisiko = value ?? _allValue),
                 ),
+                _buildDropdownField(
+                  icon: Icons.category,
+                  label: 'Jenis Temuan',
+                  value: _selectedTipe,
+                  items: _tipeOptions,
+                  onChanged:
+                      (value) =>
+                          setState(() => _selectedTipe = value ?? _allValue),
+                ),
               ];
 
               return constraints.maxWidth >= 720
@@ -327,16 +342,14 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
           onChanged:
               (value) => setState(() => _selectedUlp = value ?? _allValue),
         ),
-      if (_penyulangOptions.length > 1)
-        _buildDropdownField(
-          icon: Icons.electric_bolt,
-          label: 'Penyulang',
-          value: _selectedPenyulang,
-          items: _penyulangOptions,
-          onChanged:
-              (value) =>
-                  setState(() => _selectedPenyulang = value ?? _allValue),
-        ),
+      _buildDropdownField(
+        icon: Icons.electric_bolt,
+        label: 'Penyulang',
+        value: _selectedPenyulang,
+        items: _penyulangOptions,
+        onChanged:
+            (value) => setState(() => _selectedPenyulang = value ?? _allValue),
+      ),
       if (_zonaOptions.length > 1)
         _buildDropdownField(
           icon: Icons.radar,

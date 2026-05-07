@@ -398,3 +398,51 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
   - [x] `https://elsafe.vercel.app/#/login` load halaman login ELSAFE, bukan Vercel 404
   - [x] Console tidak ada error aplikasi awal
   - [ ] Workflow authenticated export/input/edit dicek setelah sesi login valid tersedia
+
+---
+
+### Phase 9: Fix Button UI & User CRUD Data
+
+**Fix A — UI Color (ElevatedButton & Dialog):**
+- [x] 9.1 Fix `lib/config/app_theme.dart`: tambah `foregroundColor: Colors.white` ke `elevatedButtonTheme` di kedua theme (dark & light)
+  - Root cause: M3 ElevatedButton default foreground = primary (biru) di atas background biru → tidak terbaca
+  - Efek global: semua ElevatedButton di app terperbaiki (Terapkan Filter, Export, Preview, dll)
+- [x] 9.2 Fix `lib/Screen/main_shell.dart`: tambah import `app_theme.dart` dan beri explicit colors ke logout dialog
+  - `backgroundColor: context.surfaceColor`
+  - Title & content: `TextStyle(color: context.textPrimary)`
+  - Button Batal: `TextStyle(color: context.textSecondary)`
+
+**Fix B — Filter Export Data:**
+- [x] 9.3 Fix `lib/utils/export_temuan_filter.dart`: tambah parameter `selectedTipe` (backward-compatible, default `const {}`)
+- [x] 9.4 Fix `lib/Screen/export_temuan.dart`:
+  - [x] Tambah import `temuan_types.dart`
+  - [x] Tambah state `_selectedTipe` dan getter `_tipeOptions` → `[Semua, KMU, ROW]`
+  - [x] Hardcode `_statusOptions` → `[Semua, Open, Closed]` (hilangkan duplikat Close/Closed)
+  - [x] Hardcode `_risikoOptions` → `[Semua, Medium, High, Extreme]` (tidak bergantung data)
+  - [x] Fix `_penyulangOptions`: user biasa → `Penyulang.untukUlp()` per ULP, admin → `Penyulang.semua`
+  - [x] Tambah dropdown "Jenis Temuan" di filter section utama
+  - [x] Hapus kondisi `_penyulangOptions.length > 1` → Penyulang selalu tampil
+  - [x] Update `_resetFilters()` dan `_applyFilters()` untuk `_selectedTipe`
+
+**Fix C — Permission Edit & Delete Temuan:**
+- [x] 9.5 Fix `lib/config/temuan_service.dart` → `updateTemuan()`:
+  - [x] Ambil profil user untuk cek admin dan ULP
+  - [x] Select `user_id, ulp` dari record temuan
+  - [x] Logic: admin bypass || owner || (user_id null && ULP match)
+  - [x] Query update: tanpa filter `user_id` untuk admin/null-owner
+- [x] 9.6 Fix `lib/config/temuan_service.dart` → `deleteTemuanSilent()`:
+  - [x] Logika permission yang sama dengan `updateTemuan()`
+  - [x] Select tambah field `ulp` untuk cek ULP match
+  - [x] Query delete: tanpa filter `user_id` untuk admin/null-owner
+
+**Verifikasi:**
+- [x] `flutter analyze` → No issues
+- [x] `flutter test` → 25/25 passed
+- [ ] Manual check dark/light mode: ElevatedButton teks putih
+- [ ] Manual check logout dialog: title & content terbaca kedua mode
+- [ ] Manual check export: dropdown Jenis Temuan [Semua, KMU, ROW]
+- [ ] Manual check export: Status [Semua, Open, Closed] tanpa duplikat
+- [ ] Manual check export: Level Risiko [Semua, Medium, High, Extreme]
+- [ ] Manual check export: Penyulang selalu muncul sesuai ULP
+- [ ] Manual check edit temuan: admin bisa edit semua temuan
+- [ ] Manual check edit temuan: user bisa edit data lama (user_id null) di ULP-nya

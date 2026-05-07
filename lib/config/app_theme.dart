@@ -45,7 +45,10 @@ class ThemeService {
           elevation: 8,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0072FF)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF0072FF),
+            foregroundColor: Colors.white,
+          ),
         ),
         dividerColor: Colors.grey[800],
         inputDecorationTheme: InputDecorationTheme(
@@ -79,7 +82,10 @@ class ThemeService {
           elevation: 8,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0072FF)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF0072FF),
+            foregroundColor: Colors.white,
+          ),
         ),
         dividerColor: Colors.grey[300],
         inputDecorationTheme: InputDecorationTheme(

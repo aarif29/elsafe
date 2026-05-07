@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../config/app_theme.dart';
 import 'dashboard.dart';
 import 'daftar_temuan.dart';
 import 'notifications_screen.dart';
@@ -70,12 +71,22 @@ class _MainShellState extends State<MainShell> {
       context: context,
       builder:
           (ctx) => AlertDialog(
-            title: const Text('Logout'),
-            content: const Text('Apakah Anda yakin ingin logout?'),
+            backgroundColor: context.surfaceColor,
+            title: Text(
+              'Logout',
+              style: TextStyle(color: context.textPrimary),
+            ),
+            content: Text(
+              'Apakah Anda yakin ingin logout?',
+              style: TextStyle(color: context.textPrimary),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Batal'),
+                child: Text(
+                  'Batal',
+                  style: TextStyle(color: context.textSecondary),
+                ),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(ctx, true),

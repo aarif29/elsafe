@@ -10,6 +10,7 @@ List<TemuanModel> filterExportTemuan(
   Set<int> selectedSections = const {},
   Set<String> selectedUlps = const {},
   String? selectedPenyulang,
+  Set<String> selectedTipe = const {},
 }) {
   final start = startDate == null ? null : _dateOnly(startDate);
   final endExclusive =
@@ -26,6 +27,7 @@ List<TemuanModel> filterExportTemuan(
     if (!_matchesIntFilter(t.zona, selectedZonas)) return false;
     if (!_matchesIntFilter(t.section, selectedSections)) return false;
     if (!_matchesStringFilter(t.ulp, selectedUlps)) return false;
+    if (!_matchesStringFilter(t.tipeTemuan, selectedTipe)) return false;
 
     if (selectedPenyulang != null && t.namaPenyulang != selectedPenyulang) {
       return false;
