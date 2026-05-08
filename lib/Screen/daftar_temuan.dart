@@ -27,6 +27,7 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
   final ScrollController _scrollController = ScrollController();
 
   bool _isAdmin = false;
+  String? _currentUserUlp;
 
   static const int _pageSize = 10;
 
@@ -89,6 +90,11 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
     return ['Semua', ...ulps];
   }
 
+  List<String> get _penyulangOptions {
+    if (_isAdmin) return Penyulang.semua;
+    return Penyulang.perUlp[_currentUserUlp] ?? [];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -120,7 +126,9 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
       _hasLoadedOnce = true;
       appLog.d('🔄 didChangeDependencies - loading data...');
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        _isAdmin = await _ulpService.isAdmin();
+        final profile = await _ulpService.getCurrentUserProfile();
+        _isAdmin = profile?['role'] == 'admin';
+        _currentUserUlp = profile?['ulp'] as String?;
         _loadData();
       });
     }
@@ -385,13 +393,12 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
           const SizedBox(height: 10),
 
           // Filter row with dropdowns
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                // ULP filter - hanya untuk admin
-                if (_isAdmin) ...[
-                  _buildFilterDropdown(
+          Row(
+            children: [
+              // ULP filter - hanya untuk admin
+              if (_isAdmin) ...[
+                Expanded(
+                  child: _buildFilterDropdown(
                     icon: Icons.location_on,
                     label: 'ULP',
                     value: _filterUlp,
@@ -399,45 +406,53 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
                     onChanged: (v) => setState(() => _filterUlp = v!),
                     itemBuilder: (item) => item == 'Semua' ? 'Semua ULP' : item,
                   ),
-                  const SizedBox(width: 8),
-                ],
-                // Status filter
-                _buildFilterDropdown(
+                ),
+                const SizedBox(width: 4),
+              ],
+              // Status filter
+              Expanded(
+                child: _buildFilterDropdown(
                   icon: Icons.assessment,
                   label: 'Status',
                   value: _filterStatus,
                   items: const ['Semua', 'Open', 'Closed'],
                   onChanged: (v) => setState(() => _filterStatus = v!),
                 ),
-                const SizedBox(width: 8),
-                // Tipe filter
-                _buildFilterDropdown(
+              ),
+              const SizedBox(width: 4),
+              // Tipe filter
+              Expanded(
+                child: _buildFilterDropdown(
                   icon: Icons.category,
                   label: 'Tipe',
                   value: _filterTipe,
                   items: const ['Semua', 'KMU', 'ROW'],
                   onChanged: (v) => setState(() => _filterTipe = v!),
                 ),
-                const SizedBox(width: 8),
-                // Kategori filter
-                _buildFilterDropdown(
+              ),
+              const SizedBox(width: 4),
+              // Kategori filter
+              Expanded(
+                child: _buildFilterDropdown(
                   icon: Icons.warning_amber,
                   label: 'Kategori',
                   value: _filterKategori,
                   items: const ['Semua', 'Medium', 'High', 'Extreme'],
                   onChanged: (v) => setState(() => _filterKategori = v!),
                 ),
-                const SizedBox(width: 8),
-                // Penyulang filter
-                _buildFilterDropdown(
+              ),
+              const SizedBox(width: 4),
+              // Penyulang filter
+              Expanded(
+                child: _buildFilterDropdown(
                   icon: Icons.electric_bolt,
                   label: 'Penyulang',
                   value: _filterPenyulang,
-                  items: ['Semua', ...Penyulang.semua],
+                  items: ['Semua', ..._penyulangOptions],
                   onChanged: (v) => setState(() => _filterPenyulang = v!),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
@@ -453,11 +468,11 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
     String Function(String)? itemBuilder,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 14, color: context.textHint),
             const SizedBox(width: 4),
@@ -482,6 +497,7 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
           child: DropdownButton<String>(
             value: value,
             isDense: true,
+            isExpanded: true,
             underline: const SizedBox(),
             dropdownColor: context.surfaceColor,
             style: TextStyle(color: context.textPrimary, fontSize: 12),
