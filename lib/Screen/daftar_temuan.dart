@@ -27,6 +27,7 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
   final ScrollController _scrollController = ScrollController();
 
   bool _isAdmin = false;
+  String? _currentUserUlp;
 
   static const int _pageSize = 10;
 
@@ -89,6 +90,11 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
     return ['Semua', ...ulps];
   }
 
+  List<String> get _penyulangOptions {
+    if (_isAdmin) return Penyulang.semua;
+    return Penyulang.perUlp[_currentUserUlp] ?? [];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -120,7 +126,9 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
       _hasLoadedOnce = true;
       appLog.d('🔄 didChangeDependencies - loading data...');
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        _isAdmin = await _ulpService.isAdmin();
+        final profile = await _ulpService.getCurrentUserProfile();
+        _isAdmin = profile?['role'] == 'admin';
+        _currentUserUlp = profile?['ulp'] as String?;
         _loadData();
       });
     }
@@ -440,7 +448,7 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
                   icon: Icons.electric_bolt,
                   label: 'Penyulang',
                   value: _filterPenyulang,
-                  items: ['Semua', ...Penyulang.semua],
+                  items: ['Semua', ..._penyulangOptions],
                   onChanged: (v) => setState(() => _filterPenyulang = v!),
                 ),
               ),
