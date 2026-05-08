@@ -8,6 +8,7 @@ import '../config/temuan_service.dart';
 import '../config/temuan_model.dart';
 import '../config/location_service.dart';
 import '../config/ulp_service.dart';
+import '../config/temuan_types.dart';
 import '../widgets/maps_control_button.dart';
 
 class MapsViewWidget extends StatefulWidget {
@@ -52,6 +53,9 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   bool _isAdmin = false;
   String _filterUlp = 'Semua';
   String _filterStatus = 'Semua';
+  String _filterTipe = 'Semua';
+  String _filterKategori = 'Semua';
+  String _filterPenyulang = 'Semua';
 
   final LatLng _center = const LatLng(-7.9666, 112.6326);
 
@@ -67,18 +71,11 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
 
   List<TemuanModel> get _filteredTemuan {
     var result = _temuanList;
-    
-    // Filter ULP (hanya untuk admin)
-    if (_filterUlp != 'Semua') {
-      result = result.where((t) => t.ulp == _filterUlp).toList();
-    }
-    
-    // Filter Status (untuk semua user)
-    if (_filterStatus != 'Semua') {
-      final statusMatch = _filterStatus == 'Closed' ? 'Closed' : 'Open';
-      result = result.where((t) => t.statusTemuan == statusMatch).toList();
-    }
-    
+    if (_filterUlp != 'Semua') result = result.where((t) => t.ulp == _filterUlp).toList();
+    if (_filterStatus != 'Semua') result = result.where((t) => t.statusTemuan == _filterStatus).toList();
+    if (_filterTipe != 'Semua') result = result.where((t) => t.tipeTemuan == _filterTipe).toList();
+    if (_filterKategori != 'Semua') result = result.where((t) => t.levelRisiko == _filterKategori).toList();
+    if (_filterPenyulang != 'Semua') result = result.where((t) => t.namaPenyulang == _filterPenyulang).toList();
     return result;
   }
 
@@ -609,6 +606,64 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
     );
   }
 
+  Widget _buildMapDropdown({
+    required IconData icon,
+    required String label,
+    required String value,
+    required List<String> items,
+    required void Function(String) onSave,
+    String Function(String)? itemBuilder,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 12, color: Colors.white70),
+            const SizedBox(width: 3),
+            Flexible(
+              child: Text(
+                '$label:',
+                style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.w500),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 3),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.grey[600]!),
+          ),
+          child: DropdownButton<String>(
+            value: value,
+            isDense: true,
+            isExpanded: true,
+            underline: const SizedBox(),
+            dropdownColor: Colors.grey[800],
+            style: const TextStyle(color: Colors.white, fontSize: 11),
+            icon: const Icon(Icons.arrow_drop_down, size: 16, color: Colors.white70),
+            items: items.map((item) {
+              final display = itemBuilder != null ? itemBuilder(item) : item;
+              return DropdownMenuItem(
+                value: item,
+                child: Text(display, style: const TextStyle(color: Colors.white, fontSize: 11)),
+              );
+            }).toList(),
+            onChanged: (v) {
+              if (v != null) setState(() { onSave(v); _createMarkers(); });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -634,158 +689,106 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
       ),
       body: Column(
         children: [
-          // Filter section: ULP (admin) + Status (all users)
+          // Filter section
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
             child: Row(
               children: [
-                // ULP Filter - hanya untuk admin
                 if (_isAdmin) ...[
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on, size: 14, color: Colors.white70),
-                            const SizedBox(width: 4),
-                            const Text(
-                              'ULP:',
-                              style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[800],
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey[600]!),
-                          ),
-                          child: DropdownButton<String>(
-                            value: _filterUlp,
-                            isExpanded: true,
-                            underline: const SizedBox(),
-                            dropdownColor: Colors.grey[800],
-                            style: const TextStyle(color: Colors.white, fontSize: 13),
-                            icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
-                            items: _ulpOptions.map((ulp) {
-                              return DropdownMenuItem(
-                                value: ulp,
-                                child: Text(ulp == 'Semua' ? 'Semua ULP' : ulp),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _filterUlp = value;
-                                  _createMarkers();
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                      ],
+                    child: _buildMapDropdown(
+                      icon: Icons.location_on,
+                      label: 'ULP',
+                      value: _filterUlp,
+                      items: _ulpOptions,
+                      itemBuilder: (u) => u == 'Semua' ? 'Semua ULP' : u,
+                      onSave: (v) => _filterUlp = v,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 4),
                 ],
-                // Status Filter - untuk semua user
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: _isAdmin ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.assessment, size: 14, color: Colors.white70),
-                          const SizedBox(width: 4),
-                          const Text(
-                            'Status:',
-                            style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey[600]!),
-                        ),
-                        child: DropdownButton<String>(
-                          value: _filterStatus,
-                          isExpanded: true,
-                          underline: const SizedBox(),
-                          dropdownColor: Colors.grey[800],
-                          style: const TextStyle(color: Colors.white, fontSize: 13),
-                          icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
-                          items: const [
-                            DropdownMenuItem(value: 'Semua', child: Text('Semua')),
-                            DropdownMenuItem(value: 'Open', child: Text('Open')),
-                            DropdownMenuItem(value: 'Closed', child: Text('Closed')),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _filterStatus = value;
-                                _createMarkers();
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                    ],
+                  child: _buildMapDropdown(
+                    icon: Icons.assessment,
+                    label: 'Status',
+                    value: _filterStatus,
+                    items: const ['Semua', 'Open', 'Closed'],
+                    onSave: (v) => _filterStatus = v,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: _buildMapDropdown(
+                    icon: Icons.category,
+                    label: 'Tipe',
+                    value: _filterTipe,
+                    items: const ['Semua', 'KMU', 'ROW'],
+                    onSave: (v) => _filterTipe = v,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: _buildMapDropdown(
+                    icon: Icons.warning_amber,
+                    label: 'Risiko',
+                    value: _filterKategori,
+                    items: const ['Semua', 'Medium', 'High', 'Extreme'],
+                    onSave: (v) => _filterKategori = v,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: _buildMapDropdown(
+                    icon: Icons.electric_bolt,
+                    label: 'Penyulang',
+                    value: _filterPenyulang,
+                    items: ['Semua', ...Penyulang.semua],
+                    onSave: (v) => _filterPenyulang = v,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
-          // Info panel
+          // Info panel — satu baris: Total (kiri) + Legenda (kanan)
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.grey[800],
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Column(
+            child: Row(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Total: ${_filteredTemuan.length}${_filterUlp != 'Semua' ? ' · $_filterUlp' : ''}${_filterStatus != 'Semua' ? ' · $_filterStatus' : ''}',
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    Text('Marker: ${_markers.length}', style: const TextStyle(color: Colors.grey)),
-                  ],
+                Text(
+                  'Total: ${_filteredTemuan.length}',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 8),
-                // Legenda
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _LegendItem(icon: Icons.location_on, color: Colors.red, label: 'KMU'),
-                      const SizedBox(width: 12),
-                      _LegendItem(icon: Icons.location_on, color: Colors.green, label: 'ROW'),
-                      const SizedBox(width: 12),
-                      _LegendItem(icon: Icons.bolt, color: Colors.amber, label: 'Medium'),
-                      const SizedBox(width: 12),
-                      _LegendItem(icon: Icons.bolt, color: Colors.orange, label: 'High'),
-                      const SizedBox(width: 12),
-                      _LegendItem(icon: Icons.bolt, color: Colors.red, label: 'Extreme'),
-                    ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    reverse: true,
+                    child: Row(
+                      children: [
+                        _LegendItem(icon: Icons.bolt, color: Colors.red, label: 'Extreme'),
+                        const SizedBox(width: 8),
+                        _LegendItem(icon: Icons.bolt, color: Colors.orange, label: 'High'),
+                        const SizedBox(width: 8),
+                        _LegendItem(icon: Icons.bolt, color: Colors.amber, label: 'Medium'),
+                        const SizedBox(width: 8),
+                        _LegendItem(icon: Icons.location_on, color: Colors.green, label: 'ROW'),
+                        const SizedBox(width: 8),
+                        _LegendItem(icon: Icons.location_on, color: Colors.red, label: 'KMU'),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Expanded(
             child:
                 _isLoading
