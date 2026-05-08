@@ -508,3 +508,30 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
 - [x] 11.11.1 `flutter test` (full suite) → 34/34 passed
 - [ ] 11.12 `flutter build web`
 - [ ] 11.13 Preview PDF manual: kolom Risiko hanya level, foto temuan muncul thumbnail, badge count benar, layout 15 kolom tidak overflow
+
+---
+
+### Phase 12: Guard Sosialisasi — Hanya Setelah Closing
+
+**Konteks:** Sosialisasi bertujuan mengingatkan pemilik bahwa potensi bahaya masih ada meski temuan sudah di-close. Secara logika bisnis, input sosialisasi hanya relevan setelah temuan di-closing.
+
+- [x] 12.1 `lib/Screen/edit_temuan.dart` — `_buildStep4Sosialisasi()`:
+  - [x] Jika `widget.temuan.jenisClosing == null`: tampilkan notice amber "Sosialisasi hanya tersedia setelah temuan di-closing. Lengkapi Step 3 (Closing) terlebih dahulu."
+  - [x] Jika sudah closing: tampilkan form tambah sosialisasi baru seperti sebelumnya
+  - [x] Riwayat sosialisasi tetap tampil read-only di kedua kondisi
+
+- [x] 12.2 `lib/Screen/temuan.dart` — `_buildStep4Sosialisasi()`:
+  - [x] Ganti input form (date picker + foto picker) dengan notice biru informasional
+  - [x] Hapus dead code: field `_tglSosialisasi`, `_fotoSosialisasi`, dan blok save sosialisasi
+  - [x] Hapus import `sosialisasi_model.dart` yang jadi unused
+
+- [x] 12.3 `lib/widgets/daftar_temuan/temuan_detail_dialog.dart`:
+  - [x] Tambah subtitle `(Tersedia setelah closing)` di bawah header Sosialisasi jika `temuan.jenisClosing == null`
+
+**Verifikasi:**
+- [x] `flutter analyze` (3 file) → No issues
+- [x] `flutter test` → 34/34 passed
+- [ ] Manual check: edit temuan Open → Step 4 tampil notice amber
+- [ ] Manual check: edit temuan Closed → Step 4 tampil form input sosialisasi
+- [ ] Manual check: buat temuan baru → Step 4 tampil notice biru
+- [ ] Manual check: detail dialog temuan Open → ada subtitle "(Tersedia setelah closing)"
