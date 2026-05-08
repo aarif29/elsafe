@@ -1504,38 +1504,68 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         const Divider(color: Colors.grey),
         const SizedBox(height: 16),
 
-        // Tambah baru
-        const Text(
-          'Tambah Sosialisasi Baru',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        if (widget.temuan.jenisClosing == null) ...[
+          // Belum closing — tampilkan notice, sembunyikan form input
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.amber.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Colors.amber.withValues(alpha: 0.5),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.warning_amber_rounded,
+                    color: Colors.amber, size: 20),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Text(
+                    'Sosialisasi hanya tersedia setelah temuan di-closing.\n'
+                    'Lengkapi Step 3 (Closing) terlebih dahulu.',
+                    style: TextStyle(color: Colors.amber, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-
-        _buildDatePicker(
-          label: 'Tanggal Sosialisasi',
-          value: _tglSosialisasiBaru,
-          onChanged: (d) => setState(() => _tglSosialisasiBaru = d),
-        ),
-        const SizedBox(height: 16),
-
-        const Text(
-          'Foto Sosialisasi',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
+          const SizedBox(height: 24),
+        ] else ...[
+          // Sudah closing — tampilkan form tambah sosialisasi baru
+          const Text(
+            'Tambah Sosialisasi Baru',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        FotoPickerWidget(
-          isEnabled: !_isSubmitting,
-          onNewFilesChanged: (files) => _fotoSosialisasiBaru = files,
-        ),
-        const SizedBox(height: 24),
+          const SizedBox(height: 12),
+
+          _buildDatePicker(
+            label: 'Tanggal Sosialisasi',
+            value: _tglSosialisasiBaru,
+            onChanged: (d) => setState(() => _tglSosialisasiBaru = d),
+          ),
+          const SizedBox(height: 16),
+
+          const Text(
+            'Foto Sosialisasi',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          FotoPickerWidget(
+            isEnabled: !_isSubmitting,
+            onNewFilesChanged: (files) => _fotoSosialisasiBaru = files,
+          ),
+          const SizedBox(height: 24),
+        ],
       ],
     );
   }

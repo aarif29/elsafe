@@ -11,7 +11,6 @@ import '../widgets/matriks_risiko_widget.dart';
 import '../config/temuan_model.dart';
 import '../config/temuan_types.dart';
 import '../config/temuan_service.dart';
-import '../config/sosialisasi_model.dart';
 import '../config/notification_service.dart';
 import '../config/ulp_service.dart';
 
@@ -73,9 +72,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
   DateTime? _tglClosing;
   List<PlatformFile> _fotoClosing = [];
 
-  // Step 4 - Sosialisasi
-  DateTime? _tglSosialisasi;
-  List<PlatformFile> _fotoSosialisasi = [];
+  // Step 4 - Sosialisasi (hanya tersedia setelah closing via edit)
 
   @override
   void initState() {
@@ -382,22 +379,6 @@ class _TemuanScreenState extends State<TemuanScreen> {
       ScaffoldMessenger.of(context).clearSnackBars();
 
       if (result['success']) {
-        // Jika ada sosialisasi, simpan
-        if (_tglSosialisasi != null) {
-          List<String>? sosUrls;
-          if (_fotoSosialisasi.isNotEmpty) {
-            sosUrls = await _uploadFiles(_fotoSosialisasi, 'foto sosialisasi');
-          }
-          final temuanId = (result['data'] as TemuanModel).id!;
-          await _temuanService.addSosialisasi(
-            SosialisasiModel(
-              temuanId: temuanId,
-              tglSosialisasi: _tglSosialisasi!,
-              fotoUrls: sosUrls,
-            ),
-          );
-        }
-
         // Cek apakah tgl_reminder sudah overdue → buat notifikasi langsung
         if (_tglReminder != null) {
           final saved = result['data'] as TemuanModel;
@@ -1404,30 +1385,32 @@ class _TemuanScreenState extends State<TemuanScreen> {
         ),
         const SizedBox(height: 8),
         const Text(
-          'Opsional — catat kegiatan sosialisasi terkait temuan ini.',
+          'Sosialisasi dilakukan untuk mengingatkan pemilik bahwa potensi bahaya masih ada setelah closing.',
           style: TextStyle(color: Colors.white70, fontSize: 13),
         ),
         const SizedBox(height: 24),
 
-        _buildDatePicker(
-          label: 'Tanggal Sosialisasi',
-          value: _tglSosialisasi,
-          onChanged: (d) => setState(() => _tglSosialisasi = d),
-        ),
-        const SizedBox(height: 20),
-
-        const Text(
-          'Foto Sosialisasi',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.blue.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.blue.withValues(alpha: 0.4)),
           ),
-        ),
-        const SizedBox(height: 8),
-        FotoPickerWidget(
-          isEnabled: !_isSubmitting,
-          onNewFilesChanged: (files) => _fotoSosialisasi = files,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.info_outline, color: Colors.blue, size: 20),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Text(
+                  'Sosialisasi bisa ditambahkan setelah temuan dibuat dan di-closing.\n'
+                  'Simpan temuan ini terlebih dahulu, lalu edit untuk menambahkan sosialisasi.',
+                  style: TextStyle(color: Colors.blue, fontSize: 13),
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 24),
       ],

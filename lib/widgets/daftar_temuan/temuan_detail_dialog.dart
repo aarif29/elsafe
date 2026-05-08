@@ -380,6 +380,17 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
                     // ===== SECTION: SOSIALISASI =====
                     const SizedBox(height: 20),
                     _SectionHeader(label: '📢 Sosialisasi'),
+                    if (temuan.jenisClosing == null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '(Tersedia setelah closing)',
+                        style: TextStyle(
+                          color: context.textHint,
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 8),
                     if (_isLoadingSosialisasi)
                       const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()))
