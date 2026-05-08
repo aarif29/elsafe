@@ -51,6 +51,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   bool _isGettingLocation = false;
   bool _showLabels = true;
   bool _isAdmin = false;
+  String? _currentUserUlp;
   String _filterUlp = 'Semua';
   String _filterStatus = 'Semua';
   String _filterTipe = 'Semua';
@@ -67,6 +68,14 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
         .toList()
       ..sort();
     return ['Semua', ...ulps];
+  }
+
+  List<String> get _penyulangOptions {
+    if (_isAdmin) {
+      if (_filterUlp == 'Semua') return Penyulang.semua;
+      return Penyulang.perUlp[_filterUlp] ?? [];
+    }
+    return Penyulang.perUlp[_currentUserUlp] ?? [];
   }
 
   List<TemuanModel> get _filteredTemuan {
@@ -86,7 +95,9 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   }
 
   Future<void> _initLoad() async {
-    _isAdmin = await _ulpService.isAdmin();
+    final profile = await _ulpService.getCurrentUserProfile();
+    _isAdmin = profile?['role'] == 'admin';
+    _currentUserUlp = profile?['ulp'] as String?;
     _loadTemuanData();
   }
 
@@ -702,7 +713,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
                       value: _filterUlp,
                       items: _ulpOptions,
                       itemBuilder: (u) => u == 'Semua' ? 'Semua ULP' : u,
-                      onSave: (v) => _filterUlp = v,
+                      onSave: (v) { _filterUlp = v; _filterPenyulang = 'Semua'; },
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -742,7 +753,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
                     icon: Icons.electric_bolt,
                     label: 'Penyulang',
                     value: _filterPenyulang,
-                    items: ['Semua', ...Penyulang.semua],
+                    items: ['Semua', ..._penyulangOptions],
                     onSave: (v) => _filterPenyulang = v,
                   ),
                 ),
