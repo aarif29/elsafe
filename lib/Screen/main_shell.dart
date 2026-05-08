@@ -32,12 +32,12 @@ class _MainShellState extends State<MainShell> {
   final _dashboardKey = GlobalKey<DashboardScreenState>();
   final _daftarKey = GlobalKey<DaftarTemuanScreenState>();
 
-  // navIndex: 0=Dashboard, 1=Daftar, 2=Peta(modal), 3=Notifikasi, 4=Profil
-  // stackIndex: 0=Dashboard, 1=Daftar, 2=Notifikasi, 3=Profil, 4=Panduan
+  // navIndex: 0=Dashboard, 1=Daftar, 2=Peta, 3=Notifikasi, 4=Profil
+  // stackIndex: 0=Dashboard, 1=Daftar, 2=Peta, 3=Notifikasi, 4=Profil, 5=Panduan
   int get _stackIndex {
-    if (_showPanduan) return 4;
-    if (_navIndex == 3) return 2;
-    if (_navIndex == 4) return 3;
+    if (_showPanduan) return 5;
+    if (_navIndex == 3) return 3;
+    if (_navIndex == 4) return 4;
     return _navIndex;
   }
 
@@ -126,22 +126,10 @@ class _MainShellState extends State<MainShell> {
   }
 
   void _onNavTap(int index) {
-    if (index == 2) {
-      setState(() => _showPanduan = false);
-      _showMapsView();
-      return;
-    }
     setState(() {
       _showPanduan = false;
       _navIndex = index;
     });
-  }
-
-  void _showMapsView() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const MapsViewWidget()),
-    );
   }
 
   Future<void> _openTambahTemuan() async {
@@ -187,13 +175,14 @@ class _MainShellState extends State<MainShell> {
             onLihatSemua: () => setState(() => _navIndex = 1),
           ),
           DaftarTemuanScreen(key: _daftarKey, onOpenExport: openExport),
+          const MapsViewWidget(),
           NotificationsScreen(onBack: backToDashboard),
           const Profile(),
           PanduanPenggunaanScreen(onBack: closePanduan),
         ],
       ),
       floatingActionButton:
-          (_showPanduan || _navIndex == 3 || _navIndex == 4)
+          (_showPanduan || _navIndex == 2 || _navIndex == 3 || _navIndex == 4)
               ? null
               : _buildFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
