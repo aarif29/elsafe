@@ -1400,7 +1400,9 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         ),
         const SizedBox(height: 8),
         const Text(
-          'Riwayat sosialisasi dan tambah entri baru.',
+          'Tetap lakukan sosialisasi kembali secara periodik walaupun status closing. '
+          'Bahaya tidak hilang, hanya resikonya berkurang.\n'
+          'Semoga kita selalu dalam lindungan-Nya.',
           style: TextStyle(color: Colors.white70, fontSize: 13),
         ),
         const SizedBox(height: 24),

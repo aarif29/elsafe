@@ -1,7 +1,7 @@
 # Graph Report - elsafe  (2026-05-08)
 
 ## Corpus Check
-- 83 files · ~77,000 words
+- 83 files · ~76,919 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5c7225d0`
+- Built from commit: `2b004f9a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -173,12 +173,12 @@ Cohesion: 0.17
 Nodes (12): Android App Icons, App Branding Assets, Google Auth Integration, Flutter App Screenshot, Google Logo Brand, iOS App Icon 20px, iOS App Icon 40px, iOS App Icon 60px (+4 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.2
-Nodes (8): app_logger.dart, NotificationService, refreshUnreadCount, reset, _subscribeRealtime, SupabaseConfig, UlpService, package:supabase_flutter/supabase_flutter.dart
-
-### Community 23 - "Community 23"
 Cohesion: 0.18
 Nodes (10): deleteFoto, deleteFotos, Exception, _getContentType, _isAdminProfile, TemuanService, package:file_picker/file_picker.dart, sosialisasi_model.dart (+2 more)
+
+### Community 23 - "Community 23"
+Cohesion: 0.2
+Nodes (8): app_logger.dart, NotificationService, refreshUnreadCount, reset, _subscribeRealtime, SupabaseConfig, UlpService, package:supabase_flutter/supabase_flutter.dart
 
 ### Community 25 - "Community 25"
 Cohesion: 0.29
