@@ -278,12 +278,9 @@ class _ProfileState extends State<Profile> {
           ? Center(
               child: CircularProgressIndicator(color: isDarkMode ? Colors.blue : const Color(0xFF1E88E5)),
             )
-          : Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  child: Form(
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
                     key: _formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -378,9 +375,7 @@ class _ProfileState extends State<Profile> {
                       ],
                     ),
                   ),
-                ),
               ),
-            ),
     );
   }
 

@@ -138,7 +138,7 @@ class ExportTemuanPdfGenerator {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            _logoBox(logoHsse, width: 64, height: 64),
+            _logoBox(logoPln, width: 62, height: 55),
             pw.Expanded(
               child: pw.Column(
                 children: [
@@ -162,7 +162,7 @@ class ExportTemuanPdfGenerator {
                 ],
               ),
             ),
-            _logoBox(logoPln, width: 72, height: 64),
+            _logoBox(logoHsse, width: 64, height: 64),
           ],
         ),
         pw.SizedBox(height: 12),
