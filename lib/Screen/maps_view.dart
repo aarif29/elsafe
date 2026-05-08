@@ -611,48 +611,29 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.9,
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      child: Column(
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Peta Lokasi Temuan',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: _loadTemuanData,
-                      icon: const Icon(Icons.refresh, color: Colors.white),
-                      tooltip: 'Refresh',
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      tooltip: 'Tutup',
-                    ),
-                  ],
-                ),
-              ],
-            ),
+    return Scaffold(
+      backgroundColor: Colors.grey[900],
+      appBar: AppBar(
+        backgroundColor: Colors.grey[900],
+        title: const Text(
+          'Peta Lokasi Temuan',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            onPressed: _loadTemuanData,
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            tooltip: 'Refresh',
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
           // Filter section: ULP (admin) + Status (all users)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),

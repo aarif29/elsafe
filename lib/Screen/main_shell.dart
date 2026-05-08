@@ -138,11 +138,9 @@ class _MainShellState extends State<MainShell> {
   }
 
   void _showMapsView() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => const MapsViewWidget(),
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const MapsViewWidget()),
     );
   }
 
