@@ -446,3 +446,25 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
 - [ ] Manual check export: Penyulang selalu muncul sesuai ULP
 - [ ] Manual check edit temuan: admin bisa edit semua temuan
 - [ ] Manual check edit temuan: user bisa edit data lama (user_id null) di ULP-nya
+
+**Catatan Phase 9:**
+- Phase 9 sudah diimplementasikan, diverifikasi (`flutter analyze` clean, `flutter test` 25/25), dan di-commit ke `main` (commit: `5b4f1ab`).
+- Manual check browser/device masih pending - hot-restart app (bukan hot reload) karena ThemeData berubah.
+
+---
+
+### Phase 10: Export Data Initial State
+
+- [x] 10.1 Diagnosis root cause:
+  - [x] `ExportTemuanScreen._loadData()` langsung mengisi `_filteredTemuan` dari semua data
+  - [x] `_resetFilters()` langsung mengembalikan `_filteredTemuan` ke semua data
+- [x] 10.2 Tambah regression test di `test/export_temuan_filter_test.dart`
+- [x] 10.3 Fix `lib/Screen/export_temuan.dart`:
+  - [x] Tambah flag `_hasAppliedFilters`
+  - [x] Initial load hanya memuat opsi filter, tidak menampilkan list temuan
+  - [x] Header hasil, list temuan, dan tombol PDF baru tampil setelah `Terapkan Filter`
+  - [x] Reset filter kembali membersihkan hasil dan selection
+- [x] 10.4 Verifikasi:
+  - [x] `flutter test test\export_temuan_filter_test.dart`
+  - [x] Targeted analyzer untuk export/filter/test
+  - [x] `graphify update .`

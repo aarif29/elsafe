@@ -21,6 +21,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   List<TemuanModel> _allTemuan = [];
   List<TemuanModel> _filteredTemuan = [];
   bool _isLoading = true;
+  bool _hasAppliedFilters = false;
   String? _errorMessage;
 
   DateTime? _startDate;
@@ -47,7 +48,9 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   Future<void> _loadData() async {
     setState(() {
       _isLoading = true;
+      _hasAppliedFilters = false;
       _errorMessage = null;
+      _filteredTemuan = [];
       _selectedTemuanIds.clear();
     });
 
@@ -61,9 +64,8 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
       setState(() {
         _isAdmin = isAdmin;
         _allTemuan = loadedTemuan;
-        _filteredTemuan = loadedTemuan;
+        _filteredTemuan = [];
         _isLoading = false;
-        _selectAllFiltered();
       });
     } else {
       setState(() {
@@ -88,6 +90,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
             _selectedPenyulang == _allValue ? null : _selectedPenyulang,
         selectedTipe: _stringFilterValue(_selectedTipe),
       );
+      _hasAppliedFilters = true;
       _selectAllFiltered();
     });
   }
@@ -103,8 +106,9 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
       _selectedZona = _allValue;
       _selectedSection = _allValue;
       _selectedTipe = _allValue;
-      _filteredTemuan = _allTemuan;
-      _selectAllFiltered();
+      _filteredTemuan = [];
+      _hasAppliedFilters = false;
+      _selectedTemuanIds.clear();
     });
   }
 
@@ -218,9 +222,14 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
                 children: [
                   _buildFilterSection(),
                   Divider(height: 1, color: context.borderColor),
-                  _buildSelectionHeader(),
-                  Expanded(child: _buildTemuanList()),
-                  _buildActionButtons(),
+                  if (_errorMessage != null)
+                    Expanded(child: _buildTemuanList())
+                  else if (_hasAppliedFilters) ...[
+                    _buildSelectionHeader(),
+                    Expanded(child: _buildTemuanList()),
+                    _buildActionButtons(),
+                  ] else
+                    const Expanded(child: SizedBox.shrink()),
                 ],
               ),
     );

@@ -1,8 +1,20 @@
+import 'dart:io';
+
 import 'package:elsafe/config/temuan_model.dart';
 import 'package:elsafe/utils/export_temuan_filter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  group('ExportTemuanScreen state', () {
+    test('keeps results empty until filters are applied', () {
+      final source = File('lib/Screen/export_temuan.dart').readAsStringSync();
+
+      expect(source, isNot(contains('_filteredTemuan = loadedTemuan;')));
+      expect(source, isNot(contains('_filteredTemuan = _allTemuan;')));
+      expect(source, contains('_hasAppliedFilters'));
+    });
+  });
+
   group('filterExportTemuan', () {
     // --- Date filters ---
 
