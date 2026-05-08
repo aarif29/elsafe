@@ -432,15 +432,12 @@ class TemuanService {
               .eq('id', id)
               .single();
 
-      final recordUserId = temuanResponse['user_id'] as String?;
       final recordUlp = temuanResponse['ulp'] as String?;
 
-      final isOwner = recordUserId == currentUserId;
       final isUlpMatch =
           recordUlp != null && currentUlp != null && recordUlp == currentUlp;
-      final hasPermission = isOwner || (recordUserId == null && isUlpMatch);
 
-      if (!hasPermission) {
+      if (!isUlpMatch) {
         return {
           'success': false,
           'message': 'Anda tidak memiliki akses untuk menghapus data ini',
@@ -454,16 +451,8 @@ class TemuanService {
         await deleteFotos(fotoUrls);
       }
 
-      // Delete temuan record
-      if (recordUserId == null && isUlpMatch) {
-        await _supabase.from('temuan').delete().eq('id', id);
-      } else {
-        await _supabase
-            .from('temuan')
-            .delete()
-            .eq('id', id)
-            .eq('user_id', currentUserId!);
-      }
+      // Delete temuan record — permission already verified via ULP match
+      await _supabase.from('temuan').delete().eq('id', id);
 
       appLog.d('✅ Temuan $id berhasil dihapus');
 
@@ -501,16 +490,12 @@ class TemuanService {
               .eq('id', id)
               .single();
 
-      final recordUserId = checkResponse['user_id'] as String?;
       final recordUlp = checkResponse['ulp'] as String?;
 
-      final isOwner = recordUserId == currentUserId;
       final isUlpMatch =
           recordUlp != null && currentUlp != null && recordUlp == currentUlp;
-      // Data lama tanpa owner (user_id null): izinkan jika ULP match
-      final hasPermission = isOwner || (recordUserId == null && isUlpMatch);
 
-      if (!hasPermission) {
+      if (!isUlpMatch) {
         return {
           'success': false,
           'message': 'Anda tidak memiliki akses untuk mengubah data ini',
@@ -525,25 +510,14 @@ class TemuanService {
         temuanData['status_temuan'] = 'Closed';
       }
 
-      late Map<String, dynamic> response;
-      if (recordUserId == null && isUlpMatch) {
-        response =
-            await _supabase
-                .from('temuan')
-                .update(temuanData)
-                .eq('id', id)
-                .select()
-                .single();
-      } else {
-        response =
-            await _supabase
-                .from('temuan')
-                .update(temuanData)
-                .eq('id', id)
-                .eq('user_id', currentUserId!)
-                .select()
-                .single();
-      }
+      // Permission already verified via ULP match — update without user_id filter
+      final response =
+          await _supabase
+              .from('temuan')
+              .update(temuanData)
+              .eq('id', id)
+              .select()
+              .single();
 
       appLog.d('✅ Temuan $id berhasil diupdate');
 
