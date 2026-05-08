@@ -26,7 +26,7 @@ void main() {
             tanggalTemuan: DateTime(2026, 5, 5),
             statusTemuan: 'Open',
             tipeTemuan: 'ROW',
-            levelRisiko: 'Tinggi',
+            levelRisiko: 'High',
             skorMatriks: 9,
             jarakAktivitas: '< 1 meter',
             intensitasAktivitas: 'Tinggi',
@@ -47,10 +47,122 @@ void main() {
           loadedAssetPaths.add(path);
           return ByteData(0);
         },
+        networkImageLoader: (_) async => null,
       );
 
       expect(loadedAssetPaths, contains('assets/Logo_Resmi_HSSE_PLN.png'));
       expect(loadedAssetPaths, contains('assets/Logo_PLN.png'));
+      expect(bytes.length, greaterThan(1000));
+      expect(String.fromCharCodes(bytes.take(5)), '%PDF-');
+    });
+
+    test('risiko column generates valid PDF with only levelRisiko set', () async {
+      // Verify PDF generates successfully when temuan has all risk fields.
+      // Risiko column now only uses levelRisiko (skor/jarak/intensitas ignored).
+      final bytes = await ExportTemuanPdfGenerator.generate(
+        temuan: [
+          TemuanModel(
+            id: '2',
+            lokasi: 'Gardu B',
+            namaPemilik: 'PLN',
+            deskripsiTemuan: 'Test',
+            tanggalTemuan: DateTime(2026, 5, 1),
+            statusTemuan: 'Open',
+            levelRisiko: 'Extreme',
+            skorMatriks: 16,
+            jarakAktivitas: '< 0.5 meter',
+            intensitasAktivitas: 'Sangat Tinggi',
+          ),
+        ],
+        generatedAt: DateTime(2026, 5, 6, 10, 30),
+        logoAssetLoader: (_) async => ByteData(0),
+        networkImageLoader: (_) async => null,
+      );
+
+      expect(bytes.length, greaterThan(1000));
+      expect(String.fromCharCodes(bytes.take(5)), '%PDF-');
+    });
+
+    test('generates PDF with foto thumbnails when networkImageLoader returns bytes', () async {
+      const fakeImageBytes = [
+        0x89, 0x50, 0x4E, 0x47, // PNG magic bytes (fake, not real PNG)
+        0x0D, 0x0A, 0x1A, 0x0A,
+      ];
+      final loadedUrls = <String>[];
+
+      final bytes = await ExportTemuanPdfGenerator.generate(
+        temuan: [
+          TemuanModel(
+            id: '3',
+            lokasi: 'Gardu C',
+            namaPemilik: 'PLN',
+            deskripsiTemuan: 'Test',
+            tanggalTemuan: DateTime(2026, 5, 2),
+            statusTemuan: 'Closed',
+            levelRisiko: 'Medium',
+            fotoUrls: ['https://example.com/foto1.jpg', 'https://example.com/foto2.jpg'],
+            fotoReminder: ['https://example.com/reminder1.jpg'],
+          ),
+        ],
+        generatedAt: DateTime(2026, 5, 6, 10, 30),
+        logoAssetLoader: (_) async => ByteData(0),
+        networkImageLoader: (url) async {
+          loadedUrls.add(url);
+          return Uint8List.fromList(fakeImageBytes);
+        },
+      );
+
+      // Only first foto from each list should be loaded
+      expect(loadedUrls, contains('https://example.com/foto1.jpg'));
+      expect(loadedUrls, contains('https://example.com/reminder1.jpg'));
+      expect(loadedUrls, isNot(contains('https://example.com/foto2.jpg')));
+      expect(bytes.length, greaterThan(1000));
+    });
+
+    test('generates PDF safely when fotoUrls and fotoReminder are null', () async {
+      final bytes = await ExportTemuanPdfGenerator.generate(
+        temuan: [
+          TemuanModel(
+            id: '4',
+            lokasi: 'Gardu D',
+            namaPemilik: 'PLN',
+            deskripsiTemuan: 'Test',
+            tanggalTemuan: DateTime(2026, 5, 3),
+            statusTemuan: 'Open',
+            levelRisiko: 'Medium',
+            fotoUrls: null,
+            fotoReminder: null,
+          ),
+        ],
+        generatedAt: DateTime(2026, 5, 6, 10, 30),
+        logoAssetLoader: (_) async => ByteData(0),
+        networkImageLoader: (_) async => null,
+      );
+
+      expect(bytes.length, greaterThan(1000));
+      expect(String.fromCharCodes(bytes.take(5)), '%PDF-');
+    });
+
+    test('generates PDF safely when fotoUrls is empty list', () async {
+      final bytes = await ExportTemuanPdfGenerator.generate(
+        temuan: [
+          TemuanModel(
+            id: '5',
+            lokasi: 'Gardu E',
+            namaPemilik: 'PLN',
+            deskripsiTemuan: 'Test',
+            tanggalTemuan: DateTime(2026, 5, 4),
+            statusTemuan: 'Open',
+            levelRisiko: 'High',
+            fotoUrls: [],
+            fotoReminder: [],
+          ),
+        ],
+        generatedAt: DateTime(2026, 5, 6, 10, 30),
+        logoAssetLoader: (_) async => ByteData(0),
+        networkImageLoader: (_) async => null,
+      );
+
       expect(bytes.length, greaterThan(1000));
       expect(String.fromCharCodes(bytes.take(5)), '%PDF-');
     });

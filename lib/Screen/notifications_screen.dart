@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../config/notification_service.dart';
 import '../config/temuan_service.dart';
 import '../config/app_theme.dart';
+import '../config/snackbar.dart';
+import '../config/ulp_service.dart';
+import '../widgets/daftar_temuan/temuan_detail_dialog.dart';
 import 'edit_temuan.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -16,12 +21,15 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   final _service = NotificationService.instance;
   final _temuanService = TemuanService();
+  final _ulpService = UlpService();
   List<Map<String, dynamic>> _notifications = [];
   bool _isLoading = true;
+  bool _isAdmin = false;
 
   @override
   void initState() {
     super.initState();
+    _loadRole();
     _load();
     // Auto-reload saat ada notifikasi baru masuk via Realtime
     _service.unreadCount.addListener(_onNewNotif);
@@ -34,6 +42,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _onNewNotif() => _load();
+
+  Future<void> _loadRole() async {
+    final isAdmin = await _ulpService.isAdmin();
+    if (!mounted) return;
+    setState(() => _isAdmin = isAdmin);
+  }
 
   Future<void> _load() async {
     setState(() => _isLoading = true);
@@ -76,9 +90,57 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       return;
     }
 
+    _isAdmin = await _ulpService.isAdmin();
+    if (_isAdmin) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder:
+            (context) => TemuanDetailDialog(
+              temuan: temuan,
+              onOpenMaps: _openGoogleMaps,
+              onCopyCoordinates: _copyCoordinates,
+              onEdit: null,
+            ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => EditTemuanScreen(temuan: temuan)),
+    );
+  }
+
+  Future<void> _openGoogleMaps(
+    double latitude,
+    double longitude,
+    String lokasi,
+  ) async {
+    final uri = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude',
+    );
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!mounted) return;
+      SnackBarUtils.showInfo(
+        context,
+        title: 'Maps',
+        message: 'Membuka lokasi di Google Maps...',
+      );
+    }
+  }
+
+  Future<void> _copyCoordinates(double latitude, double longitude) async {
+    final coordinates = '$latitude, $longitude';
+    await Clipboard.setData(ClipboardData(text: coordinates));
+    if (!mounted) return;
+    SnackBarUtils.showSuccess(
+      context,
+      title: 'Disalin!',
+      message: 'Koordinat: $coordinates',
     );
   }
 

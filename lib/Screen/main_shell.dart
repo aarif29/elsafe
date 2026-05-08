@@ -10,6 +10,7 @@ import 'temuan.dart';
 import 'maps_view.dart';
 import '../config/notification_service.dart';
 import '../config/temuan_service.dart';
+import '../config/ulp_service.dart';
 import '../widgets/panduan_penggunaan.dart';
 import '../widgets/dashboard/dashboard_drawer.dart';
 import 'export_temuan.dart';
@@ -24,7 +25,10 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _navIndex = 0;
   bool _showPanduan = false;
+  bool _isAdmin = false;
+  bool _hasLoadedRole = false;
   final _temuanService = TemuanService();
+  final _ulpService = UlpService();
   final _dashboardKey = GlobalKey<DashboardScreenState>();
   final _daftarKey = GlobalKey<DaftarTemuanScreenState>();
 
@@ -72,10 +76,7 @@ class _MainShellState extends State<MainShell> {
       builder:
           (ctx) => AlertDialog(
             backgroundColor: context.surfaceColor,
-            title: Text(
-              'Logout',
-              style: TextStyle(color: context.textPrimary),
-            ),
+            title: Text('Logout', style: TextStyle(color: context.textPrimary)),
             content: Text(
               'Apakah Anda yakin ingin logout?',
               style: TextStyle(color: context.textPrimary),
@@ -105,6 +106,16 @@ class _MainShellState extends State<MainShell> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationService.instance.initialize();
+      _loadRole();
+    });
+  }
+
+  Future<void> _loadRole() async {
+    final isAdmin = await _ulpService.isAdmin();
+    if (!mounted) return;
+    setState(() {
+      _isAdmin = isAdmin;
+      _hasLoadedRole = true;
     });
   }
 
@@ -192,7 +203,10 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
-  Widget _buildFab() {
+  Widget? _buildFab() {
+    if (!_hasLoadedRole) return null;
+    if (_isAdmin) return null;
+
     return Container(
       width: 60,
       height: 60,

@@ -7,6 +7,11 @@ import 'temuan_model.dart';
 import 'sosialisasi_model.dart';
 import 'ulp_service.dart';
 
+const String _adminReadOnlyMessage = 'Admin hanya dapat melihat data temuan';
+
+bool _isAdminProfile(Map<String, dynamic>? profile) =>
+    profile?['role'] == 'admin';
+
 class TemuanService {
   final _supabase = Supabase.instance.client;
   final _ulpService = UlpService();
@@ -25,11 +30,12 @@ class TemuanService {
     try {
       if (currentUserId == null) return null;
 
-      final response = await _supabase
-          .from('profiles')
-          .select('full_name, nip')
-          .eq('id', currentUserId!)
-          .single();
+      final response =
+          await _supabase
+              .from('profiles')
+              .select('full_name, nip')
+              .eq('id', currentUserId!)
+              .single();
 
       return response;
     } catch (e) {
@@ -45,6 +51,15 @@ class TemuanService {
   // ========== UPLOAD FOTO (SUPPORT WEB & MOBILE) ==========
   Future<Map<String, dynamic>> uploadFoto(dynamic file) async {
     try {
+      if (currentUserId == null) {
+        return {'success': false, 'message': 'User tidak terautentikasi'};
+      }
+
+      final profile = await _ulpService.getCurrentUserProfile();
+      if (_isAdminProfile(profile)) {
+        return {'success': false, 'message': _adminReadOnlyMessage};
+      }
+
       String fileName;
       String filePath;
 
@@ -102,7 +117,8 @@ class TemuanService {
         }
       } else if (file is File && !kIsWeb) {
         // ===== Fallback untuk File langsung (mobile only) =====
-        fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+        fileName =
+            '${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
         filePath = 'temuan_photos/$fileName';
 
         appLog.d('📤 Uploading foto (File): ${file.path}');
@@ -120,7 +136,9 @@ class TemuanService {
 
         appLog.d('✅ Upload berhasil: $uploadedPath');
       } else {
-        throw Exception('Unsupported file type. Expected PlatformFile or File.');
+        throw Exception(
+          'Unsupported file type. Expected PlatformFile or File.',
+        );
       }
 
       // Get public URL
@@ -166,6 +184,15 @@ class TemuanService {
   // ========== DELETE FOTO ==========
   Future<Map<String, dynamic>> deleteFoto(String url) async {
     try {
+      if (currentUserId == null) {
+        return {'success': false, 'message': 'User tidak terautentikasi'};
+      }
+
+      final profile = await _ulpService.getCurrentUserProfile();
+      if (_isAdminProfile(profile)) {
+        return {'success': false, 'message': _adminReadOnlyMessage};
+      }
+
       appLog.d('🗑️ Deleting foto: $url');
 
       // Extract file path from URL
@@ -188,10 +215,7 @@ class TemuanService {
 
       appLog.d('✅ Foto berhasil dihapus');
 
-      return {
-        'success': true,
-        'message': 'Foto berhasil dihapus',
-      };
+      return {'success': true, 'message': 'Foto berhasil dihapus'};
     } catch (e) {
       appLog.e('❌ Error delete foto', error: e);
       return {
@@ -218,12 +242,17 @@ class TemuanService {
         return {'success': false, 'message': 'User tidak terautentikasi'};
       }
 
+      // Admin hanya read-only untuk data temuan.
+      final profile = await _ulpService.getCurrentUserProfile();
+      if (_isAdminProfile(profile)) {
+        return {'success': false, 'message': _adminReadOnlyMessage};
+      }
+
       final temuanData = temuan.toJson();
       temuanData['user_id'] = currentUserId;
       temuanData['created_by'] = currentUserEmail;
 
       // Set ULP dari profil user
-      final profile = await _ulpService.getCurrentUserProfile();
       if (profile != null && profile['ulp'] != null) {
         temuanData['ulp'] = profile['ulp'];
       }
@@ -300,7 +329,9 @@ class TemuanService {
       }
 
       final List<TemuanModel> temuanList =
-          response.map((json) => TemuanModel.fromJson(json as Map<String, dynamic>)).toList();
+          response
+              .map((json) => TemuanModel.fromJson(json as Map<String, dynamic>))
+              .toList();
 
       return {
         'success': true,
@@ -358,7 +389,9 @@ class TemuanService {
       }
 
       final List<TemuanModel> temuanList =
-          response.map((json) => TemuanModel.fromJson(json as Map<String, dynamic>)).toList();
+          response
+              .map((json) => TemuanModel.fromJson(json as Map<String, dynamic>))
+              .toList();
 
       return {
         'success': true,
@@ -386,15 +419,18 @@ class TemuanService {
       }
 
       final profile = await _ulpService.getCurrentUserProfile();
-      final isAdmin = profile?['role'] == 'admin';
+      if (_isAdminProfile(profile)) {
+        return {'success': false, 'message': _adminReadOnlyMessage};
+      }
       final currentUlp = profile?['ulp'] as String?;
 
       // Get temuan data first to delete photos
-      final temuanResponse = await _supabase
-          .from('temuan')
-          .select('user_id, ulp, foto_urls')
-          .eq('id', id)
-          .single();
+      final temuanResponse =
+          await _supabase
+              .from('temuan')
+              .select('user_id, ulp, foto_urls')
+              .eq('id', id)
+              .single();
 
       final recordUserId = temuanResponse['user_id'] as String?;
       final recordUlp = temuanResponse['ulp'] as String?;
@@ -402,8 +438,7 @@ class TemuanService {
       final isOwner = recordUserId == currentUserId;
       final isUlpMatch =
           recordUlp != null && currentUlp != null && recordUlp == currentUlp;
-      final hasPermission =
-          isAdmin || isOwner || (recordUserId == null && isUlpMatch);
+      final hasPermission = isOwner || (recordUserId == null && isUlpMatch);
 
       if (!hasPermission) {
         return {
@@ -420,7 +455,7 @@ class TemuanService {
       }
 
       // Delete temuan record
-      if (isAdmin || (recordUserId == null && isUlpMatch)) {
+      if (recordUserId == null && isUlpMatch) {
         await _supabase.from('temuan').delete().eq('id', id);
       } else {
         await _supabase
@@ -454,14 +489,17 @@ class TemuanService {
       }
 
       final profile = await _ulpService.getCurrentUserProfile();
-      final isAdmin = profile?['role'] == 'admin';
+      if (_isAdminProfile(profile)) {
+        return {'success': false, 'message': _adminReadOnlyMessage};
+      }
       final currentUlp = profile?['ulp'] as String?;
 
-      final checkResponse = await _supabase
-          .from('temuan')
-          .select('user_id, ulp')
-          .eq('id', id)
-          .single();
+      final checkResponse =
+          await _supabase
+              .from('temuan')
+              .select('user_id, ulp')
+              .eq('id', id)
+              .single();
 
       final recordUserId = checkResponse['user_id'] as String?;
       final recordUlp = checkResponse['ulp'] as String?;
@@ -470,8 +508,7 @@ class TemuanService {
       final isUlpMatch =
           recordUlp != null && currentUlp != null && recordUlp == currentUlp;
       // Data lama tanpa owner (user_id null): izinkan jika ULP match
-      final hasPermission =
-          isAdmin || isOwner || (recordUserId == null && isUlpMatch);
+      final hasPermission = isOwner || (recordUserId == null && isUlpMatch);
 
       if (!hasPermission) {
         return {
@@ -489,21 +526,23 @@ class TemuanService {
       }
 
       late Map<String, dynamic> response;
-      if (isAdmin || (recordUserId == null && isUlpMatch)) {
-        response = await _supabase
-            .from('temuan')
-            .update(temuanData)
-            .eq('id', id)
-            .select()
-            .single();
+      if (recordUserId == null && isUlpMatch) {
+        response =
+            await _supabase
+                .from('temuan')
+                .update(temuanData)
+                .eq('id', id)
+                .select()
+                .single();
       } else {
-        response = await _supabase
-            .from('temuan')
-            .update(temuanData)
-            .eq('id', id)
-            .eq('user_id', currentUserId!)
-            .select()
-            .single();
+        response =
+            await _supabase
+                .from('temuan')
+                .update(temuanData)
+                .eq('id', id)
+                .eq('user_id', currentUserId!)
+                .select()
+                .single();
       }
 
       appLog.d('✅ Temuan $id berhasil diupdate');
@@ -525,11 +564,8 @@ class TemuanService {
   /// Fetch temuan by ID tanpa filter user — untuk navigasi dari notifikasi (admin bisa lihat semua)
   Future<TemuanModel?> getTemuanByIdAny(String id) async {
     try {
-      final response = await _supabase
-          .from('temuan')
-          .select('*')
-          .eq('id', id)
-          .maybeSingle();
+      final response =
+          await _supabase.from('temuan').select('*').eq('id', id).maybeSingle();
       if (response == null) return null;
       return TemuanModel.fromJson(response);
     } catch (e) {
@@ -546,12 +582,13 @@ class TemuanService {
         return {'success': false, 'message': 'User tidak terautentikasi'};
       }
 
-      final response = await _supabase
-          .from('temuan')
-          .select('*')
-          .eq('id', id)
-          .eq('user_id', currentUserId!)
-          .single();
+      final response =
+          await _supabase
+              .from('temuan')
+              .select('*')
+              .eq('id', id)
+              .eq('user_id', currentUserId!)
+              .single();
 
       return {
         'success': true,
@@ -573,8 +610,10 @@ class TemuanService {
         return {'success': false, 'message': 'User tidak terautentikasi'};
       }
 
-      final response =
-          await _supabase.from('temuan').select('id').eq('user_id', currentUserId!);
+      final response = await _supabase
+          .from('temuan')
+          .select('id')
+          .eq('user_id', currentUserId!);
 
       final totalTemuan = (response as List).length;
 
@@ -589,20 +628,28 @@ class TemuanService {
 
   // ==================== SOSIALISASI CRUD ====================
 
-  Future<Map<String, dynamic>> addSosialisasi(SosialisasiModel sosialisasi) async {
+  Future<Map<String, dynamic>> addSosialisasi(
+    SosialisasiModel sosialisasi,
+  ) async {
     try {
       if (currentUserId == null) {
         return {'success': false, 'message': 'User tidak terautentikasi'};
       }
 
+      final profile = await _ulpService.getCurrentUserProfile();
+      if (_isAdminProfile(profile)) {
+        return {'success': false, 'message': _adminReadOnlyMessage};
+      }
+
       final data = sosialisasi.toJson();
       data['created_by'] = currentUserEmail;
 
-      final response = await _supabase
-          .from('temuan_sosialisasi')
-          .insert(data)
-          .select()
-          .single();
+      final response =
+          await _supabase
+              .from('temuan_sosialisasi')
+              .insert(data)
+              .select()
+              .single();
 
       appLog.d('✅ Sosialisasi berhasil ditambah: ${response['id']}');
 
@@ -636,14 +683,12 @@ class TemuanService {
           .eq('temuan_id', temuanId)
           .order('tgl_sosialisasi', ascending: false);
 
-      final List<SosialisasiModel> list = (response as List)
-          .map((json) => SosialisasiModel.fromJson(json))
-          .toList();
+      final List<SosialisasiModel> list =
+          (response as List)
+              .map((json) => SosialisasiModel.fromJson(json))
+              .toList();
 
-      return {
-        'success': true,
-        'data': list,
-      };
+      return {'success': true, 'data': list};
     } catch (e) {
       appLog.e('❌ Error get sosialisasi', error: e);
       return {
@@ -658,6 +703,11 @@ class TemuanService {
     try {
       if (currentUserId == null) {
         return {'success': false, 'message': 'User tidak terautentikasi'};
+      }
+
+      final profile = await _ulpService.getCurrentUserProfile();
+      if (_isAdminProfile(profile)) {
+        return {'success': false, 'message': _adminReadOnlyMessage};
       }
 
       await _supabase.from('temuan_sosialisasi').delete().eq('id', id);

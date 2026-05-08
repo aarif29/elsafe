@@ -6,21 +6,37 @@ import '../../config/app_theme.dart';
 class TemuanListItem extends StatelessWidget {
   final TemuanModel temuan;
   final VoidCallback onTap;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+  final bool canModify;
 
   const TemuanListItem({
     super.key,
     required this.temuan,
     required this.onTap,
-    required this.onEdit,
-    required this.onDelete,
+    this.onEdit,
+    this.onDelete,
+    this.canModify = true,
   });
 
   Color get _tipeColor {
     if (temuan.tipeTemuan == TipeTemuan.kmu) return Colors.red;
     if (temuan.tipeTemuan == TipeTemuan.row) return Colors.green;
     return Colors.grey;
+  }
+
+  Color get _statusBackgroundColor {
+    switch (temuan.statusTemuan) {
+      case 'Open':
+        return Colors.red.withValues(alpha: 0.07);
+      case 'On Progress':
+        return Colors.orange.withValues(alpha: 0.07);
+      case 'Closed':
+      case 'Close':
+        return Colors.green.withValues(alpha: 0.07);
+      default:
+        return Colors.transparent;
+    }
   }
 
   Color get _levelRisikoColor {
@@ -45,7 +61,7 @@ class TemuanListItem extends StatelessWidget {
           // Card utama
           Container(
             decoration: BoxDecoration(
-              color: context.cardColor,
+              color: Color.alphaBlend(_statusBackgroundColor, context.cardColor),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: context.borderColor, width: 0.5),
             ),
@@ -53,51 +69,60 @@ class TemuanListItem extends StatelessWidget {
               onTap: onTap,
               borderRadius: BorderRadius.circular(12),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Foto leading
                     (temuan.fotoUrls != null && temuan.fotoUrls!.isNotEmpty)
                         ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              temuan.fotoUrls!.first,
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
-                              loadingBuilder: (context, child, progress) {
-                                if (progress == null) return child;
-                                return Container(
-                                  width: 60,
-                                  height: 60,
-                                  color: context.skeletonBase,
-                                  child: const Center(
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2, color: Colors.blue),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            temuan.fotoUrls!.first,
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, progress) {
+                              if (progress == null) return child;
+                              return Container(
                                 width: 60,
                                 height: 60,
                                 color: context.skeletonBase,
-                                child: Icon(Icons.broken_image,
-                                    color: context.textHint),
-                              ),
-                            ),
-                          )
-                        : Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: context.skeletonBase,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(Icons.image_not_supported,
-                                color: context.textHint),
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder:
+                                (context, error, stackTrace) => Container(
+                                  width: 60,
+                                  height: 60,
+                                  color: context.skeletonBase,
+                                  child: Icon(
+                                    Icons.broken_image,
+                                    color: context.textHint,
+                                  ),
+                                ),
                           ),
+                        )
+                        : Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: context.skeletonBase,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: context.textHint,
+                          ),
+                        ),
                     const SizedBox(width: 12),
                     // Content
                     Expanded(
@@ -110,15 +135,18 @@ class TemuanListItem extends StatelessWidget {
                                 child: Text(
                                   temuan.namaPemilik,
                                   style: TextStyle(
-                                      color: context.textPrimary,
-                                      fontWeight: FontWeight.bold),
+                                    color: context.textPrimary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                               if (temuan.fotoUrls != null &&
                                   temuan.fotoUrls!.length > 1)
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.blue,
                                     borderRadius: BorderRadius.circular(12),
@@ -126,22 +154,26 @@ class TemuanListItem extends StatelessWidget {
                                   child: Text(
                                     '+${temuan.fotoUrls!.length - 1}',
                                     style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                             ],
                           ),
                           const SizedBox(height: 2),
-                          Text(temuan.lokasi,
-                              style:
-                                  TextStyle(color: context.textSecondary)),
+                          Text(
+                            temuan.lokasi,
+                            style: TextStyle(color: context.textSecondary),
+                          ),
                           const SizedBox(height: 2),
                           Text(
                             '${temuan.tanggalTemuan.day.toString().padLeft(2, '0')}/${temuan.tanggalTemuan.month.toString().padLeft(2, '0')}/${temuan.tanggalTemuan.year}',
                             style: TextStyle(
-                                color: context.textSecondary, fontSize: 12),
+                              color: context.textSecondary,
+                              fontSize: 12,
+                            ),
                           ),
                           const SizedBox(height: 6),
                           Row(
@@ -149,13 +181,16 @@ class TemuanListItem extends StatelessWidget {
                               if (temuan.tipeTemuan != null) ...[
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 2),
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color:
-                                        _tipeColor.withValues(alpha: 0.15),
+                                    color: _tipeColor.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
-                                        color: _tipeColor, width: 1),
+                                      color: _tipeColor,
+                                      width: 1,
+                                    ),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -183,17 +218,22 @@ class TemuanListItem extends StatelessWidget {
                               ],
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: (temuan.statusTemuan == 'Open')
-                                      ? Colors.red.withValues(alpha: 0.15)
-                                      : Colors.green
-                                          .withValues(alpha: 0.15),
+                                  color:
+                                      (temuan.statusTemuan == 'Open')
+                                          ? Colors.red.withValues(alpha: 0.15)
+                                          : Colors.green.withValues(
+                                            alpha: 0.15,
+                                          ),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: (temuan.statusTemuan == 'Open')
-                                        ? Colors.red
-                                        : Colors.green,
+                                    color:
+                                        (temuan.statusTemuan == 'Open')
+                                            ? Colors.red
+                                            : Colors.green,
                                     width: 1,
                                   ),
                                 ),
@@ -202,9 +242,10 @@ class TemuanListItem extends StatelessWidget {
                                       ? 'Open'
                                       : 'Closed',
                                   style: TextStyle(
-                                    color: (temuan.statusTemuan == 'Open')
-                                        ? Colors.red
-                                        : Colors.green,
+                                    color:
+                                        (temuan.statusTemuan == 'Open')
+                                            ? Colors.red
+                                            : Colors.green,
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -214,16 +255,27 @@ class TemuanListItem extends StatelessWidget {
                               if (temuan.levelRisiko != null) ...[
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 2),
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: _levelRisikoColor.withValues(alpha: 0.15),
+                                    color: _levelRisikoColor.withValues(
+                                      alpha: 0.15,
+                                    ),
                                     borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: _levelRisikoColor, width: 1),
+                                    border: Border.all(
+                                      color: _levelRisikoColor,
+                                      width: 1,
+                                    ),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.shield, color: _levelRisikoColor, size: 10),
+                                      Icon(
+                                        Icons.shield,
+                                        color: _levelRisikoColor,
+                                        size: 10,
+                                      ),
                                       const SizedBox(width: 3),
                                       Text(
                                         temuan.levelRisiko!,
@@ -241,8 +293,9 @@ class TemuanListItem extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   temuan.deskripsiTemuan,
-                                  style:
-                                      TextStyle(color: context.textSecondary),
+                                  style: TextStyle(
+                                    color: context.textSecondary,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -252,19 +305,20 @@ class TemuanListItem extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: onEdit,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: onDelete,
-                        ),
-                      ],
-                    ),
+                    if (canModify)
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.blue),
+                            onPressed: onEdit,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: onDelete,
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),

@@ -43,6 +43,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
   bool _isLoadingLocation = false;
   bool _isSubmitting = false;
   bool _showDateError = false;
+  bool _isAdmin = false;
   double? _currentLatitude;
   double? _currentLongitude;
   String? _tipeTemuan;
@@ -113,13 +114,16 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
 
     // Reminder
     _tglReminder = t.tglReminder;
-    if (t.fotoReminder != null)
+    if (t.fotoReminder != null) {
       _existingFotoReminder = List.from(t.fotoReminder!);
+    }
 
     // Closing
     _jenisClosing = t.jenisClosing;
     _tglClosing = t.tglClosing;
-    if (t.fotoClosing != null) _existingFotoClosing = List.from(t.fotoClosing!);
+    if (t.fotoClosing != null) {
+      _existingFotoClosing = List.from(t.fotoClosing!);
+    }
 
     // Jaringan listrik
     _namaPenyulang = t.namaPenyulang;
@@ -127,7 +131,10 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     _zona = t.zona;
     UlpService().getCurrentUserProfile().then((profile) {
       if (profile != null && mounted) {
-        setState(() => _currentUlp = profile['ulp'] as String?);
+        setState(() {
+          _currentUlp = profile['ulp'] as String?;
+          _isAdmin = profile['role'] == 'admin';
+        });
       }
     });
 
@@ -196,7 +203,9 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       if (permission.isDenied) throw Exception('Izin lokasi ditolak.');
 
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
       final lokasiText =
           'Lat: ${position.latitude.toStringAsFixed(6)}, '
@@ -215,19 +224,21 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
           _alamatTemuanController.text = alamatText;
         }
       });
-      if (mounted)
+      if (mounted) {
         SnackBarUtils.showSuccess(
           context,
           title: 'Berhasil!',
           message: 'Lokasi berhasil didapatkan',
         );
+      }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         SnackBarUtils.showError(
           context,
           title: 'Error!',
           message: e.toString(),
         );
+      }
     } finally {
       setState(() => _isLoadingLocation = false);
     }
@@ -263,12 +274,13 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
           _alamatTemuanController.text = alamatText;
         }
       });
-      if (mounted)
+      if (mounted) {
         SnackBarUtils.showSuccess(
           context,
           title: 'Berhasil!',
           message: 'Lokasi berhasil dipilih dari peta',
         );
+      }
     }
   }
 
@@ -321,6 +333,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
   ) async {
     List<String> urls = [];
     for (int i = 0; i < files.length; i++) {
+      if (!mounted) break;
       SnackBarUtils.hide(context);
       SnackBarUtils.showLoading(
         context,
@@ -342,6 +355,15 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
   }
 
   Future<void> _submitForm() async {
+    if (_isAdmin) {
+      SnackBarUtils.showError(
+        context,
+        title: 'Akses ditolak',
+        message: 'Admin hanya dapat melihat data temuan',
+      );
+      return;
+    }
+
     setState(() => _showDateError = _selectedDate == null);
     if (!_formKey.currentState!.validate() || _selectedDate == null) {
       _goToStep(0);
@@ -416,39 +438,39 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         updatedTemuan,
       );
 
-      // Delete removed photos
-      for (var url in [
-        ..._deletedFotoUrls,
-        ..._deletedFotoReminder,
-        ..._deletedFotoClosing,
-      ]) {
-        try {
-          await _temuanService.deleteFoto(url);
-        } catch (_) {}
-      }
-
-      // Save new sosialisasi if filled
-      if (_tglSosialisasiBaru != null) {
-        List<String>? sosUrls;
-        if (_fotoSosialisasiBaru.isNotEmpty) {
-          sosUrls = await _uploadFiles(
-            _fotoSosialisasiBaru,
-            'foto sosialisasi',
-          );
-        }
-        await _temuanService.addSosialisasi(
-          SosialisasiModel(
-            temuanId: widget.temuan.id!,
-            tglSosialisasi: _tglSosialisasiBaru!,
-            fotoUrls: sosUrls,
-          ),
-        );
-      }
-
       if (!mounted) return;
       ScaffoldMessenger.of(context).clearSnackBars();
 
       if (result['success']) {
+        // Delete removed photos after update succeeds.
+        for (var url in [
+          ..._deletedFotoUrls,
+          ..._deletedFotoReminder,
+          ..._deletedFotoClosing,
+        ]) {
+          try {
+            await _temuanService.deleteFoto(url);
+          } catch (_) {}
+        }
+
+        // Save new sosialisasi after update succeeds.
+        if (_tglSosialisasiBaru != null) {
+          List<String>? sosUrls;
+          if (_fotoSosialisasiBaru.isNotEmpty) {
+            sosUrls = await _uploadFiles(
+              _fotoSosialisasiBaru,
+              'foto sosialisasi',
+            );
+          }
+          await _temuanService.addSosialisasi(
+            SosialisasiModel(
+              temuanId: widget.temuan.id!,
+              tglSosialisasi: _tglSosialisasiBaru!,
+              fotoUrls: sosUrls,
+            ),
+          );
+        }
+
         // Selalu clear dulu notif lama; lalu buat baru jika sudah overdue
         await NotificationService.instance.clearReminderNotifIfNotOverdue(
           temuanId: widget.temuan.id!,
@@ -463,6 +485,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
           );
         }
 
+        if (!mounted) return;
         SnackBarUtils.showSuccess(
           context,
           title: 'Berhasil!',
@@ -1558,8 +1581,9 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
-        if (await _confirmDiscard() && context.mounted)
+        if (await _confirmDiscard() && context.mounted) {
           Navigator.of(context).pop();
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.black,

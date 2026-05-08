@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5b4f1abd`
+- Built from commit: `0eaae904`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -182,11 +182,11 @@ Nodes (8): build, Column, DashboardInfoSection, _DashboardInfoSectionState, disp
 
 ### Community 23 - "Community 23"
 Cohesion: 0.25
-Nodes (7): build, Column, InkWell, Scaffold, SettingsScreen, SizedBox, _ThemeOption
+Nodes (7): ../../config/app_theme.dart, build, _buildSection, Container, PanduanPenggunaanScreen, Scaffold, SizedBox
 
 ### Community 24 - "Community 24"
 Cohesion: 0.25
-Nodes (7): ../../config/app_theme.dart, build, Column, Container, DashboardStatsSection, SizedBox, _StatCard
+Nodes (7): build, Column, InkWell, Scaffold, SettingsScreen, SizedBox, _ThemeOption
 
 ### Community 26 - "Community 26"
 Cohesion: 0.29
@@ -198,7 +198,7 @@ Nodes (6): build, Container, DashboardWelcomeCard, SizedBox, Text, TextStyle
 
 ### Community 28 - "Community 28"
 Cohesion: 0.29
-Nodes (6): build, _buildSection, Container, PanduanPenggunaanScreen, Scaffold, SizedBox
+Nodes (6): build, Column, Container, DashboardStatsSection, SizedBox, _StatCard
 
 ### Community 29 - "Community 29"
 Cohesion: 0.33
@@ -236,7 +236,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.368) - this node is a cross-community bridge._
 - **Why does `../../config/temuan_model.dart` connect `Community 11` to `Community 0`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 9`, `Community 12`, `Community 14`?**
   _High betweenness centrality (0.058) - this node is a cross-community bridge._
-- **Why does `../../config/app_theme.dart` connect `Community 24` to `Community 0`, `Community 1`, `Community 4`, `Community 6`, `Community 8`, `Community 9`, `Community 11`, `Community 12`, `Community 14`, `Community 15`, `Community 22`, `Community 23`, `Community 28`?**
+- **Why does `../../config/app_theme.dart` connect `Community 23` to `Community 0`, `Community 1`, `Community 4`, `Community 6`, `Community 8`, `Community 9`, `Community 11`, `Community 12`, `Community 14`, `Community 15`, `Community 22`, `Community 24`, `Community 28`?**
   _High betweenness centrality (0.057) - this node is a cross-community bridge._
 - **What connects `MainActivity`, `-registerWithRegistry`, `MyApp` to the rest of the system?**
   _539 weakly-connected nodes found - possible documentation gaps or missing edges._

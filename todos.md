@@ -273,10 +273,10 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
   - [x] `flutter test test/export_temuan_filter_test.dart`
   - [x] `flutter test test/main_shell_navigation_test.dart`
   - [x] `flutter build web`
-  - [ ] Browser/manual check layout export light/dark theme
+  - [x] Browser/manual check layout export light/dark theme
 
 **Catatan Phase 6:**
-- Phase 6 sudah diimplementasikan bersamaan dengan Phase 5 refinement.
+- Phase 6 sudah diimplementasikan bersamaan dengan Phase 5 refinement dan manual check layout export light/dark theme sudah selesai.
 
 ---
 
@@ -468,3 +468,43 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
   - [x] `flutter test test\export_temuan_filter_test.dart`
   - [x] Targeted analyzer untuk export/filter/test
   - [x] `graphify update .`
+
+---
+
+### Phase 11: Foto Kolom & Simplifikasi Risiko di PDF
+
+**Perubahan kolom Risiko:**
+- [x] 11.1 Sederhanakan `_risikoLabel()` di `lib/utils/pdf_generator.dart`
+  - [x] Hapus logika skor_matriks, jarak_aktivitas, intensitas_aktivitas
+  - [x] Hanya tampilkan `levelRisiko` (Extreme / High / Medium / Rendah / dll)
+  - [x] Ubah lebar kolom Risiko dari `FlexColumnWidth(1.0)` ke `FixedColumnWidth(40)`
+
+**Kolom baru Foto Temuan & Foto Reminder:**
+- [x] 11.2 Tambah `typedef NetworkImageLoader` dan `_defaultNetworkLoader()` (gunakan `http` package yang sudah ada)
+- [x] 11.3 Tambah parameter `NetworkImageLoader? networkImageLoader` di `generate()` (injectable untuk testing)
+- [x] 11.4 Tambah `_preloadFirstFotos()`: load hanya URL pertama dari `fotoUrls` dan `fotoReminder` tiap temuan secara paralel
+- [x] 11.5 Tambah `_fotoCell()`: tampilkan thumbnail 54×44pt + badge `(+N lagi)` jika lebih dari 1 foto; tampilkan `-` jika kosong
+- [x] 11.6 Update `columnWidths` di `_buildTable()`: tambah kolom 13 `FixedColumnWidth(60)` dan 14 `FixedColumnWidth(60)`
+- [x] 11.7 Update header row: tambah 'Foto Temuan', 'Foto Reminder'
+- [x] 11.8 Update data rows: tambah `_fotoCell()` untuk kolom foto temuan dan foto reminder
+
+**Layout insight:**
+- Foto pertama saja ditampilkan sebagai thumbnail (tinggi baris seragam)
+- Badge `(+N lagi)` muncul jika ada lebih dari 1 foto
+- Jika tidak ada foto: tampilkan `-`
+- Usable width A4 landscape: ~786pt; fixed total baru 434pt; flex columns tetap proporsional
+
+**Update test:**
+- [x] 11.9 Update `test/pdf_generator_test.dart`:
+  - [x] Tambah `networkImageLoader: (_) async => null` ke test existing
+  - [x] Tambah test: risiko hanya menampilkan levelRisiko (bukan skor/jarak/intensitas)
+  - [x] Tambah test: generate dengan foto URLs menggunakan mock networkImageLoader
+  - [x] Tambah test: generate aman saat fotoUrls dan fotoReminder null
+  - [x] Tambah test: generate aman saat fotoUrls dan fotoReminder list kosong
+
+**Verifikasi:**
+- [x] 11.10 `flutter analyze lib/utils/pdf_generator.dart test/pdf_generator_test.dart` → No issues
+- [x] 11.11 `flutter test test/pdf_generator_test.dart` → 6/6 passed
+- [x] 11.11.1 `flutter test` (full suite) → 34/34 passed
+- [ ] 11.12 `flutter build web`
+- [ ] 11.13 Preview PDF manual: kolom Risiko hanya level, foto temuan muncul thumbnail, badge count benar, layout 15 kolom tidak overflow

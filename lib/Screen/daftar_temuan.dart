@@ -306,15 +306,19 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
             temuan: temuan,
             onOpenMaps: _openGoogleMaps,
             onCopyCoordinates: _copyCoordinates,
-            onEdit: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditTemuanScreen(temuan: temuan),
-                ),
-              );
-              if (result == true) _loadData();
-            },
+            onEdit:
+                _isAdmin
+                    ? null
+                    : () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => EditTemuanScreen(temuan: temuan),
+                        ),
+                      );
+                      if (result == true) _loadData();
+                    },
           ),
     );
   }
@@ -635,16 +639,20 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
         return TemuanListItem(
           temuan: temuan,
           onTap: () => _showDetailDialog(temuan),
-          onEdit: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EditTemuanScreen(temuan: temuan),
-              ),
-            );
-            if (result == true) _loadData();
-          },
-          onDelete: () => _deleteTemuan(temuan.id!),
+          canModify: !_isAdmin,
+          onEdit:
+              _isAdmin
+                  ? null
+                  : () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditTemuanScreen(temuan: temuan),
+                      ),
+                    );
+                    if (result == true) _loadData();
+                  },
+          onDelete: _isAdmin ? null : () => _deleteTemuan(temuan.id!),
         );
       },
     );

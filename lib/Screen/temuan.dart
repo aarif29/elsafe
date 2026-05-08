@@ -43,6 +43,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
   bool _isSubmitting = false;
   bool _showDateError = false;
   bool _showPhotoError = false;
+  bool _isAdmin = false;
   double? _currentLatitude;
   double? _currentLongitude;
   List<PlatformFile> _selectedPhotos = [];
@@ -82,7 +83,10 @@ class _TemuanScreenState extends State<TemuanScreen> {
     _userProfileFuture = _temuanService.getCurrentUserProfile();
     UlpService().getCurrentUserProfile().then((profile) {
       if (profile != null && mounted) {
-        setState(() => _currentUlp = profile['ulp'] as String?);
+        setState(() {
+          _currentUlp = profile['ulp'] as String?;
+          _isAdmin = profile['role'] == 'admin';
+        });
       }
     });
   }
@@ -267,6 +271,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
   ) async {
     List<String> urls = [];
     for (int i = 0; i < files.length; i++) {
+      if (!mounted) break;
       SnackBarUtils.hide(context);
       SnackBarUtils.showLoading(
         context,
@@ -288,6 +293,15 @@ class _TemuanScreenState extends State<TemuanScreen> {
   }
 
   Future<void> _submitForm() async {
+    if (_isAdmin) {
+      SnackBarUtils.showError(
+        context,
+        title: 'Akses ditolak',
+        message: 'Admin hanya dapat melihat data temuan',
+      );
+      return;
+    }
+
     // Validasi step 1
     setState(() {
       _showPhotoError = _selectedPhotos.isEmpty;
@@ -328,6 +342,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
       }
 
       // Simpan temuan
+      if (!mounted) return;
       SnackBarUtils.hide(context);
       SnackBarUtils.showLoading(context, message: 'Menyimpan data temuan...');
 
@@ -595,8 +610,9 @@ class _TemuanScreenState extends State<TemuanScreen> {
   }
 
   Widget _buildMiniMapPreview() {
-    if (_currentLatitude == null || _currentLongitude == null)
+    if (_currentLatitude == null || _currentLongitude == null) {
       return const SizedBox.shrink();
+    }
     final position = LatLng(_currentLatitude!, _currentLongitude!);
     return Padding(
       padding: const EdgeInsets.only(top: 12),
@@ -1124,8 +1140,9 @@ class _TemuanScreenState extends State<TemuanScreen> {
           isEnabled: !_isSubmitting,
           onNewFilesChanged: (files) {
             _selectedPhotos = files;
-            if (files.isNotEmpty && _showPhotoError)
+            if (files.isNotEmpty && _showPhotoError) {
               setState(() => _showPhotoError = false);
+            }
           },
         ),
         const SizedBox(height: 20),
@@ -1423,8 +1440,9 @@ class _TemuanScreenState extends State<TemuanScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
-        if (await _confirmDiscard() && context.mounted)
+        if (await _confirmDiscard() && context.mounted) {
           Navigator.of(context).pop();
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.black,
