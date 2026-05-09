@@ -25,6 +25,7 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _navIndex = 0;
   bool _showPanduan = false;
+  bool _showExport = false;
   bool _isAdmin = false;
   bool _hasLoadedRole = false;
   final _temuanService = TemuanService();
@@ -33,9 +34,10 @@ class _MainShellState extends State<MainShell> {
   final _daftarKey = GlobalKey<DaftarTemuanScreenState>();
 
   // navIndex: 0=Dashboard, 1=Daftar, 2=Peta, 3=Notifikasi, 4=Profil
-  // stackIndex: 0=Dashboard, 1=Daftar, 2=Peta, 3=Notifikasi, 4=Profil, 5=Panduan
+  // stackIndex: 0=Dashboard, 1=Daftar, 2=Peta, 3=Notifikasi, 4=Profil, 5=Panduan, 6=Export
   int get _stackIndex {
     if (_showPanduan) return 5;
+    if (_showExport) return 6;
     if (_navIndex == 3) return 3;
     if (_navIndex == 4) return 4;
     return _navIndex;
@@ -57,10 +59,14 @@ class _MainShellState extends State<MainShell> {
   }
 
   void openExport() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ExportTemuanScreen()),
-    );
+    setState(() {
+      _showPanduan = false;
+      _showExport = true;
+    });
+  }
+
+  void closeExport() {
+    setState(() => _showExport = false);
   }
 
   void backToDashboard() {
@@ -179,10 +185,11 @@ class _MainShellState extends State<MainShell> {
           NotificationsScreen(onBack: backToDashboard),
           const Profile(),
           PanduanPenggunaanScreen(onBack: closePanduan),
+          ExportTemuanScreen(onBack: closeExport),
         ],
       ),
       floatingActionButton:
-          (_showPanduan || _navIndex == 2 || _navIndex == 3 || _navIndex == 4)
+          (_showPanduan || _showExport || _navIndex == 2 || _navIndex == 3 || _navIndex == 4)
               ? null
               : _buildFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

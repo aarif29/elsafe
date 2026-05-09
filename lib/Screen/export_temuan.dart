@@ -9,7 +9,9 @@ import '../utils/export_temuan_filter.dart';
 import '../utils/pdf_generator.dart';
 
 class ExportTemuanScreen extends StatefulWidget {
-  const ExportTemuanScreen({super.key});
+  final VoidCallback? onBack;
+
+  const ExportTemuanScreen({super.key, this.onBack});
 
   @override
   State<ExportTemuanScreen> createState() => _ExportTemuanScreenState();
@@ -209,7 +211,17 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.bgColor,
-      appBar: AppBar(title: const Text('Export Data')),
+      appBar: AppBar(
+        title: const Text('Export Data'),
+        automaticallyImplyLeading: false,
+        leading: widget.onBack == null
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: widget.onBack,
+                tooltip: 'Kembali',
+              ),
+      ),
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
