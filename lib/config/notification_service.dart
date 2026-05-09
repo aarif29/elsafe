@@ -144,17 +144,14 @@ class NotificationService {
       final body =
           'Sudah $daysPassed hari sejak pengingat diatur. Lokasi: $lokasi. ULP: $ulp. Segera lakukan tindak lanjut.';
 
-      final today = DateTime(now.year, now.month, now.day).toUtc();
-
       for (final userId in targetIds) {
-        // Hindari duplikat di hari yang sama
+        // Hindari duplikat: satu temuan hanya boleh punya satu notif per user
         final existing = await _supabase
             .from('notifications')
             .select('id')
             .eq('user_id', userId)
             .eq('temuan_id', temuanId)
             .eq('type', 'reminder_h1')
-            .gte('created_at', today.toIso8601String())
             .maybeSingle();
 
         if (existing == null) {

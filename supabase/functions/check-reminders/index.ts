@@ -82,14 +82,13 @@ Deno.serve(async (_req) => {
       const targetIds = new Set<string>([temuan.user_id, ...adminIds]);
 
       for (const userId of targetIds) {
-        // Hindari duplikat: jangan kirim notif yang sama di hari yang sama
+        // Hindari duplikat: satu temuan hanya boleh punya satu notif per user
         const { data: existing } = await supabase
           .from("notifications")
           .select("id")
           .eq("user_id", userId)
           .eq("temuan_id", temuan.id)
           .eq("type", "reminder_h1")
-          .gte("created_at", new Date(today).toISOString())
           .maybeSingle();
 
         if (!existing) {
