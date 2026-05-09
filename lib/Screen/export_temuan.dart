@@ -180,12 +180,12 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
 
   List<String> get _zonaOptions => [
     _allValue,
-    ..._uniqueInts(_allTemuan.map((t) => t.zona)),
+    ...List.generate(5, (i) => '${i + 1}'),
   ];
 
   List<String> get _sectionOptions => [
     _allValue,
-    ..._uniqueInts(_allTemuan.map((t) => t.section)),
+    ...List.generate(10, (i) => '${i + 1}'),
   ];
 
   List<TemuanModel> get _selectedTemuan {
@@ -203,11 +203,6 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
             .toList()
           ..sort();
     return result;
-  }
-
-  List<String> _uniqueInts(Iterable<int?> values) {
-    final result = values.whereType<int>().toSet().toList()..sort();
-    return result.map((value) => value.toString()).toList();
   }
 
   @override
