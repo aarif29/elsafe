@@ -9,9 +9,7 @@ import '../utils/export_temuan_filter.dart';
 import '../utils/pdf_generator.dart';
 
 class ExportTemuanScreen extends StatefulWidget {
-  final VoidCallback? onBack;
-
-  const ExportTemuanScreen({super.key, this.onBack});
+  const ExportTemuanScreen({super.key});
 
   @override
   State<ExportTemuanScreen> createState() => _ExportTemuanScreenState();
@@ -170,7 +168,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   List<String> get _penyulangOptions {
     if (_isAdmin) return [_allValue, ...Penyulang.semua];
     final ulps = _uniqueStrings(_allTemuan.map((t) => t.ulp));
-    final penyulangList =
+    final List =
         ulps.isEmpty
             ? Penyulang.semua
             : ulps.expand((u) => Penyulang.untukUlp(u)).toSet().toList()
@@ -182,12 +180,12 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
 
   List<String> get _zonaOptions => [
     _allValue,
-    ...List.generate(5, (i) => '${i + 1}'),
+    ..._uniqueInts(_allTemuan.map((t) => t.zona)),
   ];
 
   List<String> get _sectionOptions => [
     _allValue,
-    ...List.generate(10, (i) => '${i + 1}'),
+    ..._uniqueInts(_allTemuan.map((t) => t.section)),
   ];
 
   List<TemuanModel> get _selectedTemuan {
@@ -207,21 +205,16 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
     return result;
   }
 
+  List<String> _uniqueInts(Iterable<int?> values) {
+    final result = values.whereType<int>().toSet().toList()..sort();
+    return result.map((value) => value.toString()).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.bgColor,
-      appBar: AppBar(
-        title: const Text('Export Data'),
-        automaticallyImplyLeading: false,
-        leading: widget.onBack == null
-            ? null
-            : IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: widget.onBack,
-                tooltip: 'Kembali',
-              ),
-      ),
+      appBar: AppBar(title: const Text('Export Data')),
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())

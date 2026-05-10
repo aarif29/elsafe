@@ -168,9 +168,7 @@ class _MainShellState extends State<MainShell> {
                 userName: userName,
                 userEmail: userEmail,
                 onLogout: _handleLogout,
-                onOpenNotifications: openNotifications,
                 onOpenPanduan: openPanduan,
-                onOpenExport: openExport,
               )
               : null,
       body: IndexedStack(
@@ -185,7 +183,7 @@ class _MainShellState extends State<MainShell> {
           NotificationsScreen(onBack: backToDashboard),
           const Profile(),
           PanduanPenggunaanScreen(onBack: closePanduan),
-          ExportTemuanScreen(onBack: closeExport),
+          const ExportTemuanScreen(),
         ],
       ),
       floatingActionButton:

@@ -1,23 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../config/app_theme.dart';
-import '../../config/notification_service.dart';
 
 class DashboardDrawer extends StatelessWidget {
   final String userName;
   final String userEmail;
   final VoidCallback onLogout;
-  final VoidCallback onOpenNotifications;
   final VoidCallback onOpenPanduan;
-  final VoidCallback onOpenExport;
 
   const DashboardDrawer({
     super.key,
     required this.userName,
     required this.userEmail,
     required this.onLogout,
-    required this.onOpenNotifications,
     required this.onOpenPanduan,
-    required this.onOpenExport,
   });
 
   @override
@@ -71,68 +66,9 @@ class DashboardDrawer extends StatelessWidget {
             ),
           ),
 
-          // EXPORT
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
-            child: Text(
-              'EXPORT',
-              style: TextStyle(
-                color: context.textHint,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-              ),
-            ),
-          ),
-          _DrawerItem(
-            icon: Icons.picture_as_pdf,
-            title: 'Export Temuan ke PDF',
-            onTap: () {
-              Navigator.pop(context);
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                onOpenExport();
-              });
-            },
-          ),
-
-          // PENGATURAN
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
-            child: Text(
-              'PENGATURAN',
-              style: TextStyle(
-                color: context.textHint,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-              ),
-            ),
-          ),
-          ValueListenableBuilder<int>(
-            valueListenable: NotificationService.instance.unreadCount,
-            builder:
-                (context, count, _) => _DrawerItem(
-                  icon: Icons.notifications_outlined,
-                  title: count > 0 ? 'Notifikasi ($count)' : 'Notifikasi',
-                  onTap: () {
-                    Navigator.pop(context);
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      onOpenNotifications();
-                    });
-                  },
-                ),
-          ),
-
-          Divider(
-            color: context.borderColor,
-            height: 24,
-            indent: 16,
-            endIndent: 16,
-          ),
-
           // BANTUAN
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
             child: Text(
               'BANTUAN',
               style: TextStyle(
