@@ -168,7 +168,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
   List<String> get _penyulangOptions {
     if (_isAdmin) return [_allValue, ...Penyulang.semua];
     final ulps = _uniqueStrings(_allTemuan.map((t) => t.ulp));
-    final List =
+    final penyulangList =
         ulps.isEmpty
             ? Penyulang.semua
             : ulps.expand((u) => Penyulang.untukUlp(u)).toSet().toList()
