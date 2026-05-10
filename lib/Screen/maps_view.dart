@@ -18,6 +18,434 @@ class MapsViewWidget extends StatefulWidget {
   State<MapsViewWidget> createState() => _MapsViewWidgetState();
 }
 
+class _MarkerDetailSheet extends StatelessWidget {
+  final TemuanModel temuan;
+  final Color pinColor;
+  final Color labelBgColor;
+  final VoidCallback onOpenMaps;
+  final VoidCallback onCopyCoords;
+
+  const _MarkerDetailSheet({
+    required this.temuan,
+    required this.pinColor,
+    required this.labelBgColor,
+    required this.onOpenMaps,
+    required this.onCopyCoords,
+  });
+
+  String _fmt(DateTime? d) {
+    if (d == null) return '-';
+    return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+  }
+
+  String _val(String? v) => (v == null || v.trim().isEmpty) ? '-' : v;
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.55,
+      minChildSize: 0.35,
+      maxChildSize: 0.92,
+      expand: false,
+      builder: (_, scrollCtrl) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 4),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  controller: scrollCtrl,
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  children: [
+                    _buildHeader(),
+                    const SizedBox(height: 14),
+                    _buildSection('Identitas', Icons.badge_outlined, _buildIdentitas()),
+                    _buildSection('Lokasi', Icons.place_outlined, _buildLokasi()),
+                    _buildSection('Deskripsi Temuan', Icons.description_outlined, _buildDeskripsi()),
+                    _buildSection('Jaringan Listrik', Icons.electric_bolt, _buildJaringan()),
+                    if (_hasMatriks()) _buildSection('Matriks Risiko', Icons.assessment_outlined, _buildMatriks()),
+                    if (temuan.statusTemuan == 'Closed' || temuan.statusTemuan == 'Close')
+                      _buildSection('Closing', Icons.check_circle_outline, _buildClosing()),
+                    if (temuan.tglReminder != null)
+                      _buildSection('Reminder', Icons.notifications_outlined, _buildReminder()),
+                    if (temuan.fotoUrls != null && temuan.fotoUrls!.isNotEmpty)
+                      _buildSection('Foto Temuan', Icons.photo_library_outlined, _buildFoto(context)),
+                    if (temuan.latitude != null && temuan.longitude != null) ...[
+                      const SizedBox(height: 4),
+                      _buildCoordButtons(context),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHeader() {
+    final statusColor = (temuan.statusTemuan == 'Open') ? Colors.green : Colors.blueGrey;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                temuan.namaPemilik,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (temuan.nomorAms != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  'AMS: ${temuan.nomorAms}',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Wrap(
+          spacing: 6,
+          runSpacing: 4,
+          alignment: WrapAlignment.end,
+          children: [
+            if (temuan.tipeTemuan != null)
+              _badge(temuan.tipeTemuan!, labelBgColor, Colors.white),
+            if (temuan.levelRisiko != null)
+              _badge(temuan.levelRisiko!, pinColor.withValues(alpha: 0.25), pinColor,
+                  border: pinColor, icon: Icons.bolt),
+            _badge(temuan.statusTemuan ?? 'Open', statusColor.withValues(alpha: 0.2), statusColor,
+                border: statusColor),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _badge(String label, Color bg, Color textColor, {Color? border, IconData? icon}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(10),
+        border: border != null ? Border.all(color: border, width: 1) : null,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 11, color: textColor),
+            const SizedBox(width: 2),
+          ],
+          Text(label, style: TextStyle(color: textColor, fontSize: 11, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, IconData icon, Widget content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(color: Color(0xFF3A3A3A), height: 20),
+        Row(
+          children: [
+            Icon(icon, size: 14, color: Colors.grey[400]),
+            const SizedBox(width: 6),
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.6,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        content,
+      ],
+    );
+  }
+
+  Widget _buildIdentitas() {
+    return Column(
+      children: [
+        _row(Icons.calendar_today, 'Tanggal Temuan', _fmt(temuan.tanggalTemuan)),
+        if (temuan.ulp != null) _row(Icons.location_city, 'ULP', _val(temuan.ulp)),
+        if (temuan.createdAt != null) _row(Icons.access_time, 'Dibuat', _fmt(temuan.createdAt)),
+      ],
+    );
+  }
+
+  Widget _buildLokasi() {
+    return Column(
+      children: [
+        if (temuan.alamatTemuan != null && temuan.alamatTemuan!.trim().isNotEmpty)
+          _row(Icons.home_outlined, 'Alamat', _val(temuan.alamatTemuan)),
+        _row(Icons.place, 'Lokasi / Gardu', _val(temuan.lokasi)),
+        if (temuan.latitude != null)
+          _row(Icons.gps_fixed, 'Koordinat',
+              '${temuan.latitude!.toStringAsFixed(6)}, ${temuan.longitude!.toStringAsFixed(6)}'),
+      ],
+    );
+  }
+
+  Widget _buildDeskripsi() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.grey[850],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        _val(temuan.deskripsiTemuan),
+        style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.5),
+      ),
+    );
+  }
+
+  Widget _buildJaringan() {
+    return Column(
+      children: [
+        _row(Icons.electric_bolt, 'Penyulang', _val(temuan.namaPenyulang)),
+        _row(Icons.account_tree, 'Section', temuan.section != null ? 'Section ${temuan.section}' : '-'),
+        _row(Icons.radar, 'Zona', temuan.zona != null ? 'Zona ${temuan.zona}' : '-'),
+      ],
+    );
+  }
+
+  bool _hasMatriks() =>
+      temuan.jenisObjek != null ||
+      temuan.jenisAset != null ||
+      temuan.lokasiObjek != null ||
+      temuan.jarakAktivitas != null ||
+      temuan.intensitasAktivitas != null ||
+      temuan.skorMatriks != null;
+
+  Widget _buildMatriks() {
+    return Column(
+      children: [
+        if (temuan.jenisObjek != null) _row(Icons.category, 'Jenis Objek', _val(temuan.jenisObjek)),
+        if (temuan.jenisAset != null) _row(Icons.cable, 'Jenis Aset', _val(temuan.jenisAset)),
+        if (temuan.lokasiObjek != null) _row(Icons.location_searching, 'Lokasi Objek', _val(temuan.lokasiObjek)),
+        if (temuan.jarakAktivitas != null) _row(Icons.straighten, 'Jarak Aktivitas', _val(temuan.jarakAktivitas)),
+        if (temuan.intensitasAktivitas != null) _row(Icons.trending_up, 'Intensitas', _val(temuan.intensitasAktivitas)),
+        if (temuan.skorMatriks != null)
+          _row(Icons.bar_chart, 'Skor Matriks', '${temuan.skorMatriks}',
+              valueColor: pinColor),
+      ],
+    );
+  }
+
+  Widget _buildClosing() {
+    return Column(
+      children: [
+        if (temuan.jenisClosing != null) _row(Icons.handyman, 'Jenis Closing', _val(temuan.jenisClosing)),
+        _row(Icons.event_available, 'Tanggal Closing', _fmt(temuan.tglClosing)),
+        if (temuan.fotoClosing != null && temuan.fotoClosing!.isNotEmpty)
+          _row(Icons.photo, 'Foto Closing', '${temuan.fotoClosing!.length} foto'),
+      ],
+    );
+  }
+
+  Widget _buildReminder() {
+    return Column(
+      children: [
+        _row(Icons.alarm, 'Tanggal Reminder', _fmt(temuan.tglReminder)),
+        if (temuan.fotoReminder != null && temuan.fotoReminder!.isNotEmpty)
+          _row(Icons.photo, 'Foto Reminder', '${temuan.fotoReminder!.length} foto'),
+      ],
+    );
+  }
+
+  Widget _buildFoto(BuildContext context) {
+    final urls = temuan.fotoUrls!;
+    return SizedBox(
+      height: 90,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: urls.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (_, i) => GestureDetector(
+          onTap: () => _openFoto(context, urls, i),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              urls[i],
+              width: 90,
+              height: 90,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                width: 90,
+                height: 90,
+                color: Colors.grey[800],
+                child: const Icon(Icons.broken_image, color: Colors.grey),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openFoto(BuildContext context, List<String> urls, int initialIndex) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => _FotoViewer(urls: urls, initialIndex: initialIndex),
+      ),
+    );
+  }
+
+  Widget _buildCoordButtons(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+              onOpenMaps();
+            },
+            icon: const Icon(Icons.map, size: 16, color: Colors.green),
+            label: const Text('Buka Maps'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.green,
+              side: const BorderSide(color: Colors.green),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+              onCopyCoords();
+            },
+            icon: const Icon(Icons.copy, size: 16, color: Colors.blue),
+            label: const Text('Salin Koordinat'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.blue,
+              side: const BorderSide(color: Colors.blue),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _row(IconData icon, String label, String value, {Color? valueColor}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 15, color: Colors.grey[500]),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 110,
+            child: Text(
+              label,
+              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                color: valueColor ?? Colors.white,
+                fontSize: 12,
+                fontWeight: valueColor != null ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FotoViewer extends StatefulWidget {
+  final List<String> urls;
+  final int initialIndex;
+  const _FotoViewer({required this.urls, required this.initialIndex});
+
+  @override
+  State<_FotoViewer> createState() => _FotoViewerState();
+}
+
+class _FotoViewerState extends State<_FotoViewer> {
+  late int _current;
+  late PageController _pageCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _current = widget.initialIndex;
+    _pageCtrl = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        title: Text('${_current + 1} / ${widget.urls.length}'),
+      ),
+      body: PageView.builder(
+        controller: _pageCtrl,
+        itemCount: widget.urls.length,
+        onPageChanged: (i) => setState(() => _current = i),
+        itemBuilder: (_, i) => InteractiveViewer(
+          child: Center(
+            child: Image.network(
+              widget.urls[i],
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const Icon(
+                Icons.broken_image,
+                color: Colors.grey,
+                size: 64,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _LegendItem extends StatelessWidget {
   final IconData icon;
   final Color color;
@@ -44,7 +472,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   final MapController _mapController = MapController();
 
   List<TemuanModel> _temuanList = [];
-  List<Marker> _markers = [];
+  final List<Marker> _markers = [];
   Marker? _currentLocationMarker;
 
   bool _isLoading = true;
@@ -181,7 +609,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
                     border: Border.all(color: labelBorder, width: 1),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.35),
+                        color: Colors.black.withValues(alpha: 0.35),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -232,7 +660,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.25),
+                color: Colors.blue.withValues(alpha: 0.25),
                 shape: BoxShape.circle,
               ),
             ),
@@ -342,160 +770,17 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
   }
 
   void _showMarkerInfo(TemuanModel temuan) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            backgroundColor: Colors.grey[850],
-            title: Text(
-              temuan.namaPemilik,
-              style: const TextStyle(color: Colors.white),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Tipe & Level badges
-                  Row(
-                    children: [
-                      if (temuan.tipeTemuan != null) ...[
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: _labelBgColor(temuan.tipeTemuan),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            temuan.tipeTemuan!,
-                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                      ],
-                      if (temuan.levelRisiko != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: _pinColor(temuan.tipeTemuan, temuan.levelRisiko).withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: _pinColor(temuan.tipeTemuan, temuan.levelRisiko)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.bolt, size: 12, color: _pinColor(temuan.tipeTemuan, temuan.levelRisiko)),
-                              const SizedBox(width: 3),
-                              Text(
-                                temuan.levelRisiko!,
-                                style: TextStyle(color: _pinColor(temuan.tipeTemuan, temuan.levelRisiko), fontSize: 11, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Lokasi: ${temuan.lokasi}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Tanggal: ${temuan.tanggalTemuan.day}/${temuan.tanggalTemuan.month}/${temuan.tanggalTemuan.year}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Deskripsi: ${temuan.deskripsiTemuan}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  if (temuan.latitude != null && temuan.longitude != null) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[700],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red, width: 2),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            'Koordinat: ${temuan.latitude}, ${temuan.longitude}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  _openGoogleMaps(
-                                    temuan.latitude!,
-                                    temuan.longitude!,
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.map,
-                                  size: 16,
-                                  color: Colors.green,
-                                ),
-                                label: const Text('Maps'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.grey[800],
-                                  foregroundColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                ),
-                              ),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  _copyCoordinates(
-                                    temuan.latitude!,
-                                    temuan.longitude!,
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.copy,
-                                  size: 16,
-                                  color: Colors.blue,
-                                ),
-                                label: const Text('Copy'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.grey[800],
-                                  foregroundColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Tutup',
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ),
-            ],
-          ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _MarkerDetailSheet(
+        temuan: temuan,
+        pinColor: _pinColor(temuan.tipeTemuan, temuan.levelRisiko),
+        labelBgColor: _labelBgColor(temuan.tipeTemuan),
+        onOpenMaps: () => _openGoogleMaps(temuan.latitude!, temuan.longitude!),
+        onCopyCoords: () => _copyCoordinates(temuan.latitude!, temuan.longitude!),
+      ),
     );
   }
 
@@ -565,7 +850,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.35),
+                color: Colors.black.withValues(alpha: 0.35),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: const Text(
