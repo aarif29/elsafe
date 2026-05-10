@@ -72,7 +72,7 @@ class _MarkerDetailSheet extends StatelessWidget {
                   children: [
                     _buildHeader(),
                     const SizedBox(height: 14),
-                    _buildSection('Identitas', Icons.badge_outlined, _buildIdentitas()),
+                    _buildSection('Info Temuan', Icons.badge_outlined, _buildIdentitas()),
                     _buildSection('Lokasi', Icons.place_outlined, _buildLokasi()),
                     _buildSection('Deskripsi Temuan', Icons.description_outlined, _buildDeskripsi()),
                     _buildSection('Jaringan Listrik', Icons.electric_bolt, _buildJaringan()),
@@ -195,6 +195,7 @@ class _MarkerDetailSheet extends StatelessWidget {
       children: [
         _row(Icons.calendar_today, 'Tanggal Temuan', _fmt(temuan.tanggalTemuan)),
         if (temuan.ulp != null) _row(Icons.location_city, 'ULP', _val(temuan.ulp)),
+        if (temuan.createdBy != null) _row(Icons.person_outline, 'Diupload oleh', _val(temuan.createdBy)),
         if (temuan.createdAt != null) _row(Icons.access_time, 'Dibuat', _fmt(temuan.createdAt)),
       ],
     );
@@ -205,7 +206,6 @@ class _MarkerDetailSheet extends StatelessWidget {
       children: [
         if (temuan.alamatTemuan != null && temuan.alamatTemuan!.trim().isNotEmpty)
           _row(Icons.home_outlined, 'Alamat', _val(temuan.alamatTemuan)),
-        _row(Icons.place, 'Lokasi / Gardu', _val(temuan.lokasi)),
         if (temuan.latitude != null)
           _row(Icons.gps_fixed, 'Koordinat',
               '${temuan.latitude!.toStringAsFixed(6)}, ${temuan.longitude!.toStringAsFixed(6)}'),
@@ -232,8 +232,8 @@ class _MarkerDetailSheet extends StatelessWidget {
     return Column(
       children: [
         _row(Icons.electric_bolt, 'Penyulang', _val(temuan.namaPenyulang)),
-        _row(Icons.account_tree, 'Section', temuan.section != null ? 'Section ${temuan.section}' : '-'),
         _row(Icons.radar, 'Zona', temuan.zona != null ? 'Zona ${temuan.zona}' : '-'),
+        _row(Icons.account_tree, 'Section', temuan.section != null ? 'Section ${temuan.section}' : '-'),
       ],
     );
   }
@@ -254,8 +254,8 @@ class _MarkerDetailSheet extends StatelessWidget {
         if (temuan.lokasiObjek != null) _row(Icons.location_searching, 'Lokasi Objek', _val(temuan.lokasiObjek)),
         if (temuan.jarakAktivitas != null) _row(Icons.straighten, 'Jarak Aktivitas', _val(temuan.jarakAktivitas)),
         if (temuan.intensitasAktivitas != null) _row(Icons.trending_up, 'Intensitas', _val(temuan.intensitasAktivitas)),
-        if (temuan.skorMatriks != null)
-          _row(Icons.bar_chart, 'Skor Matriks', '${temuan.skorMatriks}',
+        if (temuan.levelRisiko != null)
+          _row(Icons.bar_chart, 'Level Risiko', _val(temuan.levelRisiko),
               valueColor: pinColor),
       ],
     );
