@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'Screen/splashscreen.dart';
 import 'profil/loginscreen.dart';
 import 'Screen/main_shell.dart';
 import 'Screen/ulp_selection_screen.dart';
@@ -270,7 +269,7 @@ class _MyAppState extends State<MyApp> {
           theme: ThemeService.light(),
           darkTheme: ThemeService.dark(),
           themeMode: mode,
-          home: const ElsafeSplashScreen(),
+          home: const Scaffold(backgroundColor: Colors.white),
         );
       },
     );
