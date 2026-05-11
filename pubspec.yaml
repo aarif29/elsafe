@@ -71,6 +71,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/LOGO_ELSAFE.png
     - assets/logo_google.png
     - assets/Logo_PLN.png
     - assets/Logo_HSSE_PLN.png

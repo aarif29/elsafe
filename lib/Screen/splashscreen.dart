@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:elsafe/profil/loginscreen.dart';
 
 void main() {
@@ -107,52 +106,10 @@ class _ElsafeSplashScreenState extends State<ElsafeSplashScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // Logo
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF00C6FF), Color(0xFF0072FF)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blueAccent.withValues(alpha: 0.6),
-                              blurRadius: 20,
-                              spreadRadius: 1,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(24),
-                        child: const Icon(
-                          Icons.flash_on,
-                          size: 72,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      // App Name
-                      const Text(
-                        'ELSAFE',
-                        style: TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 4,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Tagline
-                      Text(
-                        'Menjaga Energi, Melindungi Nyawa',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey[400],
-                          fontStyle: FontStyle.italic,
-                          letterSpacing: 1.2,
-                        ),
+                      Image.asset(
+                        'assets/LOGO_ELSAFE.png',
+                        width: 220,
+                        height: 220,
                       ),
                       const SizedBox(height: 48),
                       // Loading indicator
