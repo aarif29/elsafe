@@ -2,6 +2,8 @@
 
 Dokumen ini disusun dari graphify `GRAPH_REPORT.md` dan pembacaan modul inti aplikasi Flutter/Supabase. Fokus sistem adalah pencatatan, pemantauan, tindak lanjut, notifikasi, pemetaan, dan export laporan temuan potensi bahaya KMU/ROW.
 
+> **Catatan Format:** Semua diagram menggunakan tema `neutral` dan arah `TB`/`TD` agar sesuai orientasi *portrait* kertas A4. Class diagram dan activity diagram masing-masing dibagi dua bagian agar setiap gambar cukup dalam satu halaman A4.
+
 ## Ringkasan Aktor dan Modul
 
 Aktor utama:
@@ -19,397 +21,282 @@ Modul inti:
 - `filterExportTemuan`, `ExportTemuanPdfGenerator`
 - `DashboardDrawer`, `PanduanPenggunaanScreen` (widget bantu di MainShell)
 
+---
+
 ## 1. Use Case Diagram
 
 ```mermaid
-flowchart LR
-  petugas[Petugas / User]
-  admin[Admin]
-  supabase[(Supabase Auth, DB, Storage, Realtime)]
-  google[Google OAuth / Google Maps]
+%%{init: {'theme': 'neutral'}}%%
+flowchart TB
+  petugas([Petugas / User])
+  admin([Admin])
 
-  subgraph sistem[Elsafe App]
-    ucLogin((Login dengan Google))
-    ucRegister((Registrasi Email))
-    ucReset((Reset Password))
-    ucPilihUlp((Memilih ULP Awal))
-    ucDashboard((Melihat Dashboard))
-    ucTambah((Membuat Temuan KMU/ROW))
-    ucUpload((Upload Foto Temuan))
-    ucRisiko((Menghitung Matriks Risiko))
-    ucLokasi((Memilih / Mengambil Lokasi))
-    ucDaftar((Melihat Daftar Temuan))
-    ucDetail((Melihat Detail Temuan))
-    ucEdit((Mengubah Temuan))
-    ucHapus((Menghapus Temuan))
-    ucReminder((Mengisi Reminder))
-    ucClosing((Mengisi Closing))
-    ucSosialisasi((Mengelola Sosialisasi))
-    ucNotif((Melihat dan Membaca Notifikasi))
-    ucMaps((Melihat Temuan pada Peta))
-    ucExport((Filter dan Export PDF))
-    ucProfil((Mengelola Profil))
-    ucReqUlp((Mengajukan Ganti ULP))
-    ucApprove((Menyetujui / Menolak Ganti ULP))
-    ucReadOnly((Melihat Semua Temuan Read-only))
-    ucPanduan((Melihat Panduan Penggunaan))
+  subgraph sistem["Sistem Elsafe"]
+    subgraph grpAuth["Autentikasi"]
+      ucLogin([Login Google])
+      ucRegister([Registrasi])
+      ucReset([Reset Sandi])
+      ucPilihUlp([Pilih ULP Awal])
+    end
+
+    subgraph grpTemuan["Pengelolaan Temuan"]
+      ucDashboard([Dashboard])
+      ucTambah([Buat Temuan])
+      ucDaftar([Daftar Temuan])
+      ucDetail([Detail Temuan])
+      ucEdit([Edit Temuan])
+      ucHapus([Hapus Temuan])
+    end
+
+    subgraph grpSub["Sub-Proses Temuan"]
+      ucUpload([Upload Foto])
+      ucRisiko([Matriks Risiko])
+      ucLokasi([Pilih Lokasi])
+      ucReminder([Reminder])
+      ucClosing([Closing])
+      ucSosialisasi([Sosialisasi])
+    end
+
+    subgraph grpMonitor["Monitoring dan Output"]
+      ucNotif([Notifikasi])
+      ucMaps([Peta Temuan])
+      ucExport([Export PDF])
+      ucPanduan([Panduan])
+    end
+
+    subgraph grpProfil["Profil"]
+      ucProfil([Profil])
+      ucReqUlp([Ajukan Ganti ULP])
+    end
+
+    subgraph grpAdmin["Fitur Admin"]
+      ucApprove([Approval Ganti ULP])
+      ucReadOnly([Lihat Temuan])
+    end
   end
 
-  petugas --> ucLogin
-  petugas --> ucRegister
-  petugas --> ucReset
-  petugas --> ucPilihUlp
-  petugas --> ucDashboard
-  petugas --> ucTambah
-  petugas --> ucDaftar
-  petugas --> ucDetail
-  petugas --> ucEdit
-  petugas --> ucHapus
-  petugas --> ucNotif
-  petugas --> ucMaps
-  petugas --> ucExport
-  petugas --> ucProfil
-  petugas --> ucReqUlp
-  petugas --> ucPanduan
+  supabase[(Supabase)]
+  google[Google OAuth / Maps]
 
-  admin --> ucLogin
-  admin --> ucDashboard
-  admin --> ucReadOnly
-  admin --> ucNotif
-  admin --> ucExport
-  admin --> ucApprove
-  admin --> ucPanduan
+  petugas --> ucLogin & ucRegister & ucReset & ucPilihUlp
+  petugas --> ucDashboard & ucTambah & ucDaftar & ucDetail & ucEdit & ucHapus
+  petugas --> ucNotif & ucMaps & ucExport & ucProfil & ucReqUlp & ucPanduan
 
-  ucTambah -. includes .-> ucUpload
-  ucTambah -. includes .-> ucRisiko
-  ucTambah -. includes .-> ucLokasi
-  ucTambah -. includes .-> ucReminder
-  ucEdit -. includes .-> ucClosing
-  ucEdit -. includes .-> ucSosialisasi
-  ucEdit -. includes .-> ucUpload
-  ucExport -. includes .-> ucDaftar
+  admin --> ucLogin & ucDashboard & ucReadOnly
+  admin --> ucNotif & ucExport & ucApprove & ucPanduan
 
-  ucLogin --> google
-  ucLokasi --> google
-  ucMaps --> google
+  ucTambah -.->|include| ucUpload
+  ucTambah -.->|include| ucRisiko
+  ucTambah -.->|include| ucLokasi
+  ucTambah -.->|include| ucReminder
+  ucEdit -.->|include| ucClosing
+  ucEdit -.->|include| ucSosialisasi
+  ucEdit -.->|include| ucUpload
 
-  ucLogin --> supabase
-  ucRegister --> supabase
-  ucReset --> supabase
-  ucPilihUlp --> supabase
-  ucTambah --> supabase
-  ucUpload --> supabase
-  ucDaftar --> supabase
-  ucEdit --> supabase
-  ucHapus --> supabase
-  ucNotif --> supabase
-  ucReqUlp --> supabase
-  ucApprove --> supabase
-  ucExport --> supabase
+  ucLogin --> google & supabase
+  ucLokasi & ucMaps --> google
+  ucRegister & ucReset & ucPilihUlp --> supabase
+  ucTambah & ucUpload & ucDaftar & ucEdit & ucHapus --> supabase
+  ucNotif & ucReqUlp & ucApprove & ucExport --> supabase
 ```
 
-## 2. Class Diagram
+---
+
+## 2a. Class Diagram – Layer UI
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 classDiagram
   class MyApp {
     -GlobalKey navigatorKey
     -StreamSubscription authSubscription
-    -bool isRedirecting
     +build()
     -setupAuthListener()
-    -redirect()
-    -navigateAfterLogin(nav, userId)
+    -navigateAfterLogin()
   }
-
   class ElsafeSplashScreen {
     +build()
     +initState()
-    +dispose()
   }
-
   class ThemeService {
-    +ThemeService instance
     +ValueNotifier themeMode
-    +static light()
-    +static dark()
     +loadTheme()
     +setTheme(mode)
   }
-
   class MainShell {
-    -TemuanService temuanService
-    -UlpService ulpService
-    -int navIndex
     -bool isAdmin
-    -bool hasLoadedRole
-    -bool showPanduan
-    -bool showExport
+    -int navIndex
     +build()
     -loadRole()
-    -openTambahTemuan()
     -handleLogout()
-    +openPanduan()
-    +closePanduan()
-    +openExport()
-    +closeExport()
-    +backToDashboard()
     +openNotifications()
   }
-
   class DashboardScreen {
-    -TemuanService temuanService
     +loadData()
-    -loadDashboardData()
   }
-
   class DaftarTemuanScreen {
-    -TemuanService temuanService
-    -UlpService ulpService
     +loadData()
-    -loadMoreData()
     -deleteTemuan(id)
-    -showDetailDialog(temuan)
+    -showDetailDialog()
   }
-
   class TemuanScreen {
-    -TemuanService temuanService
     +submitForm()
-    -uploadFiles(files)
+    -uploadFiles()
     -getCurrentLocation()
-    -pickLocationManually()
   }
-
   class EditTemuanScreen {
-    -TemuanService temuanService
-    +loadSosialisasi()
     +submitForm()
-    -uploadFiles(files)
+    +loadSosialisasi()
+    -uploadFiles()
   }
-
   class ExportTemuanScreen {
-    -TemuanService temuanService
-    -loadData()
     -applyFilters()
     -previewPdf()
     -exportPdf()
   }
-
   class MapsViewWidget {
-    -TemuanService temuanService
-    +build()
     -loadTemuan()
-    -buildMarkers(list)
-    -showMarkerDetail(temuan)
+    -buildMarkers()
+    -showMarkerDetail()
   }
-
   class NotificationsScreen {
-    -NotificationService service
-    -TemuanService temuanService
-    -UlpService ulpService
     -load()
-    -onTapNotif(notif)
+    -onTapNotif()
     -markAllRead()
   }
-
   class AdminApprovalScreen {
-    -UlpService ulpService
     +loadRequests()
     -approve(id)
     -reject(id)
   }
-
   class Profile {
-    -SupabaseClient supabase
-    -UlpService ulpService
     +loadProfile()
     -saveProfile()
     -showGantiUlpDialog()
   }
 
+  MyApp --> ElsafeSplashScreen : navigates
+  MyApp --> MainShell : navigates
+  MyApp --> ThemeService
+  MainShell --> DashboardScreen
+  MainShell --> DaftarTemuanScreen
+  MainShell --> TemuanScreen
+  MainShell --> EditTemuanScreen
+  MainShell --> ExportTemuanScreen
+  MainShell --> MapsViewWidget
+  MainShell --> NotificationsScreen
+  Profile --> AdminApprovalScreen
+```
+
+---
+
+## 2b. Class Diagram – Layer Service dan Model
+
+```mermaid
+%%{init: {'theme': 'neutral'}}%%
+classDiagram
   class TemuanService {
     -SupabaseClient supabase
-    -UlpService ulpService
-    +currentUserId
-    +currentUserEmail
-    +getCurrentUserProfile()
-    +uploadFoto(file)
-    +deleteFoto(url)
-    +deleteFotos(photoUrls)
     +createTemuan(temuan)
-    +getTemuanPaginated(page, pageSize)
-    +getAllTemuanSilent()
-    +getTemuanById(id)
-    +getTemuanByIdAny(id)
-    +updateTemuan(id, temuan)
+    +updateTemuan(id, data)
     +deleteTemuanSilent(id)
+    +getTemuanPaginated(page, size)
+    +uploadFoto(file)
     +getUserStatistics()
-    +addSosialisasi(sosialisasi)
-    +getSosialisasiByTemuan(temuanId)
-    +deleteSosialisasi(id)
+    +addSosialisasi(data)
+    +getSosialisasiByTemuan(id)
   }
-
   class UlpService {
     -SupabaseClient supabase
-    +getCurrentUserProfile()
     +isAdmin()
     +setUserUlp(ulp)
     +requestGantiUlp(ulpBaru, alasan)
-    +hasPendingRequest()
+    +approveRequest(id)
+    +rejectRequest(id)
     +getPendingRequests()
-    +approveRequest(requestId)
-    +rejectRequest(requestId)
   }
-
   class NotificationService {
-    +NotificationService instance
     +ValueNotifier unreadCount
     -RealtimeChannel channel
     +initialize()
-    +refreshUnreadCount()
-    -subscribeRealtime()
     +getNotifications()
-    +markAsRead(id)
     +markAllAsRead()
-    +checkAndNotifyOverdue(temuanId, namaPemilik, lokasi, tglReminder)
-    +clearReminderNotifIfNotOverdue(temuanId, tglReminder)
-    +reset()
+    +checkAndNotifyOverdue(...)
+    +refreshUnreadCount()
   }
-
   class TemuanModel {
     +String id
     +String lokasi
-    +String alamatTemuan
-    +String namaPemilik
-    +DateTime tanggalTemuan
-    +String deskripsiTemuan
-    +double latitude
-    +double longitude
-    +List~String~ fotoUrls
     +String statusTemuan
     +String tipeTemuan
     +String ulp
     +String namaPenyulang
-    +int section
-    +int zona
     +int skorMatriks
     +String levelRisiko
-    +DateTime tglReminder
-    +DateTime tglClosing
-    +Map toJson()
-    +fromJson(json)
+    +toJson()
+    +fromJson(json)$
   }
-
   class SosialisasiModel {
     +String id
     +String temuanId
     +DateTime tglSosialisasi
-    +List~String~ fotoUrls
-    +String createdBy
-    +Map toJson()
-    +fromJson(json)
+    +List fotoUrls
+    +toJson()
+    +fromJson(json)$
   }
-
   class MatriksRisiko {
-    +hitungSkor(jarak, intensitas, objek, aset, lokasi)
-    +levelDariSkor(skor)
-    +skorDariNilai(options, value)
+    +hitungSkor(...)$
+    +levelDariSkor(skor)$
   }
-
   class Penyulang {
-    +Map perUlp
-    +untukUlp(ulp)
-    +semua
+    +Map perUlp$
+    +untukUlp(ulp)$
   }
-
   class ExportTemuanPdfGenerator {
-    +generate(temuan, startDate, endDate, ulpLabel)
+    +generate(temuan, start, end, ulp)$
   }
-
   class SupabaseConfig {
-    +supabaseUrl
-    +supabaseAnonKey
-    +initialize()
+    +supabaseUrl$
+    +initialize()$
   }
-
-  MyApp --> SupabaseConfig
-  MyApp --> ThemeService
-  MyApp --> ElsafeSplashScreen
-  MyApp --> MainShell
-  MainShell --> DashboardScreen
-  MainShell --> DaftarTemuanScreen
-  MainShell --> TemuanScreen
-  MainShell --> ExportTemuanScreen
-  MainShell --> MapsViewWidget
-  MainShell --> NotificationsScreen
-  MainShell --> TemuanService
-  MainShell --> UlpService
-  MainShell --> NotificationService
-
-  DashboardScreen --> TemuanService
-  DaftarTemuanScreen --> TemuanService
-  DaftarTemuanScreen --> UlpService
-  TemuanScreen --> TemuanService
-  TemuanScreen --> NotificationService
-  EditTemuanScreen --> TemuanService
-  EditTemuanScreen --> NotificationService
-  ExportTemuanScreen --> TemuanService
-  ExportTemuanScreen --> ExportTemuanPdfGenerator
-  MapsViewWidget --> TemuanService
-  NotificationsScreen --> NotificationService
-  NotificationsScreen --> TemuanService
-  NotificationsScreen --> UlpService
-  AdminApprovalScreen --> UlpService
-  Profile --> UlpService
-  Profile --> AdminApprovalScreen
 
   TemuanService --> TemuanModel
   TemuanService --> SosialisasiModel
   TemuanService --> UlpService
-  TemuanScreen --> MatriksRisiko
-  TemuanScreen --> Penyulang
-  EditTemuanScreen --> MatriksRisiko
-  EditTemuanScreen --> Penyulang
   ExportTemuanPdfGenerator --> TemuanModel
   SosialisasiModel --> TemuanModel : temuanId
 ```
 
-## 3. Sequence Diagram - Membuat Temuan
+---
+
+## 3. Sequence Diagram – Membuat Temuan
 
 ```mermaid
 sequenceDiagram
-  actor User as Petugas/User
-  participant MainShell
+  actor User as Petugas
   participant Form as TemuanScreen
-  participant Lokasi as Location/Map Picker
-  participant Risiko as MatriksRisiko
   participant TS as TemuanService
   participant US as UlpService
   participant NS as NotificationService
   participant SB as Supabase
 
-  User->>MainShell: Pilih menu tambah temuan
-  MainShell->>Form: Buka TemuanScreen
+  User->>Form: Buka form tambah temuan
   Form->>US: getCurrentUserProfile()
   US->>SB: select profiles
-  SB-->>US: profil user dan ULP
+  SB-->>US: profil user + ULP
   US-->>Form: profil
 
-  User->>Form: Isi data temuan, tipe KMU/ROW, penyulang, zona, section
-  User->>Form: Pilih lokasi otomatis/manual
-  Form->>Lokasi: Ambil GPS atau pilih titik peta
-  Lokasi-->>Form: latitude, longitude, alamat/lokasi
+  User->>Form: Isi data, tipe KMU/ROW, penyulang, zona, section
+  Note over Form: Hitung matriks risiko (lokal)
+  User->>Form: Pilih lokasi GPS / manual
+  Note over Form: Ambil latitude, longitude, alamat
 
-  User->>Form: Isi parameter risiko
-  Form->>Risiko: hitungSkor()
-  Risiko-->>Form: skor dan level risiko
-
-  User->>Form: Pilih foto temuan/reminder/closing/sosialisasi
-  loop setiap file
+  User->>Form: Pilih foto temuan
+  loop setiap foto
     Form->>TS: uploadFoto(file)
     TS->>US: getCurrentUserProfile()
     US->>SB: select profiles
-    SB-->>US: role dan ULP
+    SB-->>US: role + ULP
     TS->>SB: upload ke storage foto-temuan
     SB-->>TS: public URL
     TS-->>Form: URL foto
@@ -421,25 +308,26 @@ sequenceDiagram
   US->>SB: select profiles
   SB-->>US: profil
   alt role admin
-    TS-->>Form: gagal, admin read-only
+    TS-->>Form: gagal – admin read-only
   else role user
-    TS->>SB: insert table temuan
-    SB-->>TS: row temuan
+    TS->>SB: insert temuan
+    SB-->>TS: row temuan baru
     TS-->>Form: sukses
-    opt tgl_reminder sudah overdue >= 19 hari dan status Open
+    opt tgl_reminder overdue + status Open
       Form->>NS: checkAndNotifyOverdue()
-      NS->>SB: insert notifications untuk creator dan admin
+      NS->>SB: insert notifications
     end
-    Form-->>MainShell: pop(true)
-    MainShell->>MainShell: refresh dashboard/list
+    Form-->>User: kembali ke dashboard
   end
 ```
 
-## 4. Sequence Diagram - Request Ganti ULP dan Approval Admin
+---
+
+## 4. Sequence Diagram – Request Ganti ULP dan Approval Admin
 
 ```mermaid
 sequenceDiagram
-  actor User as Petugas/User
+  actor User as Petugas
   actor Admin
   participant Profile
   participant Approval as AdminApprovalScreen
@@ -448,135 +336,143 @@ sequenceDiagram
 
   User->>Profile: Pilih ganti ULP
   Profile->>US: requestGantiUlp(ulpBaru, alasan)
-  US->>SB: select profiles untuk ULP lama
+  US->>SB: select profiles (ULP lama)
   SB-->>US: profil user
-  US->>SB: cek ulp_change_requests status pending
-  alt sudah ada request pending
-    US-->>Profile: gagal, request masih pending
+  US->>SB: cek ulp_change_requests pending
+  alt request pending sudah ada
+    US-->>Profile: gagal – masih pending
   else belum ada request pending
-    US->>SB: insert ulp_change_requests(status=pending)
+    US->>SB: insert ulp_change_requests (status=pending)
     US-->>Profile: sukses, menunggu admin
   end
 
-  Admin->>Approval: Buka persetujuan ULP (dari halaman Profil)
+  Admin->>Approval: Buka persetujuan ULP
   Approval->>US: getPendingRequests()
   US->>SB: select ulp_change_requests pending
   US->>SB: select profiles pemohon
-  SB-->>US: daftar request diperkaya profil
-  US-->>Approval: data pending
+  SB-->>US: data request + profil
+  US-->>Approval: daftar pending
 
   alt Admin menyetujui
-    Admin->>Approval: Approve request
+    Admin->>Approval: Approve
     Approval->>US: approveRequest(requestId)
-    US->>SB: update request status approved
-    US->>SB: update profiles.ulp user pemohon
+    US->>SB: update request → approved
+    US->>SB: update profiles.ulp pemohon
     US-->>Approval: sukses
   else Admin menolak
-    Admin->>Approval: Reject request
+    Admin->>Approval: Reject
     Approval->>US: rejectRequest(requestId)
-    US->>SB: update request status rejected
+    US->>SB: update request → rejected
     US-->>Approval: sukses
   end
 ```
 
-## 5. Activity Diagram - Workflow Pengelolaan Temuan
+---
+
+## 5a. Activity Diagram – Alur Autentikasi dan Tambah Temuan
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 flowchart TD
   A([Mulai]) --> A0[Tampilkan SplashScreen]
-  A0 --> B{Sesi autentikasi tersedia?}
-  B -- Tidak --> C[Login Google / registrasi / reset password]
+  A0 --> B{Sesi auth tersedia?}
+  B -- Tidak --> C[Login Google / Registrasi / Reset Sandi]
   C --> D{Session valid?}
   D -- Tidak --> C
   D -- Ya --> E{ULP sudah disetel?}
   B -- Ya --> E
 
-  E -- Tidak --> F[Pilih ULP awal]
+  E -- Tidak --> F[Pilih ULP Awal]
   F --> G[Simpan ULP ke profil]
-  E -- Ya --> H[Masuk MainShell]
   G --> H
+  E -- Ya --> H[Masuk MainShell / Dashboard]
 
-  H --> I[Dashboard]
-  I --> J{Pilih fitur}
-
-  J --> K[Tambah Temuan]
-  K --> L[Isi identitas temuan dan tipe KMU/ROW]
-  L --> M[Pilih lokasi dan penyulang]
+  H --> K[Tambah Temuan]
+  K --> L[Isi identitas temuan + tipe KMU/ROW]
+  L --> M[Pilih lokasi + penyulang / section / zona]
   M --> N[Isi parameter matriks risiko]
-  N --> O[Upload foto]
-  O --> P[Isi reminder/closing/sosialisasi jika ada]
-  P --> Q{Validasi form lengkap?}
+  N --> O[Upload foto temuan]
+  O --> P[Isi reminder / closing / sosialisasi]
+  P --> Q{Form valid?}
   Q -- Tidak --> L
   Q -- Ya --> R[Simpan ke Supabase]
-  R --> S{Simpan berhasil?}
-  S -- Tidak --> T[Tampilkan error]
+  R --> S{Berhasil?}
+  S -- Tidak --> T[Tampilkan pesan error]
   T --> L
-  S -- Ya --> U{Reminder overdue dan status Open?}
+  S -- Ya --> U{Reminder overdue\n+ status Open?}
   U -- Ya --> V[Buat notifikasi user dan admin]
-  U -- Tidak --> W[Refresh data]
-  V --> W
+  V --> W[Refresh dan kembali ke Dashboard]
+  U -- Tidak --> W
+  W --> H
+```
 
-  J --> X[Daftar Temuan]
-  X --> Y[Search, filter, pagination]
-  Y --> Z{Pilih aksi}
-  Z --> AA[Lihat detail]
-  Z --> AB[Edit temuan]
-  Z --> AC[Hapus temuan]
-  AB --> R
-  AC --> AD{Role admin?}
-  AD -- Ya --> AE[Ditolak: admin read-only]
-  AD -- Tidak --> AF[Hapus data dan foto]
-  AF --> W
+---
 
-  J --> AG[Notifikasi]
-  AG --> AH[Tandai dibaca / buka temuan]
-  AH --> AA
+## 5b. Activity Diagram – Alur Fitur Pendukung
 
-  J --> AI[Peta Temuan]
-  AI --> AJ[Lihat marker dan detail lokasi]
+```mermaid
+%%{init: {'theme': 'neutral'}}%%
+flowchart TD
+  H([Dashboard]) --> J{Pilih fitur}
 
-  J --> AK[Export PDF]
-  AK --> AL[Filter periode, status, risiko, ULP, penyulang, zona, section, tipe]
-  AL --> AM[Pilih data]
-  AM --> AN[Generate PDF]
+  J -- Daftar Temuan --> X[Tampilkan list + search / filter / pagination]
+  X --> Z{Aksi pada temuan}
+  Z -- Lihat Detail --> AA[Tampilkan detail temuan]
+  Z -- Edit --> AB[Form Edit lalu Simpan ke Supabase]
+  Z -- Hapus --> AC{Role admin?}
+  AC -- Ya --> AE[Ditolak: admin read-only]
+  AC -- Tidak --> AF[Hapus data dan foto]
+  AA & AB & AF & AE --> J
 
-  J --> AO[Profil]
+  J -- Notifikasi --> AG[Tampilkan daftar notifikasi]
+  AG --> AH[Tandai dibaca / buka temuan terkait]
+  AH --> J
+
+  J -- Peta --> AI[Tampilkan flutter_map + marker temuan]
+  AI --> AJ[Lihat detail marker]
+  AJ --> J
+
+  J -- Export PDF --> AK[Buka filter laporan]
+  AK --> AL[Filter: periode, status, risiko,\nULP, penyulang, zona, section, tipe]
+  AL --> AM[Preview data terpilih]
+  AM --> AN[Generate dan unduh PDF]
+  AN --> J
+
+  J -- Profil --> AO[Tampilkan profil user]
   AO --> AP{Ajukan ganti ULP?}
-  AP -- Ya --> AQ[Kirim request pending]
+  AP -- Ya --> AQ[Kirim request, tunggu admin]
   AP -- Tidak --> J
+  AQ --> J
 
-  J --> AR{Admin?}
+  J -- Admin --> AR{Role admin?}
   AR -- Ya --> AS[Kelola approval ganti ULP]
-  AS --> AT[Approve / reject request]
+  AS --> AT[Approve / Reject request]
   AT --> J
   AR -- Tidak --> J
-
-  W --> I
-  AN --> I
-  AE --> I
 ```
+
+---
 
 ## 6. Deployment / Component Diagram
 
-Diagram ini menjelaskan komponen-komponen utama dan layanan eksternal yang digunakan aplikasi.
-
 ```mermaid
-flowchart LR
-  subgraph Client[Client Device]
-    Flutter[Flutter App\nAndroid / iOS / Web / Desktop]
+%%{init: {'theme': 'neutral'}}%%
+flowchart TB
+  subgraph Client["Client Device"]
+    Flutter["Flutter App\nAndroid / iOS / Web"]
   end
 
-  subgraph SupabaseCloud[Supabase Cloud]
-    Auth[Supabase Auth]
-    DB[(PostgreSQL Database)]
-    Storage[(Storage Bucket foto-temuan)]
-    Realtime[Realtime Channel]
+  subgraph SupabaseCloud["Supabase Cloud"]
+    Auth["Supabase Auth"]
+    DB[("PostgreSQL")]
+    Storage[("Storage\nfoto-temuan")]
+    Realtime["Realtime Channel"]
   end
 
-  subgraph External[External Services]
-    GoogleOAuth[Google OAuth]
-    GoogleMaps[Google Maps\nvia url_launcher]
-    OSM[OpenStreetMap\nTile Server]
+  subgraph External["Layanan Eksternal"]
+    GoogleOAuth["Google OAuth"]
+    GoogleMaps["Google Maps\n(url_launcher)"]
+    OSM["OpenStreetMap\nTile Server"]
   end
 
   Flutter --> Auth
@@ -587,20 +483,23 @@ flowchart LR
   Flutter --> GoogleMaps
   Flutter --> OSM
 
-  DB --- Profiles[profiles]
-  DB --- Temuan[temuan]
-  DB --- Sosialisasi[temuan_sosialisasi]
-  DB --- Notif[notifications]
-  DB --- ULPReq[ulp_change_requests]
+  DB --- Profiles["profiles"]
+  DB --- Temuan["temuan"]
+  DB --- Sosialisasi["temuan_sosialisasi"]
+  DB --- Notif["notifications"]
+  DB --- ULPReq["ulp_change_requests"]
 ```
 
 Catatan implementasi:
 - Peta dalam aplikasi menggunakan `flutter_map` + tile OpenStreetMap (bukan Google Maps SDK).
 - Tombol "Buka Maps" membuka Google Maps melalui `url_launcher` (external app/browser).
 
+---
+
 ## 7. Entity Relationship Diagram
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 erDiagram
   profiles {
     uuid id PK
@@ -681,33 +580,45 @@ erDiagram
   temuan ||--o{ notifications : memicu
 ```
 
-## Diagram Tambahan untuk Skripsi
+---
 
-Diagram yang sebaiknya ditambahkan selain empat UML utama:
-
-1. ERD / Database Schema Diagram: penting karena aplikasi sangat bergantung pada tabel `profiles`, `temuan`, `temuan_sosialisasi`, `notifications`, dan `ulp_change_requests`.
-2. Component Diagram: menunjukkan pembagian Flutter App, Supabase Auth, Database, Storage, Realtime, Google OAuth, OpenStreetMap, dan Google Maps.
-3. Deployment Diagram: menjelaskan aplikasi berjalan di perangkat client dan berkomunikasi dengan Supabase Cloud serta layanan eksternal.
-4. State Machine Diagram untuk status temuan: cocok untuk menjelaskan transisi `Open` ke `Closed`, serta kondisi reminder overdue.
-5. Wireframe atau Navigation Flow: berguna di bab perancangan antarmuka untuk menjelaskan alur dari splash screen, login, dashboard, tambah temuan, daftar, peta, notifikasi, export, dan profil.
-
-Rekomendasi prioritas untuk skripsi Teknik Informatika:
-- Wajib: Use Case Diagram, Activity Diagram, Sequence Diagram, Class Diagram, ERD.
-- Sangat disarankan: Component/Deployment Diagram.
-- Opsional tetapi kuat: State Machine Diagram status temuan dan Navigation Flow.
-
-## State Machine Diagram Tambahan - Status Temuan
+## 8. State Machine Diagram – Status Temuan
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 stateDiagram-v2
-  [*] --> Draft: User mengisi form
-  Draft --> Open: Temuan berhasil disimpan
-  Open --> Open: Reminder ditambahkan/diubah
-  Open --> Overdue: tgl_reminder lewat >= 19 hari
-  Overdue --> Notified: NotificationService membuat notifikasi
-  Notified --> Open: Notifikasi dibaca, temuan belum closing
-  Open --> Closed: jenis_closing/tgl_closing diisi
-  Overdue --> Closed: closing dilakukan
-  Notified --> Closed: closing dilakukan
+  [*] --> Draft : User mengisi form
+  Draft --> Open : Temuan berhasil disimpan
+  Open --> Open : Reminder ditambahkan / diubah
+  Open --> Overdue : tgl_reminder lewat >= 19 hari
+  Overdue --> Notified : NotificationService membuat notifikasi
+  Notified --> Open : Notifikasi dibaca, temuan belum closing
+  Open --> Closed : jenis_closing / tgl_closing diisi
+  Overdue --> Closed : closing dilakukan saat overdue
+  Notified --> Closed : closing dilakukan setelah notifikasi
   Closed --> [*]
 ```
+
+---
+
+## Catatan Diagram untuk Skripsi
+
+Diagram yang sudah tersedia dalam dokumen ini:
+
+| No | Diagram | Keterangan |
+|----|---------|-----------|
+| 1 | Use Case Diagram | Aktor, use case, relasi include, layanan eksternal |
+| 2a | Class Diagram – Layer UI | Screen, shell, widget; metode publik utama |
+| 2b | Class Diagram – Layer Service & Model | Service, model, helper; relasi dependensi |
+| 3 | Sequence – Membuat Temuan | Alur lengkap buat temuan + notifikasi overdue |
+| 4 | Sequence – Ganti ULP & Approval | Request user → approval/reject admin |
+| 5a | Activity – Autentikasi & Tambah Temuan | Login, pilih ULP, buat temuan, error handling |
+| 5b | Activity – Fitur Pendukung | Daftar, notifikasi, peta, export, profil, admin |
+| 6 | Deployment / Component | Flutter ↔ Supabase ↔ layanan eksternal |
+| 7 | ERD | Skema tabel PostgreSQL dan relasi antar tabel |
+| 8 | State Machine – Status Temuan | Transisi Draft → Open → Overdue → Closed |
+
+Rekomendasi prioritas untuk skripsi Teknik Informatika:
+- **Wajib:** Use Case Diagram, Activity Diagram (5a+5b), Sequence Diagram, Class Diagram (2a+2b), ERD.
+- **Sangat disarankan:** Deployment/Component Diagram.
+- **Opsional tetapi kuat:** State Machine Diagram status temuan.
