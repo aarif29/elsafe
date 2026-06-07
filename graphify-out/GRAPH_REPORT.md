@@ -1,16 +1,16 @@
 # Graph Report - elsafe  (2026-06-07)
 
 ## Corpus Check
-- 85 files · ~94,604 words
+- 85 files · ~95,844 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 780 nodes · 883 edges · 62 communities (53 shown, 9 thin omitted)
+- 801 nodes · 904 edges · 62 communities (53 shown, 9 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 18 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fd3d6e5e`
+- Built from commit: `5424c7ad`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -104,19 +104,19 @@ Nodes (49): _applyFilters, BoxDecoration, build, _buildActionButtons, _buildAdva
 
 ### Community 2 - "Community 2"
 Cohesion: 0.05
-Nodes (40): _appendBreakdown, _coordinates, ExportTemuanExcelGenerator, _formatDate, _formatDateTime, generate, _joinList, _joinNonEmpty (+32 more)
+Nodes (40): ../../config/sosialisasi_model.dart, ../../config/temuan_model.dart, ../../config/temuan_service.dart, build, _buildExportQuickAction, DashboardInfoSection, DashboardScreen, DashboardScreenState (+32 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.05
-Nodes (40): ../../config/sosialisasi_model.dart, ../../config/temuan_model.dart, ../../config/temuan_service.dart, build, _buildExportQuickAction, DashboardInfoSection, DashboardScreen, DashboardScreenState (+32 more)
+Nodes (36): _appendBreakdown, _appendKpiCards, _bodyAltStyle, _bodyStyle, CellStyle, _cellText, _coordinates, ExportTemuanExcelGenerator (+28 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.05
-Nodes (36): build, _buildDatePicker, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi, _buildStepIndicator (+28 more)
+Nodes (36): build, _buildDatePicker, _buildMiniMapPreview, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi (+28 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.05
-Nodes (36): build, _buildDatePicker, _buildMiniMapPreview, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi (+28 more)
+Nodes (36): build, _buildDatePicker, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi, _buildStepIndicator (+28 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.06
@@ -127,104 +127,104 @@ Cohesion: 0.06
 Nodes (32): dark, light, ThemeService, build, CircularProgressIndicator, dispose, ElsafeApp, ElsafeSplashScreen (+24 more)
 
 ### Community 8 - "Community 8"
+Cohesion: 0.07
+Nodes (25): main, _argb, main, _sampleTemuan, TemuanModel, main, _temuan, TemuanModel (+17 more)
+
+### Community 9 - "Community 9"
 Cohesion: 0.06
 Nodes (30): AnimatedBuilder, build, _buildBody, _buildFilterDropdown, _buildSearchAndFilter, Card, Center, Column (+22 more)
 
-### Community 9 - "Community 9"
+### Community 10 - "Community 10"
 Cohesion: 0.11
 Nodes (19): RegisterPlugins(), FlutterWindow(), OnCreate(), Create(), Destroy(), EnableFullDpiSupportIfAvailable(), GetClientArea(), GetThisFromHandle() (+11 more)
 
-### Community 10 - "Community 10"
+### Community 11 - "Community 11"
 Cohesion: 0.07
 Nodes (26): ../config/snackbar.dart, ../config/ulp_list.dart, ../../config/ulp_service.dart, build, _buildTextField, _buildUlpRow, Column, Container (+18 more)
 
-### Community 11 - "Community 11"
+### Community 12 - "Community 12"
+Cohesion: 0.07
+Nodes (24): ../../config/temuan_types.dart, build, Container, SizedBox, TemuanListItem, build, _buildDropdown, Column (+16 more)
+
+### Community 13 - "Community 13"
 Cohesion: 0.08
 Nodes (24): config/new_password.dart, config/supabase_config.dart, build, dispose, initState, main, MaterialApp, MyApp (+16 more)
 
-### Community 12 - "Community 12"
+### Community 14 - "Community 14"
 Cohesion: 0.09
 Nodes (21): build, _buildEmpty, Center, dispose, _formatDate, _iconBgColor, _iconColor, _iconData (+13 more)
 
-### Community 13 - "Community 13"
-Cohesion: 0.09
-Nodes (20): ../../config/temuan_types.dart, build, _buildDropdown, Column, Function, initState, _levelColor, MatriksRisikoWidget (+12 more)
-
-### Community 14 - "Community 14"
+### Community 15 - "Community 15"
 Cohesion: 0.11
 Nodes (18): build, _buildNewFileItem, Column, FotoPickerWidget, _FotoPickerWidgetState, Function, initState, Padding (+10 more)
 
-### Community 15 - "Community 15"
+### Community 16 - "Community 16"
 Cohesion: 0.12
 Nodes (15): ../config/notification_service.dart, _aboutItem, build, CircleAvatar, _contactItem, DashboardDrawer, Drawer, _DrawerItem (+7 more)
 
-### Community 16 - "Community 16"
+### Community 17 - "Community 17"
 Cohesion: 0.13
 Nodes (14): AdminApprovalScreen, _AdminApprovalScreenState, build, _buildEmpty, Center, Container, Divider, Icon (+6 more)
 
-### Community 17 - "Community 17"
+### Community 18 - "Community 18"
 Cohesion: 0.14
 Nodes (13): ../config/app_logger.dart, ../config/lupa_password.dart, build, LoginPage, _LoginPageState, Scaffold, SingleChildScrollView, SizedBox (+5 more)
 
-### Community 18 - "Community 18"
+### Community 19 - "Community 19"
 Cohesion: 0.15
 Nodes (12): AuthException, build, _buildInputField, _buildRegisterButton, Container, dispose, Function, RegisterPage (+4 more)
 
-### Community 19 - "Community 19"
+### Community 20 - "Community 20"
 Cohesion: 0.15
 Nodes (12): clearAll, hide, _showAnimatedSnackBar, showCustom, showError, showInfo, showLoading, showSimple (+4 more)
 
-### Community 20 - "Community 20"
+### Community 21 - "Community 21"
 Cohesion: 0.15
 Nodes (4): fl_register_plugins(), main(), my_application_activate(), my_application_new()
 
-### Community 21 - "Community 21"
+### Community 22 - "Community 22"
 Cohesion: 0.17
 Nodes (12): Android App Icons, App Branding Assets, Google Auth Integration, Flutter App Screenshot, Google Logo Brand, iOS App Icon 20px, iOS App Icon 40px, iOS App Icon 60px (+4 more)
-
-### Community 22 - "Community 22"
-Cohesion: 0.18
-Nodes (10): deleteFoto, deleteFotos, Exception, _getContentType, _isAdminProfile, TemuanService, package:file_picker/file_picker.dart, sosialisasi_model.dart (+2 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.2
 Nodes (8): app_logger.dart, NotificationService, refreshUnreadCount, reset, _subscribeRealtime, SupabaseConfig, UlpService, package:supabase_flutter/supabase_flutter.dart
 
 ### Community 24 - "Community 24"
+Cohesion: 0.18
+Nodes (10): deleteFoto, deleteFotos, Exception, _getContentType, _isAdminProfile, TemuanService, package:file_picker/file_picker.dart, sosialisasi_model.dart (+2 more)
+
+### Community 25 - "Community 25"
 Cohesion: 0.2
 Nodes (9): build, _buildFotoItem, Center, _confirmDelete, Container, FotoGridWidget, Function, _showFullImage (+1 more)
 
-### Community 25 - "Community 25"
+### Community 26 - "Community 26"
 Cohesion: 0.25
 Nodes (7): build, Column, InkWell, Scaffold, SettingsScreen, SizedBox, _ThemeOption
 
-### Community 26 - "Community 26"
+### Community 27 - "Community 27"
 Cohesion: 0.25
 Nodes (7): build, Column, Container, DashboardRecentActivity, _EmptyState, _RecentTemuanCard, SizedBox
 
 ### Community 28 - "Community 28"
-Cohesion: 0.29
-Nodes (6): hitungSkor, label, MatriksRisiko, Penyulang, skorDariNilai, TipeTemuan
-
-### Community 29 - "Community 29"
-Cohesion: 0.29
-Nodes (6): build, Column, Container, DashboardStatsSection, SizedBox, _StatCard
+Cohesion: 0.25
+Nodes (7): ../../config/app_theme.dart, build, _buildSection, Container, PanduanPenggunaanScreen, Scaffold, SizedBox
 
 ### Community 30 - "Community 30"
 Cohesion: 0.29
-Nodes (6): build, Container, DashboardWelcomeCard, SizedBox, Text, TextStyle
+Nodes (6): hitungSkor, label, MatriksRisiko, Penyulang, skorDariNilai, TipeTemuan
 
 ### Community 31 - "Community 31"
 Cohesion: 0.29
-Nodes (6): build, _buildSection, Container, PanduanPenggunaanScreen, Scaffold, SizedBox
+Nodes (6): build, Container, DashboardWelcomeCard, SizedBox, Text, TextStyle
 
 ### Community 32 - "Community 32"
-Cohesion: 0.33
-Nodes (4): DefaultFirebaseOptions, package:firebase_core/firebase_core.dart, package:flutter/foundation.dart, package:logger/logger.dart
+Cohesion: 0.29
+Nodes (6): build, Column, Container, DashboardStatsSection, SizedBox, _StatCard
 
 ### Community 33 - "Community 33"
 Cohesion: 0.33
-Nodes (5): ../../config/app_theme.dart, build, Container, SizedBox, TemuanListItem
+Nodes (4): DefaultFirebaseOptions, package:firebase_core/firebase_core.dart, package:flutter/foundation.dart, package:logger/logger.dart
 
 ### Community 34 - "Community 34"
 Cohesion: 0.33
@@ -251,21 +251,21 @@ Cohesion: 0.5
 Nodes (3): MapUtils, package:flutter_map/flutter_map.dart, package:latlong2/latlong.dart
 
 ## Knowledge Gaps
-- **595 isolated node(s):** `MainActivity`, `-registerWithRegistry`, `MyApp`, `_MyAppState`, `main` (+590 more)
+- **616 isolated node(s):** `MainActivity`, `-registerWithRegistry`, `MyApp`, `_MyAppState`, `main` (+611 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `package:flutter/material.dart` connect `Community 39` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 19`, `Community 24`, `Community 25`, `Community 26`, `Community 29`, `Community 30`, `Community 31`, `Community 33`?**
-  _High betweenness centrality (0.347) - this node is a cross-community bridge._
-- **Why does `../../config/temuan_model.dart` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 33`, `Community 4`, `Community 5`, `Community 7`, `Community 8`, `Community 26`?**
-  _High betweenness centrality (0.097) - this node is a cross-community bridge._
-- **Why does `../../config/app_theme.dart` connect `Community 33` to `Community 1`, `Community 3`, `Community 6`, `Community 8`, `Community 10`, `Community 11`, `Community 12`, `Community 15`, `Community 16`, `Community 25`, `Community 26`, `Community 29`, `Community 31`?**
+- **Why does `package:flutter/material.dart` connect `Community 39` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 19`, `Community 20`, `Community 25`, `Community 26`, `Community 27`, `Community 28`, `Community 31`, `Community 32`?**
+  _High betweenness centrality (0.342) - this node is a cross-community bridge._
+- **Why does `../../config/temuan_model.dart` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 9`, `Community 12`, `Community 27`?**
+  _High betweenness centrality (0.127) - this node is a cross-community bridge._
+- **Why does `../../config/app_theme.dart` connect `Community 28` to `Community 32`, `Community 1`, `Community 2`, `Community 6`, `Community 9`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 16`, `Community 17`, `Community 26`, `Community 27`?**
   _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **What connects `MainActivity`, `-registerWithRegistry`, `MyApp` to the rest of the system?**
-  _595 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _616 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.04 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**

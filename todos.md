@@ -683,3 +683,44 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
 - PDF workflow existing tetap menjadi sumber filter/selection.
 - Package reference dicek pada 06/06/2026: `excel 4.0.6`; `share_plus` terbaru 13.1.0 butuh Dart >=3.10, jadi plan memakai `share_plus 10.1.4` yang sesuai dengan SDK project `^3.7.0`.
 - Coding integrasi UI Excel selesai tanpa menjalankan test/analyzer sesuai instruksi user.
+
+---
+
+### Phase 14: Report Pro Styling Export Excel
+
+**Konteks:**
+- [x] User merasa output Excel terlalu textual/plain
+- [x] Pilihan desain: `Report Pro`
+- [x] Batas v1: tetap pakai package `excel 4.0.6`, tidak embed logo/foto, tidak tambah chart
+
+**Perubahan generator:**
+- [x] Style title band di sheet `Temuan` dan `Ringkasan`
+- [x] Style metadata periode/ULP/generated at
+- [x] Style header tabel dengan PLN blue, font putih, bold, wrap text
+- [x] Tambah alternating row fill di data `Temuan`
+- [x] Tambah warna status:
+  - [x] `Open` amber
+  - [x] `Closed` / `Close` green
+  - [x] Status lain light blue
+- [x] Tambah warna risiko:
+  - [x] `Extreme` red
+  - [x] `High` / `Tinggi` orange
+  - [x] `Medium` / `Sedang` / `Rendah` amber
+  - [x] Risiko lain neutral
+- [x] Style link maps sebagai teks biru underline
+- [x] Tambah KPI cards di sheet `Ringkasan`:
+  - [x] Total
+  - [x] Open
+  - [x] Closed
+  - [x] Extreme/High
+- [x] Sesuaikan row height dan column width agar layout lebih readable
+
+**Testing & verifikasi:**
+- [x] Tambah regression test style title/header/status/risiko
+- [x] Tambah regression test KPI cards `Ringkasan`
+- [x] `flutter test --no-pub test\excel_generator_test.dart -r expanded` -> 3/3 passed
+- [x] `flutter analyze lib\utils\excel_generator.dart test\excel_generator_test.dart` -> No issues
+- [x] `graphify update .`
+- [ ] Combined related suite masih perlu dibereskan untuk test lama `test/main_shell_navigation_test.dart`
+  - [ ] `flutter test --no-pub test\export_temuan_filter_test.dart test\pdf_generator_test.dart test\main_shell_navigation_test.dart test\excel_generator_test.dart -r expanded` gagal pada 3 source-string expectation lama di `main_shell_navigation_test.dart`
+- [ ] Manual QA: buka file XLSX di Excel/LibreOffice/Google Sheets dan cek tampilan Report Pro
