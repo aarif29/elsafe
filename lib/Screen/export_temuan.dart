@@ -1,4 +1,3 @@
-import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
@@ -745,7 +744,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
     if (selectedTemuan.isEmpty) return;
 
     final fileName = _exportFileName('xlsx');
-    final bytes = ExportTemuanExcelGenerator.generate(
+    final bytes = await ExportTemuanExcelGenerator.generate(
       temuan: selectedTemuan,
       startDate: _startDate,
       endDate: _endDate,

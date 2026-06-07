@@ -724,3 +724,32 @@ Setiap rencana & perubahan, akan ditulis dan diupdate di file ini. Jika sudah se
 - [ ] Combined related suite masih perlu dibereskan untuk test lama `test/main_shell_navigation_test.dart`
   - [ ] `flutter test --no-pub test\export_temuan_filter_test.dart test\pdf_generator_test.dart test\main_shell_navigation_test.dart test\excel_generator_test.dart -r expanded` gagal pada 3 source-string expectation lama di `main_shell_navigation_test.dart`
 - [ ] Manual QA: buka file XLSX di Excel/LibreOffice/Google Sheets dan cek tampilan Report Pro
+
+---
+
+### Phase 15: Embed Foto di Export Excel
+
+**Konteks:**
+- [x] User ingin kolom foto Excel berisi picture di dalam cell, bukan link tekstual
+- [x] Behavior disamakan dengan export PDF sekarang: tampilkan foto pertama sebagai thumbnail dan badge `(+N lagi)` jika ada foto tambahan
+- [x] Keputusan teknis: pindah generator Excel dari package `excel` ke `syncfusion_flutter_xlsio` karena `excel 4.0.6` tidak menyediakan API drawing/image untuk embed picture
+
+**Perubahan generator:**
+- [x] Tambah dependency `syncfusion_flutter_xlsio`
+- [x] Ubah `ExportTemuanExcelGenerator.generate()` menjadi async
+- [x] Tambah injectable `NetworkImageLoader` untuk testing dan default loader via `http.get`
+- [x] Embed foto pertama dari `fotoUrls`, `fotoReminder`, dan `fotoClosing`
+- [x] Jika foto gagal di-download, fallback ke URL tekstual agar data tetap tidak hilang
+- [x] Jika foto kosong/null, tampilkan `-`
+- [x] Pertahankan styling Report Pro dan sheet `Ringkasan`
+
+**Integrasi UI:**
+- [x] Update `_exportExcel()` agar `await` generator async
+- [x] Hapus import redundant `cross_file` karena `XFile` sudah tersedia dari `share_plus`
+
+**Testing & verifikasi:**
+- [x] Tambah regression test embed foto first-only dan media entry di XLSX
+- [x] Tambah regression test fallback URL saat image loader gagal
+- [x] `flutter test --no-pub test\excel_generator_test.dart -r expanded` -> 5/5 passed
+- [x] `flutter analyze lib\utils\excel_generator.dart lib\Screen\export_temuan.dart test\excel_generator_test.dart` -> No issues
+- [ ] Manual QA: export Excel dengan foto Supabase real dan buka di Excel/LibreOffice/Google Sheets
