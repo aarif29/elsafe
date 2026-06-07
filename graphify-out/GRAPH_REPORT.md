@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `77f15997`
+- Built from commit: `cbe61781`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -118,11 +118,11 @@ Nodes (38): ../../config/app_theme.dart, config/new_password.dart, config/supaba
 
 ### Community 6 - "Community 6"
 Cohesion: 0.05
-Nodes (36): build, _buildDatePicker, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi, _buildStepIndicator (+28 more)
+Nodes (36): build, _buildDatePicker, _buildMiniMapPreview, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi (+28 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.05
-Nodes (36): build, _buildDatePicker, _buildMiniMapPreview, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi (+28 more)
+Nodes (36): build, _buildDatePicker, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi, _buildStepIndicator (+28 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.06
