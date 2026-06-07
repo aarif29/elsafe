@@ -1,10 +1,13 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../config/app_theme.dart';
 import '../config/temuan_model.dart';
 import '../config/temuan_service.dart';
 import '../config/temuan_types.dart';
+import '../utils/excel_generator.dart';
 import '../utils/export_temuan_filter.dart';
 import '../utils/pdf_generator.dart';
 
@@ -170,9 +173,9 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
     final ulps = _uniqueStrings(_allTemuan.map((t) => t.ulp));
     final penyulangList =
         ulps.isEmpty
-            ? Penyulang.semua
-            : ulps.expand((u) => Penyulang.untukUlp(u)).toSet().toList()
-              ..sort();
+              ? Penyulang.semua
+              : ulps.expand((u) => Penyulang.untukUlp(u)).toSet().toList()
+          ..sort();
     return [_allValue, ...penyulangList];
   }
 
@@ -661,27 +664,43 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       color: context.surfaceColor,
-      child: Row(
-        children: [
-          Expanded(
-            child: OutlinedButton.icon(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final buttons = <Widget>[
+            OutlinedButton.icon(
               onPressed: canExport ? _previewPdf : null,
               icon: const Icon(Icons.preview),
               label: const Text('Preview PDF', overflow: TextOverflow.ellipsis),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: ElevatedButton.icon(
+            ElevatedButton.icon(
               onPressed: canExport ? _exportPdf : null,
-              icon: const Icon(Icons.share),
-              label: Text(
-                'Export ($selectedCount)',
+              icon: const Icon(Icons.picture_as_pdf),
+              label: const Text('Export PDF', overflow: TextOverflow.ellipsis),
+            ),
+            ElevatedButton.icon(
+              onPressed: canExport ? _exportExcel : null,
+              icon: const Icon(Icons.table_view),
+              label: const Text(
+                'Export Excel',
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-          ),
-        ],
+          ];
+
+          if (constraints.maxWidth >= 640) {
+            return Row(children: _expandFields(buttons));
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < buttons.length; i++) ...[
+                buttons[i],
+                if (i < buttons.length - 1) const SizedBox(height: 10),
+              ],
+            ],
+          );
+        },
       ),
     );
   }
@@ -691,7 +710,7 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
     if (selectedTemuan.isEmpty) return;
 
     await Printing.layoutPdf(
-      name: _exportFileName(),
+      name: _exportFileName('pdf'),
       onLayout:
           (_) => ExportTemuanPdfGenerator.generate(
             temuan: selectedTemuan,
@@ -713,11 +732,44 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
       ulpLabel: _pdfUlpLabel(selectedTemuan),
     );
 
-    await Printing.sharePdf(bytes: bytes, filename: _exportFileName());
+    await Printing.sharePdf(bytes: bytes, filename: _exportFileName('pdf'));
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('PDF berhasil dibuat (${selectedTemuan.length})')),
+    );
+  }
+
+  Future<void> _exportExcel() async {
+    final selectedTemuan = _selectedTemuan;
+    if (selectedTemuan.isEmpty) return;
+
+    final fileName = _exportFileName('xlsx');
+    final bytes = ExportTemuanExcelGenerator.generate(
+      temuan: selectedTemuan,
+      startDate: _startDate,
+      endDate: _endDate,
+      ulpLabel: _pdfUlpLabel(selectedTemuan),
+    );
+
+    await Share.shareXFiles(
+      [
+        XFile.fromData(
+          bytes,
+          name: fileName,
+          mimeType:
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ),
+      ],
+      subject: 'Export Temuan ELSAFE',
+      text: 'Export data temuan ELSAFE',
+    );
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Excel berhasil dibuat (${selectedTemuan.length})'),
+      ),
     );
   }
 
@@ -738,14 +790,14 @@ class _ExportTemuanScreenState extends State<ExportTemuanScreen> {
     return '$day/$month/${d.year}';
   }
 
-  String _exportFileName() {
+  String _exportFileName(String extension) {
     final now = DateTime.now();
     final year = now.year.toString();
     final month = now.month.toString().padLeft(2, '0');
     final day = now.day.toString().padLeft(2, '0');
     final hour = now.hour.toString().padLeft(2, '0');
     final minute = now.minute.toString().padLeft(2, '0');
-    return 'temuan-elsafe-$year$month$day-$hour$minute.pdf';
+    return 'temuan-elsafe-$year$month$day-$hour$minute.$extension';
   }
 
   String _valueOrDash(String? value) {
