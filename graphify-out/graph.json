@@ -2151,7 +2151,7 @@
       "source_file": "lib/Screen/temuan.dart",
       "source_location": null,
       "id": "package_geocoding_geocoding_dart",
-      "community": 6,
+      "community": 7,
       "norm_label": "package:geocoding/geocoding.dart"
     },
     {
@@ -2196,7 +2196,7 @@
       "source_file": "lib/Screen/temuan.dart",
       "source_location": null,
       "id": "widgets_foto_picker_widget_dart",
-      "community": 7,
+      "community": 6,
       "norm_label": "../widgets/foto_picker_widget.dart"
     },
     {
@@ -16645,5 +16645,5 @@
       "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png"
     }
   ],
-  "built_at_commit": "cbe61781b9edbb7a520d82c4207519ddaece417d"
+  "built_at_commit": "d8d6f7a144b23519a536ff0423018028868bb36e"
 }

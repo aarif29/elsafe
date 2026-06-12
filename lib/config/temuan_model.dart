@@ -3,6 +3,7 @@ class TemuanModel {
   final String lokasi;
   final String? alamatTemuan;
   final String namaPemilik;
+  final String? noHp;
   final DateTime tanggalTemuan;
   final String deskripsiTemuan;
   final double? latitude;
@@ -45,6 +46,7 @@ class TemuanModel {
     required this.lokasi,
     this.alamatTemuan,
     required this.namaPemilik,
+    this.noHp,
     required this.tanggalTemuan,
     required this.deskripsiTemuan,
     this.latitude,
@@ -78,6 +80,7 @@ class TemuanModel {
       'lokasi': lokasi,
       'alamat_temuan': alamatTemuan,
       'nama_pemilik': namaPemilik,
+      'no_hp': noHp,
       'tanggal_temuan': tanggalTemuan.toIso8601String(),
       'deskripsi_temuan': deskripsiTemuan,
       'latitude': latitude,
@@ -111,6 +114,7 @@ class TemuanModel {
       lokasi: json['lokasi'] ?? '',
       alamatTemuan: json['alamat_temuan']?.toString(),
       namaPemilik: json['nama_pemilik'] ?? '',
+      noHp: json['no_hp']?.toString(),
       tanggalTemuan: DateTime.parse(json['tanggal_temuan']),
       deskripsiTemuan: json['deskripsi_temuan'] ?? '',
       latitude: json['latitude']?.toDouble(),

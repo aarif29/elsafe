@@ -30,6 +30,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
   late TextEditingController _lokasiController;
   late TextEditingController _alamatTemuanController;
   late TextEditingController _namaPemilikController;
+  late TextEditingController _noHpController;
   late TextEditingController _deskripsiController;
   late TextEditingController _nomorAmsController;
   final _temuanService = TemuanService();
@@ -94,6 +95,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     _lokasiController = TextEditingController(text: t.lokasi);
     _alamatTemuanController = TextEditingController(text: t.alamatTemuan ?? '');
     _namaPemilikController = TextEditingController(text: t.namaPemilik);
+    _noHpController = TextEditingController(text: t.noHp ?? '');
     _deskripsiController = TextEditingController(text: t.deskripsiTemuan);
     _nomorAmsController = TextEditingController(text: t.nomorAms ?? '');
     _tipeTemuan = t.tipeTemuan;
@@ -146,6 +148,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
     _lokasiController.dispose();
     _alamatTemuanController.dispose();
     _namaPemilikController.dispose();
+    _noHpController.dispose();
     _deskripsiController.dispose();
     _nomorAmsController.dispose();
     _pageController.dispose();
@@ -407,6 +410,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         lokasi: _lokasiController.text,
         alamatTemuan: _emptyToNull(_alamatTemuanController.text),
         namaPemilik: _namaPemilikController.text,
+        noHp: _noHpController.text,
         tanggalTemuan: _selectedDate!,
         deskripsiTemuan: _deskripsiController.text,
         latitude: _currentLatitude,
@@ -513,6 +517,7 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       _lokasiController.text != widget.temuan.lokasi ||
       _alamatTemuanController.text != (widget.temuan.alamatTemuan ?? '') ||
       _namaPemilikController.text != widget.temuan.namaPemilik ||
+      _noHpController.text != (widget.temuan.noHp ?? '') ||
       _deskripsiController.text != widget.temuan.deskripsiTemuan ||
       _selectedDate != widget.temuan.tanggalTemuan ||
       _newFotoFiles.isNotEmpty ||
@@ -594,34 +599,13 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // NAMA PENYULANG
-        Row(
-          children: [
-            const Text(
-              'Nama Penyulang',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange),
-              ),
-              child: const Text(
-                'Opsional',
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
+        const Text(
+          'Nama Penyulang',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 8),
         Container(
@@ -664,34 +648,13 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         const SizedBox(height: 20),
 
         // ZONA
-        Row(
-          children: [
-            const Text(
-              'Zona',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange),
-              ),
-              child: const Text(
-                'Opsional',
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
+        const Text(
+          'Zona',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 8),
         Container(
@@ -736,34 +699,13 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
         const SizedBox(height: 20),
 
         // SECTION
-        Row(
-          children: [
-            const Text(
-              'Section',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange),
-              ),
-              child: const Text(
-                'Opsional',
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
+        const Text(
+          'Section',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 8),
         Container(
@@ -1116,6 +1058,32 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
           validator:
               (v) =>
                   (v == null || v.isEmpty) ? 'Nama pemilik harus diisi' : null,
+        ),
+        const SizedBox(height: 20),
+
+        // No. HP
+        const Text(
+          'No. HP',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _noHpController,
+          keyboardType: TextInputType.phone,
+          style: const TextStyle(color: Colors.white),
+          enabled: !_isSubmitting,
+          decoration: _inputDecoration(
+            hint: 'Masukkan nomor HP pemilik',
+            label: 'No. HP',
+            icon: Icons.phone,
+          ),
+          validator:
+              (v) =>
+                  (v == null || v.trim().isEmpty) ? 'No. HP harus diisi' : null,
         ),
         const SizedBox(height: 20),
 
@@ -1513,15 +1481,16 @@ class _EditTemuanScreenState extends State<EditTemuanScreen> {
             decoration: BoxDecoration(
               color: Colors.amber.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Colors.amber.withValues(alpha: 0.5),
-              ),
+              border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.warning_amber_rounded,
-                    color: Colors.amber, size: 20),
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.amber,
+                  size: 20,
+                ),
                 const SizedBox(width: 10),
                 const Expanded(
                   child: Text(

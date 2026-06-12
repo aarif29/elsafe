@@ -28,6 +28,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
   final _lokasiController = TextEditingController();
   final _alamatTemuanController = TextEditingController();
   final _namaPemilikController = TextEditingController();
+  final _noHpController = TextEditingController();
   final _deskripsiController = TextEditingController();
   final _nomorAmsController = TextEditingController();
   final _temuanService = TemuanService();
@@ -93,6 +94,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
     _lokasiController.dispose();
     _alamatTemuanController.dispose();
     _namaPemilikController.dispose();
+    _noHpController.dispose();
     _deskripsiController.dispose();
     _nomorAmsController.dispose();
     _pageController.dispose();
@@ -347,6 +349,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
         lokasi: _lokasiController.text,
         alamatTemuan: _emptyToNull(_alamatTemuanController.text),
         namaPemilik: _namaPemilikController.text,
+        noHp: _noHpController.text,
         tanggalTemuan: _selectedDate!,
         deskripsiTemuan: _deskripsiController.text,
         latitude: _currentLatitude,
@@ -418,6 +421,7 @@ class _TemuanScreenState extends State<TemuanScreen> {
       _lokasiController.text.isNotEmpty ||
       _alamatTemuanController.text.isNotEmpty ||
       _namaPemilikController.text.isNotEmpty ||
+      _noHpController.text.isNotEmpty ||
       _deskripsiController.text.isNotEmpty ||
       _nomorAmsController.text.isNotEmpty ||
       _selectedDate != null ||
@@ -687,34 +691,13 @@ class _TemuanScreenState extends State<TemuanScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // NAMA PENYULANG
-        Row(
-          children: [
-            const Text(
-              'Nama Penyulang',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange),
-              ),
-              child: const Text(
-                'Opsional',
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
+        const Text(
+          'Nama Penyulang',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 8),
         Container(
@@ -757,34 +740,13 @@ class _TemuanScreenState extends State<TemuanScreen> {
         const SizedBox(height: 20),
 
         // ZONA
-        Row(
-          children: [
-            const Text(
-              'Zona',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange),
-              ),
-              child: const Text(
-                'Opsional',
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
+        const Text(
+          'Zona',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 8),
         Container(
@@ -829,34 +791,13 @@ class _TemuanScreenState extends State<TemuanScreen> {
         const SizedBox(height: 20),
 
         // SECTION
-        Row(
-          children: [
-            const Text(
-              'Section',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange),
-              ),
-              child: const Text(
-                'Opsional',
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
+        const Text(
+          'Section',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 8),
         Container(
@@ -1098,6 +1039,33 @@ class _TemuanScreenState extends State<TemuanScreen> {
               (value) =>
                   (value == null || value.isEmpty)
                       ? 'Nama pemilik harus diisi'
+                      : null,
+        ),
+        const SizedBox(height: 20),
+
+        // NO. HP
+        const Text(
+          'No. HP',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _noHpController,
+          keyboardType: TextInputType.phone,
+          style: const TextStyle(color: Colors.white),
+          decoration: _inputDecoration(
+            hint: 'Masukkan nomor HP pemilik',
+            label: 'No. HP',
+            icon: Icons.phone,
+          ),
+          validator:
+              (value) =>
+                  (value == null || value.trim().isEmpty)
+                      ? 'No. HP harus diisi'
                       : null,
         ),
         const SizedBox(height: 20),

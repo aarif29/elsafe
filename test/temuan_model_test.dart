@@ -34,14 +34,48 @@ void main() {
       expect(temuan.alamatTemuan, isNull);
     });
   });
+
+  group('TemuanModel noHp', () {
+    test('serializes no_hp to JSON', () {
+      final temuan = _temuan(noHp: '081234567890');
+
+      expect(temuan.toJson()['no_hp'], '081234567890');
+    });
+
+    test('parses no_hp from JSON', () {
+      final temuan = TemuanModel.fromJson({
+        'id': '1',
+        'lokasi': 'Lat: -7.1, Long: 112.1',
+        'nama_pemilik': 'Pemilik',
+        'no_hp': '081234567890',
+        'tanggal_temuan': '2026-05-06',
+        'deskripsi_temuan': 'Deskripsi',
+      });
+
+      expect(temuan.noHp, '081234567890');
+    });
+
+    test('keeps old records without no_hp readable', () {
+      final temuan = TemuanModel.fromJson({
+        'id': '1',
+        'lokasi': 'Lat: -7.1, Long: 112.1',
+        'nama_pemilik': 'Pemilik',
+        'tanggal_temuan': '2026-05-06',
+        'deskripsi_temuan': 'Deskripsi',
+      });
+
+      expect(temuan.noHp, isNull);
+    });
+  });
 }
 
-TemuanModel _temuan({String? alamatTemuan}) {
+TemuanModel _temuan({String? alamatTemuan, String? noHp}) {
   return TemuanModel(
     id: '1',
     lokasi: 'Lat: -7.1, Long: 112.1',
     alamatTemuan: alamatTemuan,
     namaPemilik: 'Pemilik',
+    noHp: noHp,
     tanggalTemuan: DateTime(2026, 5, 6),
     deskripsiTemuan: 'Deskripsi',
   );
