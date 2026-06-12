@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 810 nodes · 915 edges · 60 communities (51 shown, 9 thin omitted)
+- 810 nodes · 915 edges · 59 communities (50 shown, 9 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 18 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d8d6f7a1`
+- Built from commit: `c4a752e2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -60,7 +60,6 @@
 - [[_COMMUNITY_Community 42|Community 42]]
 - [[_COMMUNITY_Community 43|Community 43]]
 - [[_COMMUNITY_Community 44|Community 44]]
-- [[_COMMUNITY_Community 45|Community 45]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `package:flutter/material.dart` - 32 edges
@@ -90,7 +89,7 @@
 - **Mobile App Icon Assets** — android_app_icons, ios_app_icons_set, ios_app_icon_20, ios_app_icon_40, ios_app_icon_60, ios_app_icon_76, ios_app_icons_1024 [EXTRACTED 1.00]
 - **elsafe Brand Visual Identity** — elsafe_brand, shield_logo, ios_app_icons, macos_app_icons, ios_launch_images, web_favicon_and_icons [EXTRACTED 1.00]
 
-## Communities (60 total, 9 thin omitted)
+## Communities (59 total, 9 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.04
@@ -118,11 +117,11 @@ Nodes (38): ../../config/app_theme.dart, config/new_password.dart, config/supaba
 
 ### Community 6 - "Community 6"
 Cohesion: 0.05
-Nodes (36): build, _buildDatePicker, _buildMiniMapPreview, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi (+28 more)
+Nodes (36): build, _buildDatePicker, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi, _buildStepIndicator (+28 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.05
-Nodes (36): build, _buildDatePicker, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi, _buildStepIndicator (+28 more)
+Nodes (36): build, _buildDatePicker, _buildMiniMapPreview, _buildPenyulangSection, _buildStep1Temuan, _buildStep2Reminder, _buildStep3Closing, _buildStep4Sosialisasi (+28 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.06
@@ -185,60 +184,56 @@ Cohesion: 0.17
 Nodes (12): Android App Icons, App Branding Assets, Google Auth Integration, Flutter App Screenshot, Google Logo Brand, iOS App Icon 20px, iOS App Icon 40px, iOS App Icon 60px (+4 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.2
-Nodes (8): app_logger.dart, NotificationService, refreshUnreadCount, reset, _subscribeRealtime, SupabaseConfig, UlpService, package:supabase_flutter/supabase_flutter.dart
-
-### Community 24 - "Community 24"
 Cohesion: 0.18
 Nodes (10): deleteFoto, deleteFotos, Exception, _getContentType, _isAdminProfile, TemuanService, package:file_picker/file_picker.dart, sosialisasi_model.dart (+2 more)
 
+### Community 24 - "Community 24"
+Cohesion: 0.2
+Nodes (8): app_logger.dart, NotificationService, refreshUnreadCount, reset, _subscribeRealtime, SupabaseConfig, UlpService, package:supabase_flutter/supabase_flutter.dart
+
 ### Community 25 - "Community 25"
 Cohesion: 0.22
-Nodes (8): main, main, _temuan, TemuanModel, main, dart:io, package:elsafe/utils/export_temuan_filter.dart, package:flutter_test/flutter_test.dart
+Nodes (7): main, main, main, dart:io, package:elsafe/config/app_theme.dart, package:elsafe/widgets/panduan_penggunaan.dart, package:flutter_test/flutter_test.dart
 
 ### Community 26 - "Community 26"
+Cohesion: 0.2
+Nodes (8): main, _temuan, TemuanModel, main, _temuan, TemuanModel, package:elsafe/config/temuan_model.dart, package:elsafe/utils/export_temuan_filter.dart
+
+### Community 27 - "Community 27"
 Cohesion: 0.25
 Nodes (7): _argb, _containsXlsxEntry, main, _sampleTemuan, TemuanModel, package:elsafe/utils/excel_generator.dart, package:excel/excel.dart
 
-### Community 28 - "Community 28"
+### Community 29 - "Community 29"
 Cohesion: 0.29
 Nodes (6): hitungSkor, label, MatriksRisiko, Penyulang, skorDariNilai, TipeTemuan
 
-### Community 29 - "Community 29"
+### Community 30 - "Community 30"
 Cohesion: 0.33
 Nodes (4): DefaultFirebaseOptions, package:firebase_core/firebase_core.dart, package:flutter/foundation.dart, package:logger/logger.dart
 
-### Community 30 - "Community 30"
+### Community 31 - "Community 31"
 Cohesion: 0.33
 Nodes (3): RegisterGeneratedPlugins(), NSWindow, MainFlutterWindow
 
-### Community 31 - "Community 31"
+### Community 32 - "Community 32"
 Cohesion: 0.47
 Nodes (4): wWinMain(), CreateAndAttachConsole(), GetCommandLineArguments(), Utf8FromUtf16()
 
-### Community 32 - "Community 32"
+### Community 33 - "Community 33"
 Cohesion: 0.4
 Nodes (6): Android App Icon Set, Flutter Dependencies, Flutter Dev Dependencies, elsafe App Identity, Flutter Dashboard UI, Flutter Project Configuration
 
-### Community 33 - "Community 33"
+### Community 34 - "Community 34"
 Cohesion: 0.53
 Nodes (6): elsafe Brand Identity, iOS App Icons, iOS Launch Screens, macOS App Icons, Shield Logo Design, Web Favicon and Icons
 
-### Community 35 - "Community 35"
-Cohesion: 0.4
-Nodes (4): ByteData, main, dart:typed_data, package:elsafe/utils/pdf_generator.dart
-
 ### Community 36 - "Community 36"
 Cohesion: 0.4
-Nodes (4): main, _temuan, TemuanModel, package:elsafe/config/temuan_model.dart
+Nodes (4): ByteData, main, dart:typed_data, package:elsafe/utils/pdf_generator.dart
 
 ### Community 37 - "Community 37"
 Cohesion: 0.5
 Nodes (3): MapUtils, package:flutter_map/flutter_map.dart, package:latlong2/latlong.dart
-
-### Community 38 - "Community 38"
-Cohesion: 0.5
-Nodes (3): main, package:elsafe/config/app_theme.dart, package:elsafe/widgets/panduan_penggunaan.dart
 
 ## Knowledge Gaps
 - **624 isolated node(s):** `MainActivity`, `-registerWithRegistry`, `MyApp`, `_MyAppState`, `main` (+619 more)
@@ -248,7 +243,7 @@ Nodes (3): main, package:elsafe/config/app_theme.dart, package:elsafe/widgets/pa
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `package:flutter/material.dart` connect `Community 4` to `Community 0`, `Community 1`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 38`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 20`?**
+- **Why does `package:flutter/material.dart` connect `Community 4` to `Community 0`, `Community 1`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 20`, `Community 25`?**
   _High betweenness centrality (0.337) - this node is a cross-community bridge._
 - **Why does `../../config/temuan_model.dart` connect `Community 9` to `Community 0`, `Community 1`, `Community 2`, `Community 6`, `Community 7`, `Community 10`, `Community 12`, `Community 16`, `Community 19`?**
   _High betweenness centrality (0.140) - this node is a cross-community bridge._
