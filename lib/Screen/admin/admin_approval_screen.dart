@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../config/ulp_service.dart';
+import '../../config/ulp_list.dart';
 import '../../config/app_theme.dart';
 
 class AdminApprovalScreen extends StatefulWidget {
@@ -75,21 +76,25 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
   }) async {
     final result = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Batal'),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(title),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: confirmColor),
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(
+                  confirmLabel,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: confirmColor),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(confirmLabel, style: const TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
     );
     return result ?? false;
   }
@@ -103,10 +108,12 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
   }
 
   void _showResultSnackbar(Map<String, dynamic> result) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(result['message'] ?? ''),
-      backgroundColor: result['success'] == true ? Colors.green : Colors.red,
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message'] ?? ''),
+        backgroundColor: result['success'] == true ? Colors.green : Colors.red,
+      ),
+    );
   }
 
   @override
@@ -122,23 +129,25 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _requests.isEmpty
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _requests.isEmpty
               ? _buildEmpty()
               : RefreshIndicator(
-                  onRefresh: _loadRequests,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _requests.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (_, i) => _RequestCard(
-                      request: _requests[i] as Map<String, dynamic>,
-                      onApprove: () => _approve(_requests[i]['id'] as String),
-                      onReject: () => _reject(_requests[i]['id'] as String),
-                    ),
-                  ),
+                onRefresh: _loadRequests,
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _requests.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder:
+                      (_, i) => _RequestCard(
+                        request: _requests[i] as Map<String, dynamic>,
+                        onApprove: () => _approve(_requests[i]['id'] as String),
+                        onReject: () => _reject(_requests[i]['id'] as String),
+                      ),
                 ),
+              ),
     );
   }
 
@@ -178,9 +187,10 @@ class _RequestCard extends StatelessWidget {
     final ulpLama = request['ulp_lama'] as String? ?? '-';
     final ulpBaru = request['ulp_baru'] as String? ?? '-';
     final alasan = request['alasan'] as String?;
-    final createdAt = request['created_at'] != null
-        ? DateTime.parse(request['created_at'] as String)
-        : null;
+    final createdAt =
+        request['created_at'] != null
+            ? DateTime.parse(request['created_at'] as String)
+            : null;
 
     return Container(
       decoration: BoxDecoration(
@@ -220,7 +230,10 @@ class _RequestCard extends StatelessWidget {
                     if (nipUser != '-')
                       Text(
                         'NIP: $nipUser',
-                        style: TextStyle(color: context.textSecondary, fontSize: 12),
+                        style: TextStyle(
+                          color: context.textSecondary,
+                          fontSize: 12,
+                        ),
                       ),
                   ],
                 ),
@@ -253,7 +266,7 @@ class _RequestCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        ulpLama,
+                        namaUlp(ulpLama),
                         style: TextStyle(
                           color: context.textPrimary,
                           fontWeight: FontWeight.w600,
@@ -274,7 +287,7 @@ class _RequestCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        ulpBaru,
+                        namaUlp(ulpBaru),
                         style: const TextStyle(
                           color: Colors.orange,
                           fontWeight: FontWeight.w600,
@@ -300,7 +313,10 @@ class _RequestCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     alasan,
-                    style: TextStyle(color: context.textSecondary, fontSize: 12),
+                    style: TextStyle(
+                      color: context.textSecondary,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],

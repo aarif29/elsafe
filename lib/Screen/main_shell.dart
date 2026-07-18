@@ -32,6 +32,7 @@ class _MainShellState extends State<MainShell> {
   final _ulpService = UlpService();
   final _dashboardKey = GlobalKey<DashboardScreenState>();
   final _daftarKey = GlobalKey<DaftarTemuanScreenState>();
+  final _profileKey = GlobalKey<ProfileState>();
 
   // navIndex: 0=Dashboard, 1=Daftar, 2=Peta, 3=Notifikasi, 4=Profil
   // stackIndex: 0=Dashboard, 1=Daftar, 2=Peta, 3=Notifikasi, 4=Profil, 5=Panduan, 6=Export
@@ -136,6 +137,7 @@ class _MainShellState extends State<MainShell> {
       _showPanduan = false;
       _navIndex = index;
     });
+    if (index == 4) _profileKey.currentState?.loadProfile();
   }
 
   Future<void> _openTambahTemuan() async {
@@ -181,13 +183,17 @@ class _MainShellState extends State<MainShell> {
           DaftarTemuanScreen(key: _daftarKey, onOpenExport: openExport),
           const MapsViewWidget(),
           NotificationsScreen(onBack: backToDashboard),
-          const Profile(),
+          Profile(key: _profileKey),
           PanduanPenggunaanScreen(onBack: closePanduan),
           const ExportTemuanScreen(),
         ],
       ),
       floatingActionButton:
-          (_showPanduan || _showExport || _navIndex == 2 || _navIndex == 3 || _navIndex == 4)
+          (_showPanduan ||
+                  _showExport ||
+                  _navIndex == 2 ||
+                  _navIndex == 3 ||
+                  _navIndex == 4)
               ? null
               : _buildFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

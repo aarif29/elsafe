@@ -1,0 +1,3 @@
+-- This migration predates local Supabase migration tracking.
+-- Its schema is already present in the linked ELSAFE production database.
+-- The placeholder keeps local migration history aligned with the remote project.

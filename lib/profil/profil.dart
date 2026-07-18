@@ -9,10 +9,10 @@ import '../Screen/admin/admin_approval_screen.dart';
 class Profile extends StatefulWidget {
   const Profile({super.key});
   @override
-  State<Profile> createState() => _ProfileState();
+  ProfileState createState() => ProfileState();
 }
 
-class _ProfileState extends State<Profile> {
+class ProfileState extends State<Profile> {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _nipController = TextEditingController();
@@ -30,11 +30,11 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadProfile();
+      loadProfile();
     });
   }
 
-  Future<void> _loadProfile() async {
+  Future<void> loadProfile() async {
     if (!mounted) return;
 
     setState(() {
@@ -167,58 +167,90 @@ class _ProfileState extends State<Profile> {
 
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDlgState) => AlertDialog(
-          backgroundColor: surface,
-          title: Text('Minta Ganti ULP', style: TextStyle(color: textPrimary)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'ULP saat ini: ${_currentUlp ?? "-"}',
-                style: TextStyle(fontWeight: FontWeight.bold, color: textPrimary),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                  labelText: 'ULP Baru',
-                  border: const OutlineInputBorder(),
-                  labelStyle: TextStyle(color: textSecondary),
+      builder:
+          (ctx) => StatefulBuilder(
+            builder:
+                (ctx, setDlgState) => AlertDialog(
+                  backgroundColor: surface,
+                  title: Text(
+                    'Minta Ganti ULP',
+                    style: TextStyle(color: textPrimary),
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'ULP saat ini: ${_currentUlp == null ? "-" : namaUlp(_currentUlp!)}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          labelText: 'ULP Baru',
+                          border: const OutlineInputBorder(),
+                          labelStyle: TextStyle(color: textSecondary),
+                        ),
+                        dropdownColor: surface,
+                        items:
+                            daftarUlp
+                                .where(
+                                  (u) =>
+                                      _currentUlp == null ||
+                                      !ulpSama(u, _currentUlp!),
+                                )
+                                .map(
+                                  (u) => DropdownMenuItem(
+                                    value: u,
+                                    child: Text(
+                                      u,
+                                      style: TextStyle(color: textPrimary),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (v) => setDlgState(() => ulpBaru = v),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: alasanController,
+                        style: TextStyle(color: textPrimary),
+                        decoration: InputDecoration(
+                          labelText: 'Alasan (opsional)',
+                          border: const OutlineInputBorder(),
+                          labelStyle: TextStyle(color: textSecondary),
+                        ),
+                        maxLines: 2,
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: Text(
+                        'Batal',
+                        style: TextStyle(color: textSecondary),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed:
+                          ulpBaru != null
+                              ? () => Navigator.pop(ctx, true)
+                              : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                      ),
+                      child: const Text(
+                        'Kirim Permintaan',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
                 ),
-                dropdownColor: surface,
-                items: daftarUlp
-                    .where((u) => u != _currentUlp)
-                    .map((u) => DropdownMenuItem(value: u, child: Text(u, style: TextStyle(color: textPrimary))))
-                    .toList(),
-                onChanged: (v) => setDlgState(() => ulpBaru = v),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: alasanController,
-                style: TextStyle(color: textPrimary),
-                decoration: InputDecoration(
-                  labelText: 'Alasan (opsional)',
-                  border: const OutlineInputBorder(),
-                  labelStyle: TextStyle(color: textSecondary),
-                ),
-                maxLines: 2,
-              ),
-            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text('Batal', style: TextStyle(color: textSecondary)),
-            ),
-            ElevatedButton(
-              onPressed: ulpBaru != null ? () => Navigator.pop(ctx, true) : null,
-              style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-              child: const Text('Kirim Permintaan', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        ),
-      ),
     );
 
     if (confirm != true || ulpBaru == null || !mounted) return;
@@ -226,7 +258,10 @@ class _ProfileState extends State<Profile> {
     setState(() => _isLoading = true);
     final result = await _ulpService.requestGantiUlp(
       ulpBaru!,
-      alasan: alasanController.text.trim().isEmpty ? null : alasanController.text.trim(),
+      alasan:
+          alasanController.text.trim().isEmpty
+              ? null
+              : alasanController.text.trim(),
     );
     alasanController.dispose();
     if (!mounted) return;
@@ -274,107 +309,130 @@ class _ProfileState extends State<Profile> {
         elevation: 0,
         iconTheme: IconThemeData(color: textPrimary),
       ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(color: isDarkMode ? Colors.blue : const Color(0xFF1E88E5)),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: (isDarkMode ? Colors.blue : const Color(0xFF1E88E5)).withValues(alpha: 0.3),
-                                blurRadius: 20,
-                                spreadRadius: 2,
-                              ),
-                            ],
+      body:
+          _isLoading
+              ? Center(
+                child: CircularProgressIndicator(
+                  color: isDarkMode ? Colors.blue : const Color(0xFF1E88E5),
+                ),
+              )
+              : SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: (isDarkMode
+                                      ? Colors.blue
+                                      : const Color(0xFF1E88E5))
+                                  .withValues(alpha: 0.3),
+                              blurRadius: 20,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor:
+                              isDarkMode
+                                  ? Colors.blue
+                                  : const Color(0xFF1E88E5),
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.white,
                           ),
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor: isDarkMode ? Colors.blue : const Color(0xFF1E88E5),
-                            child: Icon(
-                              Icons.person,
-                              size: 50,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+
+                      _buildTextField(
+                        controller: _fullNameController,
+                        label: 'Nama',
+                        icon: Icons.person_outline,
+                        validator:
+                            (value) =>
+                                value == null || value.isEmpty
+                                    ? 'Nama lengkap wajib diisi'
+                                    : null,
+                      ),
+                      const SizedBox(height: 20),
+
+                      _buildTextField(
+                        controller: _nipController,
+                        label: 'NIP',
+                        icon: Icons.badge_outlined,
+                      ),
+                      const SizedBox(height: 20),
+
+                      _buildUlpRow(),
+                      const SizedBox(height: 20),
+
+                      _buildTextField(
+                        controller: _phoneController,
+                        label: 'Nomor HP',
+                        icon: Icons.phone_outlined,
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 40),
+
+                      Container(
+                        height: 56,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          gradient: LinearGradient(
+                            colors:
+                                isDarkMode
+                                    ? const [
+                                      Color(0xFF1E3A8A),
+                                      Color(0xFF3B82F6),
+                                    ]
+                                    : const [
+                                      Color(0xFF1E88E5),
+                                      Color(0xFF1565C0),
+                                    ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: (isDarkMode
+                                      ? Colors.blue
+                                      : const Color(0xFF1E88E5))
+                                  .withValues(alpha: 0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: _saveProfile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: const Text(
+                            'Simpan Profil',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                               color: Colors.white,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 40),
-
-                        _buildTextField(
-                          controller: _fullNameController,
-                          label: 'Nama',
-                          icon: Icons.person_outline,
-                          validator: (value) => value == null || value.isEmpty ? 'Nama lengkap wajib diisi' : null,
-                        ),
-                        const SizedBox(height: 20),
-
-                        _buildTextField(
-                          controller: _nipController,
-                          label: 'NIP',
-                          icon: Icons.badge_outlined,
-                        ),
-                        const SizedBox(height: 20),
-
-                        _buildUlpRow(),
-                        const SizedBox(height: 20),
-
-                        _buildTextField(
-                          controller: _phoneController,
-                          label: 'Nomor HP',
-                          icon: Icons.phone_outlined,
-                          keyboardType: TextInputType.phone,
-                        ),
-                        const SizedBox(height: 40),
-
-                        Container(
-                          height: 56,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            gradient: LinearGradient(
-                              colors: isDarkMode
-                                  ? const [Color(0xFF1E3A8A), Color(0xFF3B82F6)]
-                                  : const [Color(0xFF1E88E5), Color(0xFF1565C0)],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: (isDarkMode ? Colors.blue : const Color(0xFF1E88E5)).withValues(alpha: 0.3),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: ElevatedButton(
-                            onPressed: _saveProfile,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              shadowColor: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            child: const Text(
-                              'Simpan Profil',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
               ),
     );
   }
@@ -402,7 +460,8 @@ class _ProfileState extends State<Profile> {
                 margin: const EdgeInsets.only(right: 12),
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: (isDarkMode ? Colors.blue : const Color(0xFF1E88E5)).withValues(alpha: 0.2),
+                  color: (isDarkMode ? Colors.blue : const Color(0xFF1E88E5))
+                      .withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -423,9 +482,12 @@ class _ProfileState extends State<Profile> {
                     Row(
                       children: [
                         Text(
-                          _currentUlp ?? 'Belum disetel',
+                          _currentUlp == null
+                              ? 'Belum disetel'
+                              : namaUlp(_currentUlp!),
                           style: TextStyle(
-                            color: _currentUlp != null ? textPrimary : Colors.grey,
+                            color:
+                                _currentUlp != null ? textPrimary : Colors.grey,
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
@@ -433,11 +495,16 @@ class _ProfileState extends State<Profile> {
                         if (_currentRole == 'admin') ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.purple.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.purple.withValues(alpha: 0.5)),
+                              border: Border.all(
+                                color: Colors.purple.withValues(alpha: 0.5),
+                              ),
                             ),
                             child: const Text(
                               'Admin',
@@ -454,11 +521,7 @@ class _ProfileState extends State<Profile> {
                   ],
                 ),
               ),
-              Icon(
-                Icons.lock_outline,
-                color: textSecondary,
-                size: 16,
-              ),
+              Icon(Icons.lock_outline, color: textSecondary, size: 16),
             ],
           ),
         ),
@@ -495,7 +558,8 @@ class _ProfileState extends State<Profile> {
             icon: const Icon(Icons.edit, size: 14),
             label: const Text('Minta Ganti ULP'),
             style: TextButton.styleFrom(
-              foregroundColor: isDarkMode ? Colors.blue : const Color(0xFF1E88E5),
+              foregroundColor:
+                  isDarkMode ? Colors.blue : const Color(0xFF1E88E5),
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             ),
           ),
@@ -556,10 +620,18 @@ class _ProfileState extends State<Profile> {
         controller: controller,
         keyboardType: keyboardType,
         validator: validator,
-        style: TextStyle(color: textPrimary, fontSize: 16, fontWeight: FontWeight.w500),
+        style: TextStyle(
+          color: textPrimary,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(color: textSecondary, fontSize: 14, fontWeight: FontWeight.w500),
+          labelStyle: TextStyle(
+            color: textSecondary,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
           prefixIcon: Container(
             margin: const EdgeInsets.all(12),
             padding: const EdgeInsets.all(8),
@@ -569,14 +641,29 @@ class _ProfileState extends State<Profile> {
             ),
             child: Icon(icon, color: primaryColor, size: 20),
           ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor, width: 2)),
-          errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.red, width: 2)),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: primaryColor, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Colors.red, width: 2),
+          ),
           errorStyle: const TextStyle(color: Colors.red),
           filled: true,
           fillColor: inputFill,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 16,
+          ),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app_logger.dart';
+import 'ulp_list.dart';
 
 class UlpService {
   final _supabase = Supabase.instance.client;
@@ -101,7 +102,7 @@ class UlpService {
       if (ulpLama == null || ulpLama.isEmpty) {
         return {'success': false, 'message': 'ULP saat ini belum disetel'};
       }
-      if (ulpLama == ulpBaru) {
+      if (ulpSama(ulpLama, ulpBaru)) {
         return {
           'success': false,
           'message': 'ULP yang dipilih sama dengan ULP saat ini',
@@ -216,31 +217,12 @@ class UlpService {
         return {'success': false, 'message': 'User tidak terautentikasi'};
       }
 
-      final request =
-          await _supabase
-              .from('ulp_change_requests')
-              .select('user_id, ulp_baru')
-              .eq('id', requestId)
-              .single();
-
-      final targetUserId = request['user_id'] as String;
-      final ulpBaru = request['ulp_baru'] as String;
-
-      // Update status permintaan
-      await _supabase
-          .from('ulp_change_requests')
-          .update({
-            'status': 'approved',
-            'reviewed_by': _currentUserId,
-            'reviewed_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', requestId);
-
-      // Update ULP user yang meminta
-      await _supabase
-          .from('profiles')
-          .update({'ulp': ulpBaru})
-          .eq('id', targetUserId);
+      // Fungsi database menjalankan update profil, request, dan notifikasi
+      // dalam satu transaksi agar request tidak bisa approved tanpa ganti ULP.
+      await _supabase.rpc(
+        'approve_ulp_change_request',
+        params: {'p_request_id': requestId},
+      );
 
       appLog.d('✅ Request $requestId disetujui');
       return {'success': true, 'message': 'Permintaan berhasil disetujui'};
