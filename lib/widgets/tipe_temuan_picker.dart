@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/app_theme.dart';
 import '../config/temuan_types.dart';
 
 class TipeTemuanPicker extends StatelessWidget {
@@ -8,7 +9,7 @@ class TipeTemuanPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[900],
+        color: context.surfaceColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
@@ -21,16 +22,16 @@ class TipeTemuanPicker extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey[600],
+                color: context.borderColor,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Pilih Jenis Temuan',
             style: TextStyle(
-              color: Colors.white,
+              color: context.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -38,13 +39,14 @@ class TipeTemuanPicker extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'Pilih kategori potensi bahaya yang akan dilaporkan',
-            style: TextStyle(color: Colors.grey[400], fontSize: 13),
+            style: TextStyle(color: context.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 20),
           _TipeCard(
             tipe: TipeTemuan.kmu,
             label: TipeTemuan.label(TipeTemuan.kmu),
-            deskripsi: 'Proyek bangunan, pasang baliho, pasang umbul-umbul, dsb',
+            deskripsi:
+                'Proyek bangunan, pasang baliho, pasang umbul-umbul, dsb',
             icon: Icons.bolt,
             color: Colors.red,
           ),
@@ -52,8 +54,7 @@ class TipeTemuanPicker extends StatelessWidget {
           _TipeCard(
             tipe: TipeTemuan.row,
             label: TipeTemuan.label(TipeTemuan.row),
-            deskripsi:
-                'Pohon produktif, wilayah rawan layang-layang, dsb',
+            deskripsi: 'Pohon produktif, wilayah rawan layang-layang, dsb',
             icon: Icons.nature,
             color: Colors.green,
           ),
@@ -127,7 +128,10 @@ class _TipeCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     deskripsi,
-                    style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                    style: TextStyle(
+                      color: context.textSecondary,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),

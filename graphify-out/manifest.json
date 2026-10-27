@@ -100,8 +100,8 @@
     "hash": "184845c7b95bf3647a1e4f063cfdb760"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\profil\\loginscreen.dart": {
-    "mtime": 1777871849.2845998,
-    "hash": "6981d314f14ca3a5cb4ffbb4621f3bee"
+    "mtime": 1792739490.7353654,
+    "hash": "c84911755ec60e27ec71ecd50e5c0841"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\profil\\profil.dart": {
     "mtime": 1784348682.357025,
@@ -112,24 +112,24 @@
     "hash": "1d8ad5d7ba034dda5de0ef27352643ed"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\Screen\\daftar_temuan.dart": {
-    "mtime": 1778263956.1041577,
-    "hash": "922ec7f7eca8d00750cf7d22b6602530"
+    "mtime": 1792736613.0908632,
+    "hash": "9ab08dcfd2816896dff844af4b8d1f33"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\Screen\\dashboard.dart": {
     "mtime": 1778055261.2529817,
     "hash": "5271d2fd743486a4ce9c24db2f82e4b0"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\Screen\\edit_temuan.dart": {
-    "mtime": 1781254666.9317265,
-    "hash": "5e2c30164001442b61e217efdc33bc78"
+    "mtime": 1792736518.8969646,
+    "hash": "72f544d76d144bc5a54825e57364f9aa"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\Screen\\export_temuan.dart": {
     "mtime": 1780839369.0002546,
     "hash": "a613424db703a1853eb35e41aba99d56"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\Screen\\main_shell.dart": {
-    "mtime": 1784348682.4384916,
-    "hash": "4f98a7d01761bec21d4805a45b5ac848"
+    "mtime": 1792735777.6882932,
+    "hash": "9b1b220481e6e555220e7151ce3abb36"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\Screen\\maps_view.dart": {
     "mtime": 1778423644.0934343,
@@ -148,8 +148,8 @@
     "hash": "df95a2740ce0a8661f2bd989e2d80469"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\Screen\\temuan.dart": {
-    "mtime": 1781254666.552339,
-    "hash": "96ca340bd7916635480620de3e7d02fd"
+    "mtime": 1792735991.5692096,
+    "hash": "a452867dcf093b4e17fa6ee1c5bd5d42"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\Screen\\ulp_selection_screen.dart": {
     "mtime": 1777857075.3605688,
@@ -175,13 +175,17 @@
     "mtime": 1778263956.1167123,
     "hash": "b87dcdb021b4e54e6fdf00222eca837e"
   },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\adaptive_shell_scaffold.dart": {
+    "mtime": 1792735778.3328433,
+    "hash": "697019c7d1548d2c6def0d9c19cf0ef4"
+  },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\foto_grid_widget.dart": {
     "mtime": 1765423165.8364036,
     "hash": "bbcdd9e5fa7321ea7436805c93157821"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\foto_picker_widget.dart": {
-    "mtime": 1777857075.3910277,
-    "hash": "954dd54b9895f8bb22026e9eaf24b652"
+    "mtime": 1792736302.436148,
+    "hash": "7fc989e91c322effa6f23f4282be4f94"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\maps_control_button.dart": {
     "mtime": 1756888187.9592733,
@@ -192,20 +196,24 @@
     "hash": "1deae52bc922caf2033898cc44d204d1"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\panduan_penggunaan.dart": {
-    "mtime": 1777955478.6664555,
-    "hash": "c48b857f67095f1cff9dd7552580d6cc"
+    "mtime": 1792739638.315802,
+    "hash": "d695d3865789f7da7b8c26352427f706"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\responsive_filter_layout.dart": {
+    "mtime": 1792735778.3402944,
+    "hash": "06e818f6c3756acd108ac97d02cb565c"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\tipe_temuan_picker.dart": {
-    "mtime": 1777857075.392404,
-    "hash": "8757ac11c3091b895847f1e0755abbcb"
+    "mtime": 1792735778.2332942,
+    "hash": "84c3926ba3e33b369221d2d755a6364f"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\daftar_temuan\\temuan_detail_dialog.dart": {
-    "mtime": 1778229204.7559013,
-    "hash": "f84fd2e20456307427354baf41304d94"
+    "mtime": 1792736302.4351575,
+    "hash": "490e72e7ea1dc0352720bdad1510153b"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\daftar_temuan\\temuan_list_item.dart": {
-    "mtime": 1778227985.6029012,
-    "hash": "6e045f6b9a4c4b8d30d998e32d69e4d1"
+    "mtime": 1792735778.3107152,
+    "hash": "10ba9d432effa283e27a674c477dbe7b"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\dashboard\\dashboard_drawer.dart": {
     "mtime": 1778420269.5833726,
@@ -216,16 +224,16 @@
     "hash": "8ed9da8cc22c25a77c84494f33aa67f1"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\dashboard\\dashboard_recent_activity.dart": {
-    "mtime": 1777857075.3880274,
-    "hash": "3d0d2958155b27406e1149fde94fb472"
+    "mtime": 1792739490.8140378,
+    "hash": "38e0a17ab2049f5390c4ddae426dfc53"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\dashboard\\dashboard_stats_section.dart": {
-    "mtime": 1777857075.389037,
-    "hash": "d1d0573bba7e16723f22f9cdbed1d5bb"
+    "mtime": 1792739490.7933617,
+    "hash": "12d3d35821874feb68fca082622dd3ac"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\dashboard\\dashboard_welcome_card.dart": {
-    "mtime": 1777857075.3900275,
-    "hash": "e6342490675153112e9b7890a15fc1d1"
+    "mtime": 1792739420.3686604,
+    "hash": "bb7153c8f0d714fd2b47f62156e9c47b"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\linux\\flutter\\generated_plugin_registrant.cc": {
     "mtime": 1784348749.179428,
@@ -287,17 +295,29 @@
     "mtime": 1778219915.7512288,
     "hash": "3003020da196c7e83486d2ff8d195d00"
   },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\test\\form_theme_test.dart": {
+    "mtime": 1792736694.396855,
+    "hash": "122d830f286d9e5803c4d2f7ee26b12c"
+  },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\test\\main_shell_navigation_test.dart": {
-    "mtime": 1778055261.482801,
-    "hash": "cbb9a0c21b2e2b60a546d7cd422f0f6f"
+    "mtime": 1792736124.149618,
+    "hash": "bffb3ee6ca76577ae3eab1805af88de8"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\test\\pdf_generator_test.dart": {
     "mtime": 1778226862.4501026,
     "hash": "63b1f3b1c86c2d393c84570a2664fb6e"
   },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\test\\responsive_filter_layout_test.dart": {
+    "mtime": 1792736124.1938498,
+    "hash": "139add5e89a930b17630efed77de184d"
+  },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\test\\temuan_model_test.dart": {
     "mtime": 1781254342.6268542,
     "hash": "7764991b3dfd7e1419c4ae2e5a8c173c"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\test\\ui_review_test.dart": {
+    "mtime": 1792739539.4320977,
+    "hash": "5f47702d5210309723a9a70b870da43b"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\test\\ulp_list_test.dart": {
     "mtime": 1784348674.6389444,
@@ -360,7 +380,7 @@
     "hash": "9e65f4b9beebb674c0dc252f70a5c177"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\graphify-out\\converted\\Nama Unit - Penyulang_7af6b4e0.md": {
-    "mtime": 1784349521.2104235,
+    "mtime": 1793066690.135362,
     "hash": "1d883e6e953093797e051c3fc1109fda"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\pubspec.yaml": {
@@ -375,6 +395,14 @@
     "mtime": 1780839459.5999792,
     "hash": "931bee04d98a1b9084f6bcd5d632dbe7"
   },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\docs\\changelog.md": {
+    "mtime": 1793066650.0667932,
+    "hash": "9dd1593a59092f79e0253a3cf8c276de"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\docs\\CODEX_HANDOFF.md": {
+    "mtime": 1793066574.5274577,
+    "hash": "2f1171ae92aea33e1d546b14355ea713"
+  },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\docs\\skripsi\\diagram-uml.md": {
     "mtime": 1781312772.181448,
     "hash": "2907f458c0df1b660506698ee6e8b42e"
@@ -386,6 +414,10 @@
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\docs\\superpowers\\plans\\2026-04-20-temuan-lifecycle-plan.md": {
     "mtime": 1776693692.0600643,
     "hash": "43180fa0ff0d4172f8de8934d25571a4"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\docs\\superpowers\\plans\\2026-10-23-ui-review-1-4.md": {
+    "mtime": 1792735350.4337735,
+    "hash": "8d25df6732b6b6862a1046a7b756d2e0"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\docs\\superpowers\\specs\\2026-04-20-temuan-lifecycle-design.md": {
     "mtime": 1776693551.546005,
@@ -566,6 +598,30 @@
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\macos\\Runner\\Assets.xcassets\\AppIcon.appiconset\\app_icon_64.png": {
     "mtime": 1741151991.730912,
     "hash": "04e7b6ef05346c70b663ca1d97de3ad5"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\elsafe-fixed-login-desktop.png": {
+    "mtime": 1792736442.4098697,
+    "hash": "93d15ff9cbb98ecb2c5146af66e5b680"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\elsafe-fixed-login-mobile.png": {
+    "mtime": 1792736474.7845702,
+    "hash": "ef6a1387c1de2ac3a232c9960e924a3f"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\elsafe-login-desktop.png": {
+    "mtime": 1792729882.0441723,
+    "hash": "97da5e0b110aa74ee47ebfb5c026e297"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\elsafe-login-mobile.png": {
+    "mtime": 1792729949.8059368,
+    "hash": "f63b4b5214172c622b5c87351e5f3a88"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\elsafe-ui-56-login-desktop.png": {
+    "mtime": 1792739887.7867374,
+    "hash": "150d525e1fdc2fed0935bef4a1c4ec64"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\elsafe-ui-56-login-mobile.png": {
+    "mtime": 1792739911.9065025,
+    "hash": "bce2639db13562d8d91bce4f80ba16e3"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\web\\favicon.png": {
     "mtime": 1739383574.9239295,

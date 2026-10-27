@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/app_theme.dart';
+import '../widgets/responsive_filter_layout.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../config/app_logger.dart';
 import '../config/snackbar.dart';
@@ -53,7 +54,7 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
       final matchStatus =
           _filterStatus == 'Semua' ||
           t.statusTemuan == _filterStatus ||
-          (_filterStatus == 'Close' && t.statusTemuan == 'Closed');
+          (_filterStatus == 'Closed' && t.statusTemuan == 'Close');
       final matchTipe = _filterTipe == 'Semua' || t.tipeTemuan == _filterTipe;
       final matchKategori =
           _filterKategori == 'Semua' || t.levelRisiko == _filterKategori;
@@ -191,21 +192,21 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            backgroundColor: Colors.grey[800],
-            title: const Text(
+            backgroundColor: context.surfaceColor,
+            title: Text(
               'Konfirmasi Hapus',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: context.textPrimary),
             ),
-            content: const Text(
+            content: Text(
               'Apakah Anda yakin ingin menghapus data ini?',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: context.textPrimary),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text(
+                child: Text(
                   'Batal',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(color: context.textSecondary),
                 ),
               ),
               TextButton(
@@ -345,8 +346,19 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadData),
         ],
       ),
-      body: Column(
-        children: [_buildSearchAndFilter(), Expanded(child: _buildBody())],
+      body: LayoutBuilder(
+        builder:
+            (context, constraints) => Column(
+              children: [
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: constraints.maxHeight * 0.5,
+                  ),
+                  child: SingleChildScrollView(child: _buildSearchAndFilter()),
+                ),
+                Expanded(child: _buildBody()),
+              ],
+            ),
       ),
     );
   }
@@ -393,64 +405,50 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
           const SizedBox(height: 10),
 
           // Filter row with dropdowns
-          Row(
+          ResponsiveFilterLayout(
             children: [
               // ULP filter - hanya untuk admin
               if (_isAdmin) ...[
-                Expanded(
-                  child: _buildFilterDropdown(
-                    icon: Icons.location_on,
-                    label: 'ULP',
-                    value: _filterUlp,
-                    items: _ulpOptions,
-                    onChanged: (v) => setState(() => _filterUlp = v!),
-                    itemBuilder: (item) => item == 'Semua' ? 'Semua ULP' : item,
-                  ),
+                _buildFilterDropdown(
+                  icon: Icons.location_on,
+                  label: 'ULP',
+                  value: _filterUlp,
+                  items: _ulpOptions,
+                  onChanged: (v) => setState(() => _filterUlp = v!),
+                  itemBuilder: (item) => item == 'Semua' ? 'Semua ULP' : item,
                 ),
-                const SizedBox(width: 4),
               ],
               // Status filter
-              Expanded(
-                child: _buildFilterDropdown(
-                  icon: Icons.assessment,
-                  label: 'Status',
-                  value: _filterStatus,
-                  items: const ['Semua', 'Open', 'Closed'],
-                  onChanged: (v) => setState(() => _filterStatus = v!),
-                ),
+              _buildFilterDropdown(
+                icon: Icons.assessment,
+                label: 'Status',
+                value: _filterStatus,
+                items: const ['Semua', 'Open', 'On Progress', 'Closed'],
+                onChanged: (v) => setState(() => _filterStatus = v!),
               ),
-              const SizedBox(width: 4),
               // Tipe filter
-              Expanded(
-                child: _buildFilterDropdown(
-                  icon: Icons.category,
-                  label: 'Tipe',
-                  value: _filterTipe,
-                  items: const ['Semua', 'KMU', 'ROW'],
-                  onChanged: (v) => setState(() => _filterTipe = v!),
-                ),
+              _buildFilterDropdown(
+                icon: Icons.category,
+                label: 'Tipe',
+                value: _filterTipe,
+                items: const ['Semua', 'KMU', 'ROW'],
+                onChanged: (v) => setState(() => _filterTipe = v!),
               ),
-              const SizedBox(width: 4),
               // Kategori filter
-              Expanded(
-                child: _buildFilterDropdown(
-                  icon: Icons.warning_amber,
-                  label: 'Kategori',
-                  value: _filterKategori,
-                  items: const ['Semua', 'Medium', 'High', 'Extreme'],
-                  onChanged: (v) => setState(() => _filterKategori = v!),
-                ),
+              _buildFilterDropdown(
+                icon: Icons.warning_amber,
+                label: 'Kategori',
+                value: _filterKategori,
+                items: const ['Semua', 'Medium', 'High', 'Extreme'],
+                onChanged: (v) => setState(() => _filterKategori = v!),
               ),
-              const SizedBox(width: 4),
               // Penyulang filter
-              Expanded(
-                child: _buildFilterDropdown(
-                  icon: Icons.electric_bolt,
-                  label: 'Penyulang',
-                  value: _filterPenyulang,
-                  items: ['Semua', ..._penyulangOptions],
-                  onChanged: (v) => setState(() => _filterPenyulang = v!),
-                ),
+              _buildFilterDropdown(
+                icon: Icons.electric_bolt,
+                label: 'Penyulang',
+                value: _filterPenyulang,
+                items: ['Semua', ..._penyulangOptions],
+                onChanged: (v) => setState(() => _filterPenyulang = v!),
               ),
             ],
           ),
@@ -472,16 +470,17 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 14, color: context.textHint),
             const SizedBox(width: 4),
-            Text(
-              '$label:',
-              style: TextStyle(
-                color: context.textHint,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
+            Expanded(
+              child: Text(
+                '$label:',
+                style: TextStyle(
+                  color: context.textHint,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],
@@ -496,11 +495,12 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
           ),
           child: DropdownButton<String>(
             value: value,
-            isDense: true,
+            isDense: false,
+            menuMaxHeight: 320,
             isExpanded: true,
             underline: const SizedBox(),
             dropdownColor: context.surfaceColor,
-            style: TextStyle(color: context.textPrimary, fontSize: 12),
+            style: TextStyle(color: context.textPrimary, fontSize: 14),
             icon: Icon(
               Icons.arrow_drop_down,
               size: 18,
@@ -514,9 +514,11 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
                     value: item,
                     child: Text(
                       displayText,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: context.textPrimary,
-                        fontSize: 12,
+                        fontSize: 14,
                       ),
                     ),
                   );
@@ -539,56 +541,62 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
 
     if (_errorMessage != null) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            Text(
-              'Terjadi Kesalahan',
-              style: TextStyle(
-                color: context.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                'Terjadi Kesalahan',
+                style: TextStyle(
+                  color: context.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _errorMessage!,
-              style: TextStyle(color: context.textSecondary),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _loadData,
-              child: const Text('Coba Lagi'),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                _errorMessage!,
+                style: TextStyle(color: context.textSecondary),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loadData,
+                child: const Text('Coba Lagi'),
+              ),
+            ],
+          ),
         ),
       );
     }
 
     if (_temuanList.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.inbox_outlined, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text(
-              'Belum Ada Data Temuan',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.inbox_outlined, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
+              Text(
+                'Belum Ada Data Temuan',
+                style: TextStyle(
+                  color: context.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Tambahkan temuan pertama Anda',
-              style: TextStyle(color: Colors.grey[400]),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'Tambahkan temuan pertama Anda',
+                style: TextStyle(color: context.textSecondary),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -597,25 +605,28 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
 
     if (filtered.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.search_off, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text(
-              'Tidak Ada Hasil',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.search_off, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
+              Text(
+                'Tidak Ada Hasil',
+                style: TextStyle(
+                  color: context.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Coba kata kunci atau filter lain',
-              style: TextStyle(color: Colors.grey[400]),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'Coba kata kunci atau filter lain',
+                style: TextStyle(color: context.textSecondary),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -713,7 +724,7 @@ class _SkeletonListItemState extends State<_SkeletonListItem>
       builder: (context, _) {
         final color = Colors.grey.withValues(alpha: _animation.value);
         return Card(
-          color: Colors.grey[800],
+          color: context.surfaceColor,
           margin: const EdgeInsets.only(bottom: 12),
           child: Padding(
             padding: const EdgeInsets.all(12),

@@ -17,11 +17,13 @@ class DashboardRecentActivity extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Wrap(
+          spacing: 16,
+          runSpacing: 4,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(
-              'Aktivitas Terkini',
+              'Temuan Terbaru',
               style: TextStyle(
                 color: context.textPrimary,
                 fontSize: 18,
@@ -42,13 +44,16 @@ class DashboardRecentActivity extends StatelessWidget {
         recentTemuan.isEmpty
             ? _EmptyState()
             : Column(
-                children: recentTemuan
-                    .map((temuan) => _RecentTemuanCard(
+              children:
+                  recentTemuan
+                      .map(
+                        (temuan) => _RecentTemuanCard(
                           temuan: temuan,
                           onTap: onLihatSemua,
-                        ))
-                    .toList(),
-              ),
+                        ),
+                      )
+                      .toList(),
+            ),
       ],
     );
   }
@@ -118,7 +123,11 @@ class _RecentTemuanCard extends StatelessWidget {
                     color: Colors.blue.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.location_on, color: Colors.blue, size: 24),
+                  child: const Icon(
+                    Icons.location_on,
+                    color: Colors.blue,
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -138,7 +147,10 @@ class _RecentTemuanCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         temuan.lokasi,
-                        style: TextStyle(color: context.textSecondary, fontSize: 12),
+                        style: TextStyle(
+                          color: context.textSecondary,
+                          fontSize: 12,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

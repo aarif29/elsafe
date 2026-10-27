@@ -32,7 +32,7 @@ class DashboardWelcomeCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [gradientStart, gradientEnd],
@@ -51,43 +51,28 @@ class DashboardWelcomeCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Kiri: greeting + tagline
+          Icon(greetingIcon, color: Colors.white, size: 24),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Icon(greetingIcon, color: Colors.white, size: 22),
-                    const SizedBox(width: 8),
-                    Text(
-                      greeting,
-                      style:
-                          const TextStyle(color: Colors.white70, fontSize: 15),
-                    ),
-                  ],
+                Text(
+                  greeting,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Selamat datang di ELSAFE!',
-                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                const SizedBox(height: 4),
+                Text(
+                  userName,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Kanan: nama user
-          Expanded(
-            child: Text(
-              userName,
-              textAlign: TextAlign.right,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-              ),
             ),
           ),
         ],

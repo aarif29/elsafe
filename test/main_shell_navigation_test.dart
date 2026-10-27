@@ -1,51 +1,139 @@
-import 'dart:io';
-
+import 'package:elsafe/config/app_theme.dart';
+import 'package:elsafe/widgets/adaptive_shell_scaffold.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('Panduan drawer callback opens Panduan inside shell', () {
-    final source = File('lib/Screen/main_shell.dart').readAsStringSync();
-
-    expect(source, contains('onOpenPanduan: openPanduan,'));
-    expect(source, contains('void openPanduan()'));
-    expect(source, contains('PanduanPenggunaanScreen'));
-    expect(source, contains('if (_showPanduan) return 4;'));
-    expect(source, contains('bottomNavigationBar: _buildBottomNav()'));
+  testWidgets('Desktop sidebar selects the existing destinations', (
+    tester,
+  ) async {
+    resize(tester, const Size(1440, 900));
+    var index = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeService.light(),
+        home: StatefulBuilder(
+          builder:
+              (context, setState) => AdaptiveShellScaffold(
+                selectedIndex: index,
+                onDestinationSelected: (value) => setState(() => index = value),
+                body: Text('Isi halaman $index'),
+              ),
+        ),
+      ),
+    );
+    expect(find.byType(NavigationRail), findsOneWidget);
+    expect(find.byType(BottomNavigationBar), findsNothing);
+    await tester.tap(find.text('Peta'));
+    await tester.pumpAndSettle();
+    expect(find.text('Isi halaman 2'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
-  test('Notification drawer callback opens Notifikasi inside shell', () {
-    final shellSource = File('lib/Screen/main_shell.dart').readAsStringSync();
-    final drawerSource =
-        File('lib/widgets/dashboard/dashboard_drawer.dart').readAsStringSync();
-    final notificationSource =
-        File('lib/Screen/notifications_screen.dart').readAsStringSync();
-
-    expect(shellSource, contains('onOpenNotifications: openNotifications,'));
-    expect(shellSource, contains('void openNotifications()'));
-    expect(shellSource, contains('NotificationsScreen('));
-    expect(notificationSource, contains('final VoidCallback? onBack;'));
-    expect(notificationSource, contains('leading:'));
-    expect(notificationSource, contains('widget.onBack == null'));
-    expect(drawerSource, isNot(contains('const NotificationsScreen()')));
+  testWidgets('Phone bottom navigation keeps the add action above it', (
+    tester,
+  ) async {
+    resize(tester, const Size(375, 812));
+    int? selected;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeService.dark(),
+        home: AdaptiveShellScaffold(
+          selectedIndex: 0,
+          onDestinationSelected: (index) => selected = index,
+          body: const Text('Isi halaman'),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            child: const Icon(Icons.add),
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(NavigationRail), findsNothing);
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
+    await tester.tap(find.text('Profil'));
+    expect(selected, 4);
+    expect(
+      tester.getRect(find.byType(FloatingActionButton)).bottom,
+      lessThan(tester.getRect(find.byType(BottomNavigationBar)).top),
+    );
+    expect(tester.takeException(), isNull);
   });
 
-  test('Export Data can be opened from drawer and daftar temuan action', () {
-    final shellSource = File('lib/Screen/main_shell.dart').readAsStringSync();
-    final dashboardSource =
-        File('lib/Screen/dashboard.dart').readAsStringSync();
-    final daftarSource =
-        File('lib/Screen/daftar_temuan.dart').readAsStringSync();
-    final drawerSource =
-        File('lib/widgets/dashboard/dashboard_drawer.dart').readAsStringSync();
-
-    expect(shellSource, contains('void openExport()'));
-    expect(shellSource, contains('const ExportTemuanScreen()'));
-    expect(shellSource, contains('onOpenExport: openExport,'));
-    expect(dashboardSource, isNot(contains('Export PDF')));
-    expect(daftarSource, contains('final VoidCallback? onOpenExport;'));
-    expect(daftarSource, contains('widget.onOpenExport'));
-    expect(daftarSource, contains('Icons.file_download_outlined'));
-    expect(daftarSource, contains('Export Data'));
-    expect(drawerSource, contains('Export Temuan ke PDF'));
+  testWidgets('Resizing retains screen state and notification count', (
+    tester,
+  ) async {
+    resize(tester, const Size(375, 812));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AdaptiveShellScaffold(
+          selectedIndex: 0,
+          onDestinationSelected: (_) {},
+          unreadCount: 125,
+          body: const _CounterScreen(),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Hitungan 0'));
+    await tester.pump();
+    expect(find.text('Hitungan 1'), findsOneWidget);
+    expect(find.text('99+'), findsOneWidget);
+    tester.view.physicalSize = const Size(1440, 900);
+    await tester.pumpAndSettle();
+    expect(find.byType(NavigationRail), findsOneWidget);
+    expect(find.text('Hitungan 1'), findsOneWidget);
+    expect(find.text('99+'), findsOneWidget);
+    tester.view.physicalSize = const Size(375, 812);
+    await tester.pumpAndSettle();
+    expect(find.text('Hitungan 1'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
+
+  testWidgets('Drawer remains accessible from the desktop page', (
+    tester,
+  ) async {
+    resize(tester, const Size(1440, 900));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AdaptiveShellScaffold(
+          selectedIndex: 0,
+          onDestinationSelected: (_) {},
+          drawer: const Drawer(child: Text('Panduan Penggunaan')),
+          body: Builder(
+            builder:
+                (context) => TextButton(
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                  child: const Text('Buka menu'),
+                ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Buka menu'));
+    await tester.pumpAndSettle();
+    expect(find.text('Panduan Penggunaan'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+}
+
+void resize(WidgetTester tester, Size size) {
+  tester.view.physicalSize = size;
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+}
+
+class _CounterScreen extends StatefulWidget {
+  const _CounterScreen();
+  @override
+  State<_CounterScreen> createState() => _CounterScreenState();
+}
+
+class _CounterScreenState extends State<_CounterScreen> {
+  int count = 0;
+  @override
+  Widget build(BuildContext context) => TextButton(
+    onPressed: () => setState(() => count++),
+    child: Text('Hitungan $count'),
+  );
 }

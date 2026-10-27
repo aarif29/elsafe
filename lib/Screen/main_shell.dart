@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/app_theme.dart';
+import '../widgets/adaptive_shell_scaffold.dart';
 import 'dashboard.dart';
 import 'daftar_temuan.dart';
 import 'notifications_screen.dart';
@@ -55,6 +56,7 @@ class _MainShellState extends State<MainShell> {
   void openNotifications() {
     setState(() {
       _showPanduan = false;
+      _showExport = false;
       _navIndex = 3;
     });
   }
@@ -73,6 +75,7 @@ class _MainShellState extends State<MainShell> {
   void backToDashboard() {
     setState(() {
       _showPanduan = false;
+      _showExport = false;
       _navIndex = 0;
     });
   }
@@ -135,6 +138,7 @@ class _MainShellState extends State<MainShell> {
   void _onNavTap(int index) {
     setState(() {
       _showPanduan = false;
+      _showExport = false;
       _navIndex = index;
     });
     if (index == 4) _profileKey.currentState?.loadProfile();
@@ -163,41 +167,46 @@ class _MainShellState extends State<MainShell> {
     final userEmail = _temuanService.currentUserEmail ?? '';
     final userName = userEmail.isNotEmpty ? userEmail.split('@')[0] : 'User';
 
-    return Scaffold(
-      drawer:
-          userEmail.isNotEmpty
-              ? DashboardDrawer(
-                userName: userName,
-                userEmail: userEmail,
-                onLogout: _handleLogout,
-                onOpenPanduan: openPanduan,
-              )
-              : null,
-      body: IndexedStack(
-        index: _stackIndex,
-        children: [
-          DashboardScreen(
-            key: _dashboardKey,
-            onLihatSemua: () => setState(() => _navIndex = 1),
+    return ValueListenableBuilder<int>(
+      valueListenable: NotificationService.instance.unreadCount,
+      builder:
+          (context, count, _) => AdaptiveShellScaffold(
+            selectedIndex: _navIndex,
+            onDestinationSelected: _onNavTap,
+            unreadCount: count,
+            drawer:
+                userEmail.isNotEmpty
+                    ? DashboardDrawer(
+                      userName: userName,
+                      userEmail: userEmail,
+                      onLogout: _handleLogout,
+                      onOpenPanduan: openPanduan,
+                    )
+                    : null,
+            body: IndexedStack(
+              index: _stackIndex,
+              children: [
+                DashboardScreen(
+                  key: _dashboardKey,
+                  onLihatSemua: () => _onNavTap(1),
+                ),
+                DaftarTemuanScreen(key: _daftarKey, onOpenExport: openExport),
+                const MapsViewWidget(),
+                NotificationsScreen(onBack: backToDashboard),
+                Profile(key: _profileKey),
+                PanduanPenggunaanScreen(onBack: closePanduan),
+                const ExportTemuanScreen(),
+              ],
+            ),
+            floatingActionButton:
+                (_showPanduan ||
+                        _showExport ||
+                        _navIndex == 2 ||
+                        _navIndex == 3 ||
+                        _navIndex == 4)
+                    ? null
+                    : _buildFab(),
           ),
-          DaftarTemuanScreen(key: _daftarKey, onOpenExport: openExport),
-          const MapsViewWidget(),
-          NotificationsScreen(onBack: backToDashboard),
-          Profile(key: _profileKey),
-          PanduanPenggunaanScreen(onBack: closePanduan),
-          const ExportTemuanScreen(),
-        ],
-      ),
-      floatingActionButton:
-          (_showPanduan ||
-                  _showExport ||
-                  _navIndex == 2 ||
-                  _navIndex == 3 ||
-                  _navIndex == 4)
-              ? null
-              : _buildFab(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
@@ -231,77 +240,6 @@ class _MainShellState extends State<MainShell> {
         tooltip: 'Tambah Temuan',
         child: const Icon(Icons.add, size: 28),
       ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return ValueListenableBuilder<int>(
-      valueListenable: NotificationService.instance.unreadCount,
-      builder: (context, count, _) {
-        return BottomNavigationBar(
-          currentIndex: _navIndex,
-          onTap: _onNavTap,
-          type: BottomNavigationBarType.fixed,
-          elevation: 8,
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard),
-              label: 'Dashboard',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.list),
-              label: 'Daftar',
-            ),
-            const BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Peta'),
-            // Tab Notifikasi dengan badge
-            BottomNavigationBarItem(
-              icon: _buildNotifIcon(count),
-              label: 'Notifikasi',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profil',
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildNotifIcon(int count) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        const Icon(Icons.notifications_outlined),
-        if (count > 0)
-          Positioned(
-            right: -6,
-            top: -4,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  width: 1.5,
-                ),
-              ),
-              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-              child: Text(
-                count > 99 ? '99+' : '$count',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

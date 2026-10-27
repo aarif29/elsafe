@@ -25,8 +25,38 @@ class TemuanListItem extends StatelessWidget {
     return Colors.grey;
   }
 
+  String get _statusLabel {
+    final value = temuan.statusTemuan?.trim();
+    switch (value?.toLowerCase()) {
+      case 'open':
+        return 'Open';
+      case 'on progress':
+        return 'On Progress';
+      case 'close':
+      case 'closed':
+        return 'Closed';
+      case null:
+      case '':
+        return 'Status belum tersedia';
+      default:
+        return value!;
+    }
+  }
+
+  Color _statusColor(BuildContext context) {
+    final MaterialColor? color = switch (_statusLabel) {
+      'Open' => Colors.red,
+      'On Progress' => Colors.orange,
+      'Closed' => Colors.green,
+      _ => null,
+    };
+    return color == null
+        ? context.textSecondary
+        : color[context.isDark ? 300 : 800]!;
+  }
+
   Color get _statusBackgroundColor {
-    switch (temuan.statusTemuan) {
+    switch (_statusLabel) {
       case 'Open':
         return Colors.red.withValues(alpha: 0.07);
       case 'On Progress':
@@ -61,7 +91,10 @@ class TemuanListItem extends StatelessWidget {
           // Card utama
           Container(
             decoration: BoxDecoration(
-              color: Color.alphaBlend(_statusBackgroundColor, context.cardColor),
+              color: Color.alphaBlend(
+                _statusBackgroundColor,
+                context.cardColor,
+              ),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: context.borderColor, width: 0.5),
             ),
@@ -176,7 +209,9 @@ class TemuanListItem extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 6),
-                          Row(
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
                             children: [
                               if (temuan.tipeTemuan != null) ...[
                                 Container(
@@ -200,21 +235,20 @@ class TemuanListItem extends StatelessWidget {
                                             ? Icons.bolt
                                             : Icons.nature,
                                         color: _tipeColor,
-                                        size: 10,
+                                        size: 14,
                                       ),
                                       const SizedBox(width: 3),
                                       Text(
                                         temuan.tipeTemuan!,
                                         style: TextStyle(
                                           color: _tipeColor,
-                                          fontSize: 10,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 6),
                               ],
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -222,36 +256,24 @@ class TemuanListItem extends StatelessWidget {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color:
-                                      (temuan.statusTemuan == 'Open')
-                                          ? Colors.red.withValues(alpha: 0.15)
-                                          : Colors.green.withValues(
-                                            alpha: 0.15,
-                                          ),
+                                  color: _statusColor(
+                                    context,
+                                  ).withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color:
-                                        (temuan.statusTemuan == 'Open')
-                                            ? Colors.red
-                                            : Colors.green,
+                                    color: _statusColor(context),
                                     width: 1,
                                   ),
                                 ),
                                 child: Text(
-                                  (temuan.statusTemuan == 'Open')
-                                      ? 'Open'
-                                      : 'Closed',
+                                  _statusLabel,
                                   style: TextStyle(
-                                    color:
-                                        (temuan.statusTemuan == 'Open')
-                                            ? Colors.red
-                                            : Colors.green,
-                                    fontSize: 11,
+                                    color: _statusColor(context),
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 6),
                               if (temuan.levelRisiko != null) ...[
                                 Container(
                                   padding: const EdgeInsets.symmetric(
@@ -274,33 +296,33 @@ class TemuanListItem extends StatelessWidget {
                                       Icon(
                                         Icons.shield,
                                         color: _levelRisikoColor,
-                                        size: 10,
+                                        size: 14,
                                       ),
                                       const SizedBox(width: 3),
                                       Text(
                                         temuan.levelRisiko!,
                                         style: TextStyle(
                                           color: _levelRisikoColor,
-                                          fontSize: 10,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 6),
                               ],
-                              Expanded(
-                                child: Text(
-                                  temuan.deskripsiTemuan,
-                                  style: TextStyle(
-                                    color: context.textSecondary,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
                             ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            temuan.deskripsiTemuan,
+                            style: TextStyle(
+                              color: context.textSecondary,
+                              fontSize: 14,
+                              height: 1.4,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -310,10 +332,12 @@ class TemuanListItem extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
+                            tooltip: 'Edit temuan',
                             icon: const Icon(Icons.edit, color: Colors.blue),
                             onPressed: onEdit,
                           ),
                           IconButton(
+                            tooltip: 'Hapus temuan',
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: onDelete,
                           ),

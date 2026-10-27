@@ -63,11 +63,15 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
   @override
   Widget build(BuildContext context) {
     final temuan = widget.temuan;
-    final String status = temuan.statusTemuan ?? 'Open';
-    final bool isOpen = status == 'Open';
-    final Color statusColor = isOpen ? Colors.red : Colors.green;
-    final IconData statusIcon = isOpen ? Icons.lock_open : Icons.lock;
-    final String statusText = isOpen ? 'Belum Selesai' : 'Sudah Selesai';
+    final rawStatus = temuan.statusTemuan?.trim();
+    final (status, statusText, baseColor, statusIcon) = switch (rawStatus?.toLowerCase()) {
+      'open' => ('Open', 'Belum Selesai', Colors.red, Icons.lock_open),
+      'on progress' => ('On Progress', 'Sedang Ditindaklanjuti', Colors.orange, Icons.pending_actions),
+      'close' || 'closed' => ('Closed', 'Sudah Selesai', Colors.green, Icons.task_alt),
+      _ => (rawStatus?.isNotEmpty == true ? rawStatus! : 'Status belum tersedia',
+          'Status perlu dikonfirmasi', Colors.grey, Icons.help_outline),
+    };
+    final statusColor = baseColor[context.isDark ? 300 : 800]!;
 
     return Dialog(
       backgroundColor: context.surfaceColor,
@@ -228,8 +232,8 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
                         children: [
                           Container(
                             padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(12)),
-                            child: Icon(statusIcon, color: Colors.white, size: 28),
+                            decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
+                            child: Icon(statusIcon, color: statusColor, size: 28),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -238,15 +242,16 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
                               children: [
                                 Text('Status Temuan', style: TextStyle(color: context.textSecondary, fontSize: 12, fontWeight: FontWeight.w500)),
                                 const SizedBox(height: 4),
-                                Row(
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                      decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(20)),
-                                      child: Text(status.toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                                      decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),
+                                      child: Text(status.toUpperCase(), style: TextStyle(color: statusColor, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1)),
                                     ),
-                                    const SizedBox(width: 8),
-                                    Expanded(child: Text(statusText, style: TextStyle(color: statusColor, fontSize: 13, fontWeight: FontWeight.w600))),
+                                    Text(statusText, style: TextStyle(color: statusColor, fontSize: 13, fontWeight: FontWeight.w600)),
                                   ],
                                 ),
                               ],

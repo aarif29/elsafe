@@ -41,15 +41,10 @@ class PanduanPenggunaanScreen extends StatelessWidget {
             icon: Icons.login,
             title: 'Login & Pemilihan ULP',
             content:
-                '1. Masukkan email dan password yang telah terdaftar.\n'
-                '2. Setelah login, petugas memilih ULP (Unit Layanan Pelanggan) sesuai wilayah tugas.\n'
+                '1. Tap "Masuk dengan Google", lalu pilih akun Google Anda.\n'
+                '2. Jika ULP belum disetel, pilih ULP (Unit Layanan Pelanggan) sesuai wilayah tugas.\n'
                 '3. Data petugas akan mengikuti ULP yang dipilih.\n'
-                '4. Admin dapat melihat data lintas ULP dan meninjau data pengguna.\n\n'
-                'Lupa password:\n'
-                '- Tap tombol "Lupa Password?" di halaman login\n'
-                '- Masukkan email yang terdaftar\n'
-                '- Cek email untuk tautan reset password\n'
-                '- Ikuti tautan untuk membuat password baru.',
+                '4. Admin dapat melihat data lintas ULP dan meninjau data pengguna.',
           ),
           _buildSection(
             context,
