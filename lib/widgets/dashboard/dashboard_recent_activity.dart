@@ -15,9 +15,10 @@ class DashboardRecentActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Wrap(
+          alignment: WrapAlignment.spaceBetween,
           spacing: 16,
           runSpacing: 4,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -26,145 +27,189 @@ class DashboardRecentActivity extends StatelessWidget {
               'Temuan Terbaru',
               style: TextStyle(
                 color: context.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
               ),
             ),
             if (recentTemuan.isNotEmpty)
               TextButton(
-                onPressed: onLihatSemua,
-                child: const Text(
-                  'Lihat Semua',
-                  style: TextStyle(color: Colors.blue, fontSize: 14),
+                style: TextButton.styleFrom(
+                  foregroundColor:
+                      context.isDark
+                          ? Colors.blue.shade300
+                          : Colors.blue.shade800,
                 ),
+                onPressed: onLihatSemua,
+                child: const Text('Lihat Semua'),
               ),
           ],
         ),
-        const SizedBox(height: 12),
-        recentTemuan.isEmpty
-            ? _EmptyState()
-            : Column(
-              children:
-                  recentTemuan
-                      .map(
-                        (temuan) => _RecentTemuanCard(
-                          temuan: temuan,
-                          onTap: onLihatSemua,
-                        ),
-                      )
-                      .toList(),
+        const SizedBox(height: 8),
+        if (recentTemuan.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Belum ada temuan',
+                  style: TextStyle(
+                    color: context.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Belum ada temuan yang dapat ditampilkan untuk akun Anda.',
+                  style: TextStyle(color: context.textSecondary, fontSize: 14),
+                ),
+              ],
             ),
+          )
+        else
+          for (final temuan in recentTemuan) ...[
+            Divider(height: 1, color: context.borderColor),
+            _RecentTemuanRow(temuan: temuan, onTap: onLihatSemua),
+          ],
       ],
     );
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(30),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.borderColor),
-      ),
-      child: Column(
-        children: [
-          Icon(Icons.inbox_outlined, color: context.textDisabled, size: 64),
-          const SizedBox(height: 16),
-          Text(
-            'Belum ada temuan',
-            style: TextStyle(
-              color: context.textSecondary,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Tap tombol + di bawah untuk\nmenambah temuan pertama Anda',
-            style: TextStyle(color: context.textHint, fontSize: 12),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RecentTemuanCard extends StatelessWidget {
+class _RecentTemuanRow extends StatelessWidget {
   final TemuanModel temuan;
   final VoidCallback onTap;
 
-  const _RecentTemuanCard({required this.temuan, required this.onTap});
+  const _RecentTemuanRow({required this.temuan, required this.onTap});
+
+  String get _status {
+    final value = temuan.statusTemuan?.trim();
+    return switch (value?.toLowerCase()) {
+      'open' => 'Open',
+      'on progress' => 'On Progress',
+      'close' || 'closed' => 'Closed',
+      null || '' => 'Status belum tersedia',
+      _ => value!,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.borderColor),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
+    final date = temuan.tanggalTemuan;
+    final dateLabel =
+        '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    final details = [
+      _status,
+      if (temuan.levelRisiko?.trim().isNotEmpty == true)
+        'Risiko ${temuan.levelRisiko}',
+      if (temuan.tipeTemuan?.trim().isNotEmpty == true) temuan.tipeTemuan!,
+    ];
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final wide =
+                  constraints.maxWidth >=
+                  900 * MediaQuery.textScalerOf(context).scale(1);
+              final identity = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    temuan.namaPemilik,
+                    style: TextStyle(
+                      color: context.textPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.location_on,
-                    color: Colors.blue,
-                    size: 24,
+                  const SizedBox(height: 4),
+                  Text(
+                    temuan.lokasi,
+                    style: TextStyle(
+                      color: context.textSecondary,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        temuan.namaPemilik,
-                        style: TextStyle(
-                          color: context.textPrimary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        temuan.lokasi,
-                        style: TextStyle(
-                          color: context.textSecondary,
-                          fontSize: 12,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${temuan.tanggalTemuan.day}/${temuan.tanggalTemuan.month}/${temuan.tanggalTemuan.year}',
-                        style: TextStyle(color: context.textHint, fontSize: 11),
-                      ),
-                    ],
+                ],
+              );
+              final metadata = [
+                for (final detail in details)
+                  Text(
+                    detail,
+                    style: TextStyle(
+                      color: context.textSecondary,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                Icon(Icons.chevron_right, color: context.textHint),
-              ],
-            ),
+              ];
+              final dateText = Text(
+                dateLabel,
+                style: TextStyle(color: context.textSecondary, fontSize: 14),
+              );
+              if (wide) {
+                final columns = [
+                  _status,
+                  if (temuan.levelRisiko?.trim().isNotEmpty == true)
+                    'Risiko ${temuan.levelRisiko}'
+                  else
+                    '',
+                  temuan.tipeTemuan?.trim() ?? '',
+                ];
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(flex: 5, child: identity),
+                    const SizedBox(width: 24),
+                    Expanded(
+                      flex: 4,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (var i = 0; i < columns.length; i++)
+                            Expanded(
+                              flex: i == 1 ? 4 : 3,
+                              child: Text(
+                                columns[i],
+                                style: TextStyle(
+                                  color: context.textSecondary,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    dateText,
+                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.chevron_right,
+                      color: context.textSecondary,
+                      size: 20,
+                    ),
+                  ],
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  identity,
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [...metadata, dateText],
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
