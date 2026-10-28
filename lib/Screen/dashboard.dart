@@ -132,42 +132,23 @@ class DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildSummary() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final welcome = DashboardWelcomeCard(userName: _userName);
-        final greeting = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            welcome,
-            if (_lastUpdated case final updated?) ...[
-              const SizedBox(height: 4),
-              Text(
-                'Diperbarui ${updated.hour.toString().padLeft(2, '0')}:${updated.minute.toString().padLeft(2, '0')}',
-                style: TextStyle(color: context.textSecondary, fontSize: 14),
-              ),
-            ],
-          ],
-        );
-        final stats = DashboardStatsSection(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        DashboardWelcomeCard(userName: _userName),
+        if (_lastUpdated case final updated?) ...[
+          const SizedBox(height: 8),
+          Text(
+            'Diperbarui ${updated.hour.toString().padLeft(2, '0')}:${updated.minute.toString().padLeft(2, '0')}',
+            style: TextStyle(color: context.textSecondary, fontSize: 13),
+          ),
+        ],
+        const SizedBox(height: 20),
+        DashboardStatsSection(
           totalTemuan: _totalTemuan,
           temuanBulanIni: _temuanBulanIni,
-        );
-        if (constraints.maxWidth >=
-            800 * MediaQuery.textScalerOf(context).scale(1)) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(child: greeting),
-              const SizedBox(width: 32),
-              SizedBox(width: 360, child: stats),
-            ],
-          );
-        }
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [greeting, const SizedBox(height: 16), stats],
-        );
-      },
+        ),
+      ],
     );
   }
 

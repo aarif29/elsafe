@@ -117,7 +117,7 @@
       "source_file": "ios/Runner/AppDelegate.swift",
       "source_location": "L1",
       "id": "ios_runner_appdelegate_swift",
-      "community": 33,
+      "community": 32,
       "norm_label": "appdelegate.swift"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "macos/Runner/AppDelegate.swift",
       "source_location": "L4",
       "id": "runner_appdelegate_appdelegate",
-      "community": 33,
+      "community": 32,
       "norm_label": "appdelegate"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "",
       "source_location": "",
       "id": "flutterappdelegate",
-      "community": 33,
+      "community": 32,
       "norm_label": "flutterappdelegate"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "ios/Runner/AppDelegate.swift",
       "source_location": "L6",
       "id": "runner_appdelegate_appdelegate_application",
-      "community": 33,
+      "community": 32,
       "norm_label": ".application()"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "ios/RunnerTests/RunnerTests.swift",
       "source_location": "L1",
       "id": "ios_runnertests_runnertests_swift",
-      "community": 42,
+      "community": 41,
       "norm_label": "runnertests.swift"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "macos/RunnerTests/RunnerTests.swift",
       "source_location": "L5",
       "id": "runnertests_runnertests_runnertests",
-      "community": 42,
+      "community": 41,
       "norm_label": "runnertests"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "",
       "source_location": "",
       "id": "xctestcase",
-      "community": 42,
+      "community": 41,
       "norm_label": "xctestcase"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "macos/RunnerTests/RunnerTests.swift",
       "source_location": "L7",
       "id": "runnertests_runnertests_runnertests_testexample",
-      "community": 42,
+      "community": 41,
       "norm_label": ".testexample()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "test/support/dashboard_fixture.dart",
       "source_location": null,
       "id": "dart_async",
-      "community": 18,
+      "community": 24,
       "norm_label": "dart:async"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "test/form_theme_test.dart",
       "source_location": null,
       "id": "package_supabase_flutter_supabase_flutter_dart",
-      "community": 24,
+      "community": 26,
       "norm_label": "package:supabase_flutter/supabase_flutter.dart"
     },
     {
@@ -414,7 +414,7 @@
       "source_file": "lib/config/app_logger.dart",
       "source_location": null,
       "id": "lib_config_app_logger_dart",
-      "community": 36,
+      "community": 35,
       "norm_label": "app_logger.dart"
     },
     {
@@ -423,7 +423,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "package_flutter_foundation_dart",
-      "community": 36,
+      "community": 35,
       "norm_label": "package:flutter/foundation.dart"
     },
     {
@@ -432,7 +432,7 @@
       "source_file": "lib/config/app_logger.dart",
       "source_location": null,
       "id": "package_logger_logger_dart",
-      "community": 36,
+      "community": 35,
       "norm_label": "package:logger/logger.dart"
     },
     {
@@ -441,7 +441,7 @@
       "source_file": "lib/config/app_theme.dart",
       "source_location": null,
       "id": "lib_config_app_theme_dart",
-      "community": 37,
+      "community": 42,
       "norm_label": "app_theme.dart"
     },
     {
@@ -450,7 +450,7 @@
       "source_file": "lib/config/app_theme.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_app_theme_dart_themeservice",
-      "community": 37,
+      "community": 42,
       "norm_label": "themeservice"
     },
     {
@@ -459,7 +459,7 @@
       "source_file": "lib/config/app_theme.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_app_theme_dart_dark",
-      "community": 37,
+      "community": 42,
       "norm_label": "dark"
     },
     {
@@ -468,7 +468,7 @@
       "source_file": "lib/config/app_theme.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_app_theme_dart_light",
-      "community": 37,
+      "community": 42,
       "norm_label": "light"
     },
     {
@@ -477,7 +477,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "package_flutter_services_dart",
-      "community": 37,
+      "community": 42,
       "norm_label": "package:flutter/services.dart"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "lib/config/firebase_options.dart",
       "source_location": null,
       "id": "lib_config_firebase_options_dart",
-      "community": 36,
+      "community": 35,
       "norm_label": "firebase_options.dart"
     },
     {
@@ -504,7 +504,7 @@
       "source_file": "lib/config/firebase_options.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_firebase_options_dart_defaultfirebaseoptions",
-      "community": 36,
+      "community": 35,
       "norm_label": "defaultfirebaseoptions"
     },
     {
@@ -513,7 +513,7 @@
       "source_file": "lib/config/firebase_options.dart",
       "source_location": null,
       "id": "package_firebase_core_firebase_core_dart",
-      "community": 36,
+      "community": 35,
       "norm_label": "package:firebase_core/firebase_core.dart"
     },
     {
@@ -549,7 +549,7 @@
       "source_file": "lib/config/notification_service.dart",
       "source_location": null,
       "id": "lib_config_notification_service_dart",
-      "community": 24,
+      "community": 26,
       "norm_label": "notification_service.dart"
     },
     {
@@ -558,7 +558,7 @@
       "source_file": "lib/config/notification_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_notification_service_dart_notificationservice",
-      "community": 24,
+      "community": 26,
       "norm_label": "notificationservice"
     },
     {
@@ -567,7 +567,7 @@
       "source_file": "lib/config/notification_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_notification_service_dart_refreshunreadcount",
-      "community": 24,
+      "community": 26,
       "norm_label": "refreshunreadcount"
     },
     {
@@ -576,7 +576,7 @@
       "source_file": "lib/config/notification_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_notification_service_dart_subscriberealtime",
-      "community": 24,
+      "community": 26,
       "norm_label": "_subscriberealtime"
     },
     {
@@ -585,7 +585,7 @@
       "source_file": "lib/config/notification_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_notification_service_dart_reset",
-      "community": 24,
+      "community": 26,
       "norm_label": "reset"
     },
     {
@@ -594,7 +594,7 @@
       "source_file": "lib/config/ulp_service.dart",
       "source_location": null,
       "id": "app_logger_dart",
-      "community": 24,
+      "community": 26,
       "norm_label": "app_logger.dart"
     },
     {
@@ -603,7 +603,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "lib_config_snackbar_dart",
-      "community": 13,
+      "community": 23,
       "norm_label": "snackbar.dart"
     },
     {
@@ -612,7 +612,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_snackbarutils",
-      "community": 13,
+      "community": 23,
       "norm_label": "snackbarutils"
     },
     {
@@ -621,7 +621,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_showsuccess",
-      "community": 13,
+      "community": 23,
       "norm_label": "showsuccess"
     },
     {
@@ -630,7 +630,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_showerror",
-      "community": 13,
+      "community": 23,
       "norm_label": "showerror"
     },
     {
@@ -639,7 +639,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_showinfo",
-      "community": 13,
+      "community": 23,
       "norm_label": "showinfo"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_showwarning",
-      "community": 13,
+      "community": 23,
       "norm_label": "showwarning"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_showcustom",
-      "community": 13,
+      "community": 23,
       "norm_label": "showcustom"
     },
     {
@@ -666,7 +666,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_showsimple",
-      "community": 13,
+      "community": 23,
       "norm_label": "showsimple"
     },
     {
@@ -675,7 +675,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_sizedbox",
-      "community": 13,
+      "community": 23,
       "norm_label": "sizedbox"
     },
     {
@@ -684,7 +684,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_showanimatedsnackbar",
-      "community": 13,
+      "community": 23,
       "norm_label": "_showanimatedsnackbar"
     },
     {
@@ -693,7 +693,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_showloading",
-      "community": 13,
+      "community": 23,
       "norm_label": "showloading"
     },
     {
@@ -702,7 +702,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_hide",
-      "community": 13,
+      "community": 23,
       "norm_label": "hide"
     },
     {
@@ -711,7 +711,7 @@
       "source_file": "lib/config/snackbar.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_snackbar_dart_clearall",
-      "community": 13,
+      "community": 23,
       "norm_label": "clearall"
     },
     {
@@ -738,7 +738,7 @@
       "source_file": "lib/config/supabase_config.dart",
       "source_location": null,
       "id": "lib_config_supabase_config_dart",
-      "community": 24,
+      "community": 26,
       "norm_label": "supabase_config.dart"
     },
     {
@@ -747,7 +747,7 @@
       "source_file": "lib/config/supabase_config.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_supabase_config_dart_supabaseconfig",
-      "community": 24,
+      "community": 26,
       "norm_label": "supabaseconfig"
     },
     {
@@ -774,7 +774,7 @@
       "source_file": "lib/config/temuan_service.dart",
       "source_location": null,
       "id": "lib_config_temuan_service_dart",
-      "community": 26,
+      "community": 28,
       "norm_label": "temuan_service.dart"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "lib/config/temuan_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_service_dart_temuanservice",
-      "community": 26,
+      "community": 28,
       "norm_label": "temuanservice"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "lib/config/temuan_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_service_dart_isadminprofile",
-      "community": 26,
+      "community": 28,
       "norm_label": "_isadminprofile"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "lib/config/temuan_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_service_dart_exception",
-      "community": 26,
+      "community": 28,
       "norm_label": "exception"
     },
     {
@@ -810,7 +810,7 @@
       "source_file": "lib/config/temuan_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_service_dart_getcontenttype",
-      "community": 26,
+      "community": 28,
       "norm_label": "_getcontenttype"
     },
     {
@@ -819,7 +819,7 @@
       "source_file": "lib/config/temuan_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_service_dart_deletefoto",
-      "community": 26,
+      "community": 28,
       "norm_label": "deletefoto"
     },
     {
@@ -828,7 +828,7 @@
       "source_file": "lib/config/temuan_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_service_dart_deletefotos",
-      "community": 26,
+      "community": 28,
       "norm_label": "deletefotos"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "package_file_picker_file_picker_dart",
-      "community": 26,
+      "community": 28,
       "norm_label": "package:file_picker/file_picker.dart"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "lib/config/temuan_service.dart",
       "source_location": null,
       "id": "temuan_model_dart",
-      "community": 26,
+      "community": 28,
       "norm_label": "temuan_model.dart"
     },
     {
@@ -864,7 +864,7 @@
       "source_file": "lib/config/temuan_service.dart",
       "source_location": null,
       "id": "sosialisasi_model_dart",
-      "community": 26,
+      "community": 28,
       "norm_label": "sosialisasi_model.dart"
     },
     {
@@ -873,7 +873,7 @@
       "source_file": "lib/config/temuan_service.dart",
       "source_location": null,
       "id": "ulp_service_dart",
-      "community": 26,
+      "community": 28,
       "norm_label": "ulp_service.dart"
     },
     {
@@ -882,7 +882,7 @@
       "source_file": "lib/config/temuan_types.dart",
       "source_location": null,
       "id": "lib_config_temuan_types_dart",
-      "community": 34,
+      "community": 33,
       "norm_label": "temuan_types.dart"
     },
     {
@@ -891,7 +891,7 @@
       "source_file": "lib/config/temuan_types.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_types_dart_tipetemuan",
-      "community": 34,
+      "community": 33,
       "norm_label": "tipetemuan"
     },
     {
@@ -900,7 +900,7 @@
       "source_file": "lib/config/temuan_types.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_types_dart_matriksrisiko",
-      "community": 34,
+      "community": 33,
       "norm_label": "matriksrisiko"
     },
     {
@@ -909,7 +909,7 @@
       "source_file": "lib/config/temuan_types.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_types_dart_penyulang",
-      "community": 34,
+      "community": 33,
       "norm_label": "penyulang"
     },
     {
@@ -918,7 +918,7 @@
       "source_file": "lib/config/temuan_types.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_types_dart_label",
-      "community": 34,
+      "community": 33,
       "norm_label": "label"
     },
     {
@@ -927,7 +927,7 @@
       "source_file": "lib/config/temuan_types.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_types_dart_skordarinilai",
-      "community": 34,
+      "community": 33,
       "norm_label": "skordarinilai"
     },
     {
@@ -936,7 +936,7 @@
       "source_file": "lib/config/temuan_types.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_temuan_types_dart_hitungskor",
-      "community": 34,
+      "community": 33,
       "norm_label": "hitungskor"
     },
     {
@@ -972,7 +972,7 @@
       "source_file": "lib/config/ulp_service.dart",
       "source_location": null,
       "id": "lib_config_ulp_service_dart",
-      "community": 24,
+      "community": 26,
       "norm_label": "ulp_service.dart"
     },
     {
@@ -981,7 +981,7 @@
       "source_file": "lib/config/ulp_service.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_config_ulp_service_dart_ulpservice",
-      "community": 24,
+      "community": 26,
       "norm_label": "ulpservice"
     },
     {
@@ -990,7 +990,7 @@
       "source_file": "lib/config/ulp_service.dart",
       "source_location": null,
       "id": "ulp_list_dart",
-      "community": 24,
+      "community": 26,
       "norm_label": "ulp_list.dart"
     },
     {
@@ -1386,7 +1386,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "lib_screen_daftar_temuan_dart",
-      "community": 9,
+      "community": 10,
       "norm_label": "daftar_temuan.dart"
     },
     {
@@ -1395,7 +1395,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_daftartemuanscreen",
-      "community": 9,
+      "community": 10,
       "norm_label": "daftartemuanscreen"
     },
     {
@@ -1404,7 +1404,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_daftartemuanscreenstate",
-      "community": 9,
+      "community": 10,
       "norm_label": "daftartemuanscreenstate"
     },
     {
@@ -1413,7 +1413,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_skeletonlistitem",
-      "community": 9,
+      "community": 10,
       "norm_label": "_skeletonlistitem"
     },
     {
@@ -1422,7 +1422,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_skeletonlistitemstate",
-      "community": 9,
+      "community": 10,
       "norm_label": "_skeletonlistitemstate"
     },
     {
@@ -1431,7 +1431,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_initstate",
-      "community": 9,
+      "community": 10,
       "norm_label": "initstate"
     },
     {
@@ -1440,7 +1440,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_dispose",
-      "community": 9,
+      "community": 10,
       "norm_label": "dispose"
     },
     {
@@ -1449,7 +1449,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_onscroll",
-      "community": 9,
+      "community": 10,
       "norm_label": "_onscroll"
     },
     {
@@ -1458,7 +1458,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_didchangedependencies",
-      "community": 9,
+      "community": 10,
       "norm_label": "didchangedependencies"
     },
     {
@@ -1467,7 +1467,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_loaddata",
-      "community": 9,
+      "community": 10,
       "norm_label": "loaddata"
     },
     {
@@ -1476,7 +1476,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_launchurl",
-      "community": 9,
+      "community": 10,
       "norm_label": "launchurl"
     },
     {
@@ -1485,7 +1485,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_exception",
-      "community": 9,
+      "community": 10,
       "norm_label": "exception"
     },
     {
@@ -1494,7 +1494,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_showdetaildialog",
-      "community": 9,
+      "community": 10,
       "norm_label": "_showdetaildialog"
     },
     {
@@ -1503,7 +1503,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_build",
-      "community": 9,
+      "community": 10,
       "norm_label": "build"
     },
     {
@@ -1512,7 +1512,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_scaffold",
-      "community": 9,
+      "community": 10,
       "norm_label": "scaffold"
     },
     {
@@ -1521,7 +1521,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_buildsearchandfilter",
-      "community": 9,
+      "community": 10,
       "norm_label": "_buildsearchandfilter"
     },
     {
@@ -1530,7 +1530,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_container",
-      "community": 9,
+      "community": 10,
       "norm_label": "container"
     },
     {
@@ -1539,7 +1539,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_sizedbox",
-      "community": 9,
+      "community": 10,
       "norm_label": "sizedbox"
     },
     {
@@ -1548,7 +1548,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_buildfilterdropdown",
-      "community": 9,
+      "community": 10,
       "norm_label": "_buildfilterdropdown"
     },
     {
@@ -1557,7 +1557,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_function",
-      "community": 9,
+      "community": 10,
       "norm_label": "function"
     },
     {
@@ -1566,7 +1566,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_column",
-      "community": 9,
+      "community": 10,
       "norm_label": "column"
     },
     {
@@ -1575,7 +1575,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_dropdownmenuitem",
-      "community": 9,
+      "community": 10,
       "norm_label": "dropdownmenuitem"
     },
     {
@@ -1584,7 +1584,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_buildbody",
-      "community": 9,
+      "community": 10,
       "norm_label": "_buildbody"
     },
     {
@@ -1593,7 +1593,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_center",
-      "community": 9,
+      "community": 10,
       "norm_label": "center"
     },
     {
@@ -1602,7 +1602,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_icon",
-      "community": 9,
+      "community": 10,
       "norm_label": "icon"
     },
     {
@@ -1611,7 +1611,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_padding",
-      "community": 9,
+      "community": 10,
       "norm_label": "padding"
     },
     {
@@ -1620,7 +1620,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_temuanlistitem",
-      "community": 9,
+      "community": 10,
       "norm_label": "temuanlistitem"
     },
     {
@@ -1629,7 +1629,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_animatedbuilder",
-      "community": 9,
+      "community": 10,
       "norm_label": "animatedbuilder"
     },
     {
@@ -1638,7 +1638,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_card",
-      "community": 9,
+      "community": 10,
       "norm_label": "card"
     },
     {
@@ -1647,7 +1647,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "widgets_responsive_filter_layout_dart",
-      "community": 9,
+      "community": 10,
       "norm_label": "../widgets/responsive_filter_layout.dart"
     },
     {
@@ -1665,7 +1665,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "config_temuan_service_dart",
-      "community": 15,
+      "community": 14,
       "norm_label": "../../config/temuan_service.dart"
     },
     {
@@ -1674,7 +1674,7 @@
       "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
       "source_location": null,
       "id": "config_temuan_model_dart",
-      "community": 10,
+      "community": 9,
       "norm_label": "../../config/temuan_model.dart"
     },
     {
@@ -1692,7 +1692,7 @@
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
       "id": "widgets_daftar_temuan_temuan_list_item_dart",
-      "community": 9,
+      "community": 10,
       "norm_label": "../widgets/daftar_temuan/temuan_list_item.dart"
     },
     {
@@ -1701,7 +1701,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "widgets_daftar_temuan_temuan_detail_dialog_dart",
-      "community": 14,
+      "community": 13,
       "norm_label": "../widgets/daftar_temuan/temuan_detail_dialog.dart"
     },
     {
@@ -1710,7 +1710,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "edit_temuan_dart",
-      "community": 14,
+      "community": 13,
       "norm_label": "edit_temuan.dart"
     },
     {
@@ -1793,24 +1793,6 @@
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_dashboard_dart_buildsummary",
       "community": 5,
       "norm_label": "_buildsummary"
-    },
-    {
-      "label": "LayoutBuilder",
-      "file_type": "code",
-      "source_file": "lib/Screen/dashboard.dart",
-      "source_location": null,
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_dashboard_dart_layoutbuilder",
-      "community": 5,
-      "norm_label": "layoutbuilder"
-    },
-    {
-      "label": "Row",
-      "file_type": "code",
-      "source_file": "lib/Screen/dashboard.dart",
-      "source_location": null,
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_dashboard_dart_row",
-      "community": 5,
-      "norm_label": "row"
     },
     {
       "label": "Column",
@@ -2250,7 +2232,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "config_sosialisasi_model_dart",
-      "community": 15,
+      "community": 14,
       "norm_label": "../../config/sosialisasi_model.dart"
     },
     {
@@ -2259,7 +2241,7 @@
       "source_file": "lib/Screen/temuan.dart",
       "source_location": null,
       "id": "widgets_foto_picker_widget_dart",
-      "community": 7,
+      "community": 6,
       "norm_label": "../widgets/foto_picker_widget.dart"
     },
     {
@@ -2268,7 +2250,7 @@
       "source_file": "lib/Screen/temuan.dart",
       "source_location": null,
       "id": "widgets_matriks_risiko_widget_dart",
-      "community": 6,
+      "community": 7,
       "norm_label": "../widgets/matriks_risiko_widget.dart"
     },
     {
@@ -3384,7 +3366,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "lib_screen_notifications_screen_dart",
-      "community": 14,
+      "community": 13,
       "norm_label": "notifications_screen.dart"
     },
     {
@@ -3393,7 +3375,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_notificationsscreen",
-      "community": 14,
+      "community": 13,
       "norm_label": "notificationsscreen"
     },
     {
@@ -3402,7 +3384,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_notificationsscreenstate",
-      "community": 14,
+      "community": 13,
       "norm_label": "_notificationsscreenstate"
     },
     {
@@ -3411,7 +3393,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_notifcard",
-      "community": 14,
+      "community": 13,
       "norm_label": "_notifcard"
     },
     {
@@ -3420,7 +3402,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_initstate",
-      "community": 14,
+      "community": 13,
       "norm_label": "initstate"
     },
     {
@@ -3429,7 +3411,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_dispose",
-      "community": 14,
+      "community": 13,
       "norm_label": "dispose"
     },
     {
@@ -3438,7 +3420,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_onnewnotif",
-      "community": 14,
+      "community": 13,
       "norm_label": "_onnewnotif"
     },
     {
@@ -3447,7 +3429,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_snackbar",
-      "community": 14,
+      "community": 13,
       "norm_label": "snackbar"
     },
     {
@@ -3456,7 +3438,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_launchurl",
-      "community": 14,
+      "community": 13,
       "norm_label": "launchurl"
     },
     {
@@ -3465,7 +3447,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_build",
-      "community": 14,
+      "community": 13,
       "norm_label": "build"
     },
     {
@@ -3474,7 +3456,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_scaffold",
-      "community": 14,
+      "community": 13,
       "norm_label": "scaffold"
     },
     {
@@ -3483,7 +3465,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_buildempty",
-      "community": 14,
+      "community": 13,
       "norm_label": "_buildempty"
     },
     {
@@ -3492,7 +3474,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_center",
-      "community": 14,
+      "community": 13,
       "norm_label": "center"
     },
     {
@@ -3501,7 +3483,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_sizedbox",
-      "community": 14,
+      "community": 13,
       "norm_label": "sizedbox"
     },
     {
@@ -3510,7 +3492,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_inkwell",
-      "community": 14,
+      "community": 13,
       "norm_label": "inkwell"
     },
     {
@@ -3519,7 +3501,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_spacer",
-      "community": 14,
+      "community": 13,
       "norm_label": "spacer"
     },
     {
@@ -3528,7 +3510,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_icondata",
-      "community": 14,
+      "community": 13,
       "norm_label": "_icondata"
     },
     {
@@ -3537,7 +3519,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_iconbgcolor",
-      "community": 14,
+      "community": 13,
       "norm_label": "_iconbgcolor"
     },
     {
@@ -3546,7 +3528,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_iconcolor",
-      "community": 14,
+      "community": 13,
       "norm_label": "_iconcolor"
     },
     {
@@ -3555,7 +3537,7 @@
       "source_file": "lib/Screen/notifications_screen.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_notifications_screen_dart_formatdate",
-      "community": 14,
+      "community": 13,
       "norm_label": "_formatdate"
     },
     {
@@ -3753,7 +3735,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "package_elsafe_profil_loginscreen_dart",
-      "community": 28,
+      "community": 31,
       "norm_label": "package:elsafe/profil/loginscreen.dart"
     },
     {
@@ -4545,7 +4527,7 @@
       "source_file": "test/pdf_generator_test.dart",
       "source_location": null,
       "id": "dart_typed_data",
-      "community": 23,
+      "community": 16,
       "norm_label": "dart:typed_data"
     },
     {
@@ -4554,7 +4536,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "package_http_http_dart",
-      "community": 10,
+      "community": 9,
       "norm_label": "package:http/http.dart"
     },
     {
@@ -4572,7 +4554,7 @@
       "source_file": "lib/utils/export_temuan_filter.dart",
       "source_location": null,
       "id": "lib_utils_export_temuan_filter_dart",
-      "community": 10,
+      "community": 9,
       "norm_label": "export_temuan_filter.dart"
     },
     {
@@ -4581,7 +4563,7 @@
       "source_file": "lib/utils/export_temuan_filter.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_export_temuan_filter_dart_dateonly",
-      "community": 10,
+      "community": 9,
       "norm_label": "_dateonly"
     },
     {
@@ -4590,7 +4572,7 @@
       "source_file": "lib/utils/export_temuan_filter.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_export_temuan_filter_dart_datetime",
-      "community": 10,
+      "community": 9,
       "norm_label": "datetime"
     },
     {
@@ -4599,7 +4581,7 @@
       "source_file": "lib/utils/export_temuan_filter.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_export_temuan_filter_dart_matchesstringfilter",
-      "community": 10,
+      "community": 9,
       "norm_label": "_matchesstringfilter"
     },
     {
@@ -4608,7 +4590,7 @@
       "source_file": "lib/utils/export_temuan_filter.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_export_temuan_filter_dart_matchesintfilter",
-      "community": 10,
+      "community": 9,
       "norm_label": "_matchesintfilter"
     },
     {
@@ -4635,7 +4617,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "lib_utils_pdf_generator_dart",
-      "community": 10,
+      "community": 9,
       "norm_label": "pdf_generator.dart"
     },
     {
@@ -4644,7 +4626,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_pdf_generator_dart_exporttemuanpdfgenerator",
-      "community": 10,
+      "community": 9,
       "norm_label": "exporttemuanpdfgenerator"
     },
     {
@@ -4653,7 +4635,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_pdf_generator_dart_bodycell",
-      "community": 10,
+      "community": 9,
       "norm_label": "_bodycell"
     },
     {
@@ -4662,7 +4644,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_pdf_generator_dart_pemilikobjeklabel",
-      "community": 10,
+      "community": 9,
       "norm_label": "_pemilikobjeklabel"
     },
     {
@@ -4671,7 +4653,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_pdf_generator_dart_joinnonempty",
-      "community": 10,
+      "community": 9,
       "norm_label": "_joinnonempty"
     },
     {
@@ -4680,7 +4662,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_pdf_generator_dart_tindaklanjutlabel",
-      "community": 10,
+      "community": 9,
       "norm_label": "_tindaklanjutlabel"
     },
     {
@@ -4689,7 +4671,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_pdf_generator_dart_periodlabel",
-      "community": 10,
+      "community": 9,
       "norm_label": "_periodlabel"
     },
     {
@@ -4698,7 +4680,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_pdf_generator_dart_formatdate",
-      "community": 10,
+      "community": 9,
       "norm_label": "_formatdate"
     },
     {
@@ -4707,7 +4689,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_pdf_generator_dart_formatdatetime",
-      "community": 10,
+      "community": 9,
       "norm_label": "_formatdatetime"
     },
     {
@@ -4716,7 +4698,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_pdf_generator_dart_valueordash",
-      "community": 10,
+      "community": 9,
       "norm_label": "_valueordash"
     },
     {
@@ -4725,7 +4707,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "package_pdf_pdf_dart",
-      "community": 10,
+      "community": 9,
       "norm_label": "package:pdf/pdf.dart"
     },
     {
@@ -4734,7 +4716,7 @@
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
       "id": "package_pdf_widgets_dart",
-      "community": 10,
+      "community": 9,
       "norm_label": "package:pdf/widgets.dart"
     },
     {
@@ -4806,7 +4788,7 @@
       "source_file": "lib/widgets/foto_grid_widget.dart",
       "source_location": null,
       "id": "lib_widgets_foto_grid_widget_dart",
-      "community": 13,
+      "community": 29,
       "norm_label": "foto_grid_widget.dart"
     },
     {
@@ -4815,7 +4797,7 @@
       "source_file": "lib/widgets/foto_grid_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_grid_widget_dart_fotogridwidget",
-      "community": 13,
+      "community": 29,
       "norm_label": "fotogridwidget"
     },
     {
@@ -4824,7 +4806,7 @@
       "source_file": "lib/widgets/foto_grid_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_grid_widget_dart_function",
-      "community": 13,
+      "community": 29,
       "norm_label": "function"
     },
     {
@@ -4833,7 +4815,7 @@
       "source_file": "lib/widgets/foto_grid_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_grid_widget_dart_build",
-      "community": 13,
+      "community": 29,
       "norm_label": "build"
     },
     {
@@ -4842,7 +4824,7 @@
       "source_file": "lib/widgets/foto_grid_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_grid_widget_dart_center",
-      "community": 13,
+      "community": 29,
       "norm_label": "center"
     },
     {
@@ -4851,7 +4833,7 @@
       "source_file": "lib/widgets/foto_grid_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_grid_widget_dart_buildfotoitem",
-      "community": 13,
+      "community": 29,
       "norm_label": "_buildfotoitem"
     },
     {
@@ -4860,7 +4842,7 @@
       "source_file": "lib/widgets/foto_grid_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_grid_widget_dart_stack",
-      "community": 13,
+      "community": 29,
       "norm_label": "stack"
     },
     {
@@ -4869,7 +4851,7 @@
       "source_file": "lib/widgets/foto_grid_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_grid_widget_dart_container",
-      "community": 13,
+      "community": 29,
       "norm_label": "container"
     },
     {
@@ -4878,7 +4860,7 @@
       "source_file": "lib/widgets/foto_grid_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_grid_widget_dart_showfullimage",
-      "community": 13,
+      "community": 29,
       "norm_label": "_showfullimage"
     },
     {
@@ -4887,7 +4869,7 @@
       "source_file": "lib/widgets/foto_grid_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_grid_widget_dart_confirmdelete",
-      "community": 13,
+      "community": 29,
       "norm_label": "_confirmdelete"
     },
     {
@@ -4896,7 +4878,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "lib_widgets_foto_picker_widget_dart",
-      "community": 16,
+      "community": 15,
       "norm_label": "foto_picker_widget.dart"
     },
     {
@@ -4905,7 +4887,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_fotopickerwidget",
-      "community": 16,
+      "community": 15,
       "norm_label": "fotopickerwidget"
     },
     {
@@ -4914,7 +4896,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_fotopickerwidgetstate",
-      "community": 16,
+      "community": 15,
       "norm_label": "_fotopickerwidgetstate"
     },
     {
@@ -4923,7 +4905,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_function",
-      "community": 16,
+      "community": 15,
       "norm_label": "function"
     },
     {
@@ -4932,7 +4914,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_initstate",
-      "community": 16,
+      "community": 15,
       "norm_label": "initstate"
     },
     {
@@ -4941,7 +4923,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_pickfromgallery",
-      "community": 16,
+      "community": 15,
       "norm_label": "_pickfromgallery"
     },
     {
@@ -4950,7 +4932,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_removenewfile",
-      "community": 16,
+      "community": 15,
       "norm_label": "_removenewfile"
     },
     {
@@ -4959,7 +4941,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_removeexistingurl",
-      "community": 16,
+      "community": 15,
       "norm_label": "_removeexistingurl"
     },
     {
@@ -4968,7 +4950,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_showsourcedialog",
-      "community": 16,
+      "community": 15,
       "norm_label": "_showsourcedialog"
     },
     {
@@ -4977,7 +4959,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_sizedbox",
-      "community": 16,
+      "community": 15,
       "norm_label": "sizedbox"
     },
     {
@@ -4986,7 +4968,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_build",
-      "community": 16,
+      "community": 15,
       "norm_label": "build"
     },
     {
@@ -4995,7 +4977,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_column",
-      "community": 16,
+      "community": 15,
       "norm_label": "column"
     },
     {
@@ -5004,7 +4986,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_padding",
-      "community": 16,
+      "community": 15,
       "norm_label": "padding"
     },
     {
@@ -5013,7 +4995,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_buildnewfileitem",
-      "community": 16,
+      "community": 15,
       "norm_label": "_buildnewfileitem"
     },
     {
@@ -5022,7 +5004,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_stack",
-      "community": 16,
+      "community": 15,
       "norm_label": "stack"
     },
     {
@@ -5031,7 +5013,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_sectionlabel",
-      "community": 16,
+      "community": 15,
       "norm_label": "_sectionlabel"
     },
     {
@@ -5040,7 +5022,7 @@
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_row",
-      "community": 16,
+      "community": 15,
       "norm_label": "row"
     },
     {
@@ -5049,7 +5031,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "foto_grid_widget_dart",
-      "community": 16,
+      "community": 15,
       "norm_label": "../foto_grid_widget.dart"
     },
     {
@@ -5382,7 +5364,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "lib_widgets_daftar_temuan_temuan_detail_dialog_dart",
-      "community": 15,
+      "community": 14,
       "norm_label": "temuan_detail_dialog.dart"
     },
     {
@@ -5391,7 +5373,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_temuandetaildialog",
-      "community": 15,
+      "community": 14,
       "norm_label": "temuandetaildialog"
     },
     {
@@ -5400,7 +5382,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_temuandetaildialogstate",
-      "community": 15,
+      "community": 14,
       "norm_label": "_temuandetaildialogstate"
     },
     {
@@ -5409,7 +5391,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_sectionheader",
-      "community": 15,
+      "community": 14,
       "norm_label": "_sectionheader"
     },
     {
@@ -5418,7 +5400,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_matriksrow",
-      "community": 15,
+      "community": 14,
       "norm_label": "_matriksrow"
     },
     {
@@ -5427,7 +5409,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_tipebadgerow",
-      "community": 15,
+      "community": 14,
       "norm_label": "_tipebadgerow"
     },
     {
@@ -5436,7 +5418,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_inforow",
-      "community": 15,
+      "community": 14,
       "norm_label": "_inforow"
     },
     {
@@ -5445,7 +5427,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_function",
-      "community": 15,
+      "community": 14,
       "norm_label": "function"
     },
     {
@@ -5454,7 +5436,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_initstate",
-      "community": 15,
+      "community": 14,
       "norm_label": "initstate"
     },
     {
@@ -5463,7 +5445,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_levelrisikocolor",
-      "community": 15,
+      "community": 14,
       "norm_label": "_levelrisikocolor"
     },
     {
@@ -5472,7 +5454,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_formatdate",
-      "community": 15,
+      "community": 14,
       "norm_label": "_formatdate"
     },
     {
@@ -5481,7 +5463,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_build",
-      "community": 15,
+      "community": 14,
       "norm_label": "build"
     },
     {
@@ -5490,7 +5472,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_dialog",
-      "community": 15,
+      "community": 14,
       "norm_label": "dialog"
     },
     {
@@ -5499,7 +5481,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_sizedbox",
-      "community": 15,
+      "community": 14,
       "norm_label": "sizedbox"
     },
     {
@@ -5508,7 +5490,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_icon",
-      "community": 15,
+      "community": 14,
       "norm_label": "icon"
     },
     {
@@ -5517,7 +5499,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_center",
-      "community": 15,
+      "community": 14,
       "norm_label": "center"
     },
     {
@@ -5526,7 +5508,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_text",
-      "community": 15,
+      "community": 14,
       "norm_label": "text"
     },
     {
@@ -5535,7 +5517,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_padding",
-      "community": 15,
+      "community": 14,
       "norm_label": "padding"
     },
     {
@@ -5544,7 +5526,7 @@
       "source_file": "lib/widgets/daftar_temuan/temuan_detail_dialog.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_daftar_temuan_temuan_detail_dialog_dart_container",
-      "community": 15,
+      "community": 14,
       "norm_label": "container"
     },
     {
@@ -5742,7 +5724,7 @@
       "source_file": "lib/widgets/dashboard/dashboard_info_section.dart",
       "source_location": null,
       "id": "lib_widgets_dashboard_dashboard_info_section_dart",
-      "community": 32,
+      "community": 24,
       "norm_label": "dashboard_info_section.dart"
     },
     {
@@ -5751,7 +5733,7 @@
       "source_file": "lib/widgets/dashboard/dashboard_info_section.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_info_section_dart_dashboardinfosection",
-      "community": 32,
+      "community": 24,
       "norm_label": "dashboardinfosection"
     },
     {
@@ -5760,7 +5742,7 @@
       "source_file": "lib/widgets/dashboard/dashboard_info_section.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_info_section_dart_build",
-      "community": 32,
+      "community": 24,
       "norm_label": "build"
     },
     {
@@ -5769,7 +5751,7 @@
       "source_file": "lib/widgets/dashboard/dashboard_info_section.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_info_section_dart_column",
-      "community": 32,
+      "community": 24,
       "norm_label": "column"
     },
     {
@@ -5778,7 +5760,7 @@
       "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
       "source_location": null,
       "id": "lib_widgets_dashboard_dashboard_recent_activity_dart",
-      "community": 10,
+      "community": 9,
       "norm_label": "dashboard_recent_activity.dart"
     },
     {
@@ -5787,17 +5769,35 @@
       "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_dashboardrecentactivity",
-      "community": 10,
+      "community": 9,
       "norm_label": "dashboardrecentactivity"
     },
     {
-      "label": "_RecentTemuanRow",
+      "label": "_RecentTemuanCard",
       "file_type": "code",
       "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
       "source_location": null,
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_recenttemuanrow",
-      "community": 10,
-      "norm_label": "_recenttemuanrow"
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_recenttemuancard",
+      "community": 9,
+      "norm_label": "_recenttemuancard"
+    },
+    {
+      "label": "_StatusTag",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
+      "source_location": null,
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_statustag",
+      "community": 9,
+      "norm_label": "_statustag"
+    },
+    {
+      "label": "_NeutralTag",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
+      "source_location": null,
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_neutraltag",
+      "community": 9,
+      "norm_label": "_neutraltag"
     },
     {
       "label": "build",
@@ -5805,7 +5805,7 @@
       "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_build",
-      "community": 10,
+      "community": 9,
       "norm_label": "build"
     },
     {
@@ -5814,7 +5814,7 @@
       "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_column",
-      "community": 10,
+      "community": 9,
       "norm_label": "column"
     },
     {
@@ -5823,26 +5823,17 @@
       "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_sizedbox",
-      "community": 10,
+      "community": 9,
       "norm_label": "sizedbox"
     },
     {
-      "label": "Material",
+      "label": "Container",
       "file_type": "code",
       "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
       "source_location": null,
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_material",
-      "community": 10,
-      "norm_label": "material"
-    },
-    {
-      "label": "Row",
-      "file_type": "code",
-      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
-      "source_location": null,
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_row",
-      "community": 10,
-      "norm_label": "row"
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_container",
+      "community": 9,
+      "norm_label": "container"
     },
     {
       "label": "dashboard_stats_section.dart",
@@ -5863,13 +5854,13 @@
       "norm_label": "dashboardstatssection"
     },
     {
-      "label": "_Statistic",
+      "label": "_StatCard",
       "file_type": "code",
       "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
       "source_location": null,
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_statistic",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_statcard",
       "community": 4,
-      "norm_label": "_statistic"
+      "norm_label": "_statcard"
     },
     {
       "label": "build",
@@ -5881,13 +5872,22 @@
       "norm_label": "build"
     },
     {
-      "label": "LayoutBuilder",
+      "label": "Column",
       "file_type": "code",
       "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
       "source_location": null,
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_layoutbuilder",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_column",
       "community": 4,
-      "norm_label": "layoutbuilder"
+      "norm_label": "column"
+    },
+    {
+      "label": "SizedBox",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
+      "source_location": null,
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_sizedbox",
+      "community": 4,
+      "norm_label": "sizedbox"
     },
     {
       "label": "Wrap",
@@ -5906,15 +5906,6 @@
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_semantics",
       "community": 4,
       "norm_label": "semantics"
-    },
-    {
-      "label": "SizedBox",
-      "file_type": "code",
-      "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
-      "source_location": null,
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_sizedbox",
-      "community": 4,
-      "norm_label": "sizedbox"
     },
     {
       "label": "dashboard_welcome_card.dart",
@@ -5944,13 +5935,31 @@
       "norm_label": "build"
     },
     {
-      "label": "Text",
+      "label": "Container",
       "file_type": "code",
       "source_file": "lib/widgets/dashboard/dashboard_welcome_card.dart",
       "source_location": null,
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_text",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_container",
       "community": 4,
-      "norm_label": "text"
+      "norm_label": "container"
+    },
+    {
+      "label": "Icon",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_welcome_card.dart",
+      "source_location": null,
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_icon",
+      "community": 4,
+      "norm_label": "icon"
+    },
+    {
+      "label": "SizedBox",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_welcome_card.dart",
+      "source_location": null,
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_sizedbox",
+      "community": 4,
+      "norm_label": "sizedbox"
     },
     {
       "label": "generated_plugin_registrant.cc",
@@ -6093,7 +6102,7 @@
       "source_file": "macos/Flutter/GeneratedPluginRegistrant.swift",
       "source_location": "L1",
       "id": "macos_flutter_generatedpluginregistrant_swift",
-      "community": 38,
+      "community": 36,
       "norm_label": "generatedpluginregistrant.swift"
     },
     {
@@ -6102,7 +6111,7 @@
       "source_file": "macos/Flutter/GeneratedPluginRegistrant.swift",
       "source_location": "L19",
       "id": "flutter_generatedpluginregistrant_registergeneratedplugins",
-      "community": 38,
+      "community": 36,
       "norm_label": "registergeneratedplugins()"
     },
     {
@@ -6111,7 +6120,7 @@
       "source_file": "macos/Runner/AppDelegate.swift",
       "source_location": "L1",
       "id": "macos_runner_appdelegate_swift",
-      "community": 33,
+      "community": 32,
       "norm_label": "appdelegate.swift"
     },
     {
@@ -6120,7 +6129,7 @@
       "source_file": "macos/Runner/AppDelegate.swift",
       "source_location": "L6",
       "id": "runner_appdelegate_appdelegate_applicationshouldterminateafterlastwindowclosed",
-      "community": 33,
+      "community": 32,
       "norm_label": ".applicationshouldterminateafterlastwindowclosed()"
     },
     {
@@ -6129,7 +6138,7 @@
       "source_file": "macos/Runner/AppDelegate.swift",
       "source_location": "L10",
       "id": "runner_appdelegate_appdelegate_applicationsupportssecurerestorablestate",
-      "community": 33,
+      "community": 32,
       "norm_label": ".applicationsupportssecurerestorablestate()"
     },
     {
@@ -6138,7 +6147,7 @@
       "source_file": "macos/Runner/MainFlutterWindow.swift",
       "source_location": "L1",
       "id": "macos_runner_mainflutterwindow_swift",
-      "community": 38,
+      "community": 36,
       "norm_label": "mainflutterwindow.swift"
     },
     {
@@ -6147,7 +6156,7 @@
       "source_file": "macos/Runner/MainFlutterWindow.swift",
       "source_location": "L4",
       "id": "runner_mainflutterwindow_mainflutterwindow",
-      "community": 38,
+      "community": 36,
       "norm_label": "mainflutterwindow"
     },
     {
@@ -6156,7 +6165,7 @@
       "source_file": "",
       "source_location": "",
       "id": "nswindow",
-      "community": 38,
+      "community": 36,
       "norm_label": "nswindow"
     },
     {
@@ -6165,7 +6174,7 @@
       "source_file": "macos/Runner/MainFlutterWindow.swift",
       "source_location": "L5",
       "id": "runner_mainflutterwindow_mainflutterwindow_awakefromnib",
-      "community": 38,
+      "community": 36,
       "norm_label": ".awakefromnib()"
     },
     {
@@ -6174,7 +6183,7 @@
       "source_file": "macos/RunnerTests/RunnerTests.swift",
       "source_location": "L1",
       "id": "macos_runnertests_runnertests_swift",
-      "community": 42,
+      "community": 41,
       "norm_label": "runnertests.swift"
     },
     {
@@ -6187,12 +6196,21 @@
       "norm_label": "dashboard-layout-capture.js"
     },
     {
+      "label": "dashboard-tuned-capture.js",
+      "file_type": "code",
+      "source_file": "output/playwright/dashboard-tuned-capture.js",
+      "source_location": "L1",
+      "id": "output_playwright_dashboard_tuned_capture_js",
+      "community": 61,
+      "norm_label": "dashboard-tuned-capture.js"
+    },
+    {
       "label": "index.ts",
       "file_type": "code",
       "source_file": "supabase/functions/check-reminders/index.ts",
       "source_location": "L1",
       "id": "supabase_functions_check_reminders_index_ts",
-      "community": 61,
+      "community": 62,
       "norm_label": "index.ts"
     },
     {
@@ -6219,7 +6237,7 @@
       "source_file": "test/widget_test.dart",
       "source_location": null,
       "id": "package_flutter_test_flutter_test_dart",
-      "community": 31,
+      "community": 25,
       "norm_label": "package:flutter_test/flutter_test.dart"
     },
     {
@@ -6228,7 +6246,7 @@
       "source_file": "test/dashboard_distill_test.dart",
       "source_location": null,
       "id": "test_dashboard_distill_test_dart",
-      "community": 18,
+      "community": 37,
       "norm_label": "dashboard_distill_test.dart"
     },
     {
@@ -6237,7 +6255,7 @@
       "source_file": "test/dashboard_distill_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_dashboard_distill_test_dart_main",
-      "community": 18,
+      "community": 37,
       "norm_label": "main"
     },
     {
@@ -6246,7 +6264,7 @@
       "source_file": "test/dashboard_distill_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_dashboard_distill_test_dart_pumpdashboard",
-      "community": 18,
+      "community": 37,
       "norm_label": "pumpdashboard"
     },
     {
@@ -6264,7 +6282,7 @@
       "source_file": "tool/dashboard_preview.dart",
       "source_location": null,
       "id": "package_elsafe_config_app_theme_dart",
-      "community": 27,
+      "community": 18,
       "norm_label": "package:elsafe/config/app_theme.dart"
     },
     {
@@ -6273,7 +6291,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "package_elsafe_widgets_dashboard_dashboard_stats_section_dart",
-      "community": 18,
+      "community": 37,
       "norm_label": "package:elsafe/widgets/dashboard/dashboard_stats_section.dart"
     },
     {
@@ -6282,7 +6300,7 @@
       "source_file": "test/dashboard_distill_test.dart",
       "source_location": null,
       "id": "support_dashboard_fixture_dart",
-      "community": 18,
+      "community": 37,
       "norm_label": "support/dashboard_fixture.dart"
     },
     {
@@ -6291,7 +6309,7 @@
       "source_file": "test/excel_generator_test.dart",
       "source_location": null,
       "id": "test_excel_generator_test_dart",
-      "community": 23,
+      "community": 16,
       "norm_label": "excel_generator_test.dart"
     },
     {
@@ -6300,7 +6318,7 @@
       "source_file": "test/excel_generator_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_excel_generator_test_dart_main",
-      "community": 23,
+      "community": 16,
       "norm_label": "main"
     },
     {
@@ -6309,7 +6327,7 @@
       "source_file": "test/excel_generator_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_excel_generator_test_dart_sampletemuan",
-      "community": 23,
+      "community": 16,
       "norm_label": "_sampletemuan"
     },
     {
@@ -6318,7 +6336,7 @@
       "source_file": "test/excel_generator_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_excel_generator_test_dart_temuanmodel",
-      "community": 23,
+      "community": 16,
       "norm_label": "temuanmodel"
     },
     {
@@ -6327,7 +6345,7 @@
       "source_file": "test/excel_generator_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_excel_generator_test_dart_argb",
-      "community": 23,
+      "community": 16,
       "norm_label": "_argb"
     },
     {
@@ -6336,7 +6354,7 @@
       "source_file": "test/excel_generator_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_excel_generator_test_dart_containsxlsxentry",
-      "community": 23,
+      "community": 16,
       "norm_label": "_containsxlsxentry"
     },
     {
@@ -6345,7 +6363,7 @@
       "source_file": "test/support/dashboard_fixture.dart",
       "source_location": null,
       "id": "package_elsafe_config_temuan_model_dart",
-      "community": 29,
+      "community": 16,
       "norm_label": "package:elsafe/config/temuan_model.dart"
     },
     {
@@ -6354,7 +6372,7 @@
       "source_file": "test/excel_generator_test.dart",
       "source_location": null,
       "id": "package_elsafe_utils_excel_generator_dart",
-      "community": 23,
+      "community": 16,
       "norm_label": "package:elsafe/utils/excel_generator.dart"
     },
     {
@@ -6363,7 +6381,7 @@
       "source_file": "test/excel_generator_test.dart",
       "source_location": null,
       "id": "package_excel_excel_dart",
-      "community": 23,
+      "community": 16,
       "norm_label": "package:excel/excel.dart"
     },
     {
@@ -6372,7 +6390,7 @@
       "source_file": "test/export_temuan_filter_test.dart",
       "source_location": null,
       "id": "test_export_temuan_filter_test_dart",
-      "community": 29,
+      "community": 25,
       "norm_label": "export_temuan_filter_test.dart"
     },
     {
@@ -6381,7 +6399,7 @@
       "source_file": "test/export_temuan_filter_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_export_temuan_filter_test_dart_main",
-      "community": 29,
+      "community": 25,
       "norm_label": "main"
     },
     {
@@ -6390,7 +6408,7 @@
       "source_file": "test/export_temuan_filter_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_export_temuan_filter_test_dart_temuan",
-      "community": 29,
+      "community": 25,
       "norm_label": "_temuan"
     },
     {
@@ -6399,7 +6417,7 @@
       "source_file": "test/export_temuan_filter_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_export_temuan_filter_test_dart_temuanmodel",
-      "community": 29,
+      "community": 25,
       "norm_label": "temuanmodel"
     },
     {
@@ -6408,7 +6426,7 @@
       "source_file": "test/export_temuan_filter_test.dart",
       "source_location": null,
       "id": "package_elsafe_utils_export_temuan_filter_dart",
-      "community": 29,
+      "community": 25,
       "norm_label": "package:elsafe/utils/export_temuan_filter.dart"
     },
     {
@@ -6417,7 +6435,7 @@
       "source_file": "test/form_theme_test.dart",
       "source_location": null,
       "id": "test_form_theme_test_dart",
-      "community": 35,
+      "community": 34,
       "norm_label": "form_theme_test.dart"
     },
     {
@@ -6426,7 +6444,7 @@
       "source_file": "test/form_theme_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_form_theme_test_dart_main",
-      "community": 35,
+      "community": 34,
       "norm_label": "main"
     },
     {
@@ -6435,7 +6453,7 @@
       "source_file": "test/form_theme_test.dart",
       "source_location": null,
       "id": "package_elsafe_screen_edit_temuan_dart",
-      "community": 35,
+      "community": 34,
       "norm_label": "package:elsafe/screen/edit_temuan.dart"
     },
     {
@@ -6444,7 +6462,7 @@
       "source_file": "test/form_theme_test.dart",
       "source_location": null,
       "id": "package_elsafe_screen_daftar_temuan_dart",
-      "community": 35,
+      "community": 34,
       "norm_label": "package:elsafe/screen/daftar_temuan.dart"
     },
     {
@@ -6453,7 +6471,7 @@
       "source_file": "test/form_theme_test.dart",
       "source_location": null,
       "id": "package_elsafe_screen_temuan_dart",
-      "community": 35,
+      "community": 34,
       "norm_label": "package:elsafe/screen/temuan.dart"
     },
     {
@@ -6462,7 +6480,7 @@
       "source_file": "test/form_theme_test.dart",
       "source_location": null,
       "id": "package_elsafe_widgets_tipe_temuan_picker_dart",
-      "community": 35,
+      "community": 34,
       "norm_label": "package:elsafe/widgets/tipe_temuan_picker.dart"
     },
     {
@@ -6471,7 +6489,7 @@
       "source_file": "test/form_theme_test.dart",
       "source_location": null,
       "id": "package_elsafe_widgets_daftar_temuan_temuan_detail_dialog_dart",
-      "community": 35,
+      "community": 34,
       "norm_label": "package:elsafe/widgets/daftar_temuan/temuan_detail_dialog.dart"
     },
     {
@@ -6480,7 +6498,7 @@
       "source_file": "test/main_shell_navigation_test.dart",
       "source_location": null,
       "id": "test_main_shell_navigation_test_dart",
-      "community": 27,
+      "community": 18,
       "norm_label": "main_shell_navigation_test.dart"
     },
     {
@@ -6489,7 +6507,7 @@
       "source_file": "test/main_shell_navigation_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_main_shell_navigation_test_dart_counterscreen",
-      "community": 27,
+      "community": 18,
       "norm_label": "_counterscreen"
     },
     {
@@ -6498,7 +6516,7 @@
       "source_file": "test/main_shell_navigation_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_main_shell_navigation_test_dart_counterscreenstate",
-      "community": 27,
+      "community": 18,
       "norm_label": "_counterscreenstate"
     },
     {
@@ -6507,7 +6525,7 @@
       "source_file": "test/main_shell_navigation_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_main_shell_navigation_test_dart_main",
-      "community": 27,
+      "community": 18,
       "norm_label": "main"
     },
     {
@@ -6516,7 +6534,7 @@
       "source_file": "test/main_shell_navigation_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_main_shell_navigation_test_dart_resize",
-      "community": 27,
+      "community": 18,
       "norm_label": "resize"
     },
     {
@@ -6525,7 +6543,7 @@
       "source_file": "test/main_shell_navigation_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_main_shell_navigation_test_dart_build",
-      "community": 27,
+      "community": 18,
       "norm_label": "build"
     },
     {
@@ -6543,7 +6561,7 @@
       "source_file": "test/pdf_generator_test.dart",
       "source_location": null,
       "id": "test_pdf_generator_test_dart",
-      "community": 23,
+      "community": 16,
       "norm_label": "pdf_generator_test.dart"
     },
     {
@@ -6552,7 +6570,7 @@
       "source_file": "test/pdf_generator_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_pdf_generator_test_dart_main",
-      "community": 23,
+      "community": 16,
       "norm_label": "main"
     },
     {
@@ -6561,7 +6579,7 @@
       "source_file": "test/pdf_generator_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_pdf_generator_test_dart_bytedata",
-      "community": 23,
+      "community": 16,
       "norm_label": "bytedata"
     },
     {
@@ -6570,7 +6588,7 @@
       "source_file": "test/pdf_generator_test.dart",
       "source_location": null,
       "id": "package_elsafe_utils_pdf_generator_dart",
-      "community": 23,
+      "community": 16,
       "norm_label": "package:elsafe/utils/pdf_generator.dart"
     },
     {
@@ -6579,7 +6597,7 @@
       "source_file": "test/responsive_filter_layout_test.dart",
       "source_location": null,
       "id": "test_responsive_filter_layout_test_dart",
-      "community": 31,
+      "community": 25,
       "norm_label": "responsive_filter_layout_test.dart"
     },
     {
@@ -6588,7 +6606,7 @@
       "source_file": "test/responsive_filter_layout_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_responsive_filter_layout_test_dart_main",
-      "community": 31,
+      "community": 25,
       "norm_label": "main"
     },
     {
@@ -6597,7 +6615,7 @@
       "source_file": "test/responsive_filter_layout_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_responsive_filter_layout_test_dart_pumpfilters",
-      "community": 31,
+      "community": 25,
       "norm_label": "pumpfilters"
     },
     {
@@ -6606,7 +6624,7 @@
       "source_file": "test/responsive_filter_layout_test.dart",
       "source_location": null,
       "id": "package_elsafe_widgets_responsive_filter_layout_dart",
-      "community": 31,
+      "community": 25,
       "norm_label": "package:elsafe/widgets/responsive_filter_layout.dart"
     },
     {
@@ -6615,7 +6633,7 @@
       "source_file": "test/temuan_model_test.dart",
       "source_location": null,
       "id": "test_temuan_model_test_dart",
-      "community": 29,
+      "community": 16,
       "norm_label": "temuan_model_test.dart"
     },
     {
@@ -6624,7 +6642,7 @@
       "source_file": "test/temuan_model_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_temuan_model_test_dart_main",
-      "community": 29,
+      "community": 16,
       "norm_label": "main"
     },
     {
@@ -6633,7 +6651,7 @@
       "source_file": "test/temuan_model_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_temuan_model_test_dart_temuan",
-      "community": 29,
+      "community": 16,
       "norm_label": "_temuan"
     },
     {
@@ -6642,7 +6660,7 @@
       "source_file": "test/temuan_model_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_temuan_model_test_dart_temuanmodel",
-      "community": 29,
+      "community": 16,
       "norm_label": "temuanmodel"
     },
     {
@@ -6651,7 +6669,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "test_ui_review_test_dart",
-      "community": 28,
+      "community": 31,
       "norm_label": "ui_review_test.dart"
     },
     {
@@ -6660,7 +6678,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_ui_review_test_dart_finding",
-      "community": 28,
+      "community": 31,
       "norm_label": "finding"
     },
     {
@@ -6669,7 +6687,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_ui_review_test_dart_main",
-      "community": 28,
+      "community": 31,
       "norm_label": "main"
     },
     {
@@ -6678,7 +6696,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_ui_review_test_dart_pumpcard",
-      "community": 28,
+      "community": 31,
       "norm_label": "pumpcard"
     },
     {
@@ -6687,7 +6705,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_ui_review_test_dart_dashboardwelcomecard",
-      "community": 28,
+      "community": 31,
       "norm_label": "dashboardwelcomecard"
     },
     {
@@ -6696,7 +6714,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_ui_review_test_dart_dashboardstatssection",
-      "community": 28,
+      "community": 31,
       "norm_label": "dashboardstatssection"
     },
     {
@@ -6705,7 +6723,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "package_elsafe_widgets_daftar_temuan_temuan_list_item_dart",
-      "community": 28,
+      "community": 31,
       "norm_label": "package:elsafe/widgets/daftar_temuan/temuan_list_item.dart"
     },
     {
@@ -6714,7 +6732,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "package_elsafe_widgets_dashboard_dashboard_recent_activity_dart",
-      "community": 28,
+      "community": 31,
       "norm_label": "package:elsafe/widgets/dashboard/dashboard_recent_activity.dart"
     },
     {
@@ -6723,7 +6741,7 @@
       "source_file": "test/ui_review_test.dart",
       "source_location": null,
       "id": "package_elsafe_widgets_dashboard_dashboard_welcome_card_dart",
-      "community": 28,
+      "community": 31,
       "norm_label": "package:elsafe/widgets/dashboard/dashboard_welcome_card.dart"
     },
     {
@@ -6732,7 +6750,7 @@
       "source_file": "test/ulp_list_test.dart",
       "source_location": null,
       "id": "test_ulp_list_test_dart",
-      "community": 31,
+      "community": 25,
       "norm_label": "ulp_list_test.dart"
     },
     {
@@ -6741,7 +6759,7 @@
       "source_file": "test/ulp_list_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_ulp_list_test_dart_main",
-      "community": 31,
+      "community": 25,
       "norm_label": "main"
     },
     {
@@ -6750,7 +6768,7 @@
       "source_file": "test/ulp_list_test.dart",
       "source_location": null,
       "id": "package_elsafe_config_ulp_list_dart",
-      "community": 31,
+      "community": 25,
       "norm_label": "package:elsafe/config/ulp_list.dart"
     },
     {
@@ -6759,7 +6777,7 @@
       "source_file": "test/widget_test.dart",
       "source_location": null,
       "id": "test_widget_test_dart",
-      "community": 27,
+      "community": 18,
       "norm_label": "widget_test.dart"
     },
     {
@@ -6768,7 +6786,7 @@
       "source_file": "test/widget_test.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_widget_test_dart_main",
-      "community": 27,
+      "community": 18,
       "norm_label": "main"
     },
     {
@@ -6777,7 +6795,7 @@
       "source_file": "test/widget_test.dart",
       "source_location": null,
       "id": "package_elsafe_widgets_panduan_penggunaan_dart",
-      "community": 27,
+      "community": 18,
       "norm_label": "package:elsafe/widgets/panduan_penggunaan.dart"
     },
     {
@@ -6786,7 +6804,7 @@
       "source_file": "tool/dashboard_preview.dart",
       "source_location": null,
       "id": "test_support_dashboard_fixture_dart",
-      "community": 18,
+      "community": 24,
       "norm_label": "../test/support/dashboard_fixture.dart"
     },
     {
@@ -6795,7 +6813,7 @@
       "source_file": "test/support/dashboard_fixture.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_support_dashboard_fixture_dart_dashboardfixtureservice",
-      "community": 18,
+      "community": 24,
       "norm_label": "dashboardfixtureservice"
     },
     {
@@ -6804,7 +6822,7 @@
       "source_file": "test/support/dashboard_fixture.dart",
       "source_location": null,
       "id": "d_kuliah_binus_aplikasi_elsafe_test_support_dashboard_fixture_dart_nosuchmethod",
-      "community": 18,
+      "community": 24,
       "norm_label": "nosuchmethod"
     },
     {
@@ -6813,7 +6831,7 @@
       "source_file": "test/support/dashboard_fixture.dart",
       "source_location": null,
       "id": "package_elsafe_config_temuan_service_dart",
-      "community": 18,
+      "community": 24,
       "norm_label": "package:elsafe/config/temuan_service.dart"
     },
     {
@@ -6858,7 +6876,7 @@
       "source_file": "web/firebase-messaging-sw.js",
       "source_location": "L1",
       "id": "web_firebase_messaging_sw_js",
-      "community": 62,
+      "community": 63,
       "norm_label": "firebase-messaging-sw.js"
     },
     {
@@ -6885,7 +6903,7 @@
       "source_file": "windows/flutter/generated_plugin_registrant.h",
       "source_location": "L1",
       "id": "windows_flutter_generated_plugin_registrant_h",
-      "community": 63,
+      "community": 64,
       "norm_label": "generated_plugin_registrant.h"
     },
     {
@@ -6948,7 +6966,7 @@
       "source_file": "windows/runner/main.cpp",
       "source_location": "L1",
       "id": "windows_runner_main_cpp",
-      "community": 39,
+      "community": 38,
       "norm_label": "main.cpp"
     },
     {
@@ -6957,7 +6975,7 @@
       "source_file": "windows/runner/main.cpp",
       "source_location": "L8",
       "id": "runner_main_wwinmain",
-      "community": 39,
+      "community": 38,
       "norm_label": "wwinmain()"
     },
     {
@@ -6966,7 +6984,7 @@
       "source_file": "windows/runner/resource.h",
       "source_location": "L1",
       "id": "windows_runner_resource_h",
-      "community": 64,
+      "community": 65,
       "norm_label": "resource.h"
     },
     {
@@ -6975,7 +6993,7 @@
       "source_file": "windows/runner/utils.cpp",
       "source_location": "L1",
       "id": "windows_runner_utils_cpp",
-      "community": 39,
+      "community": 38,
       "norm_label": "utils.cpp"
     },
     {
@@ -6984,7 +7002,7 @@
       "source_file": "windows/runner/utils.cpp",
       "source_location": "L10",
       "id": "runner_utils_createandattachconsole",
-      "community": 39,
+      "community": 38,
       "norm_label": "createandattachconsole()"
     },
     {
@@ -6993,7 +7011,7 @@
       "source_file": "windows/runner/utils.cpp",
       "source_location": "L24",
       "id": "runner_utils_getcommandlinearguments",
-      "community": 39,
+      "community": 38,
       "norm_label": "getcommandlinearguments()"
     },
     {
@@ -7002,7 +7020,7 @@
       "source_file": "windows/runner/utils.cpp",
       "source_location": "L44",
       "id": "runner_utils_utf8fromutf16",
-      "community": 39,
+      "community": 38,
       "norm_label": "utf8fromutf16()"
     },
     {
@@ -7011,7 +7029,7 @@
       "source_file": "windows/runner/utils.h",
       "source_location": "L1",
       "id": "windows_runner_utils_h",
-      "community": 65,
+      "community": 66,
       "norm_label": "utils.h"
     },
     {
@@ -7209,15 +7227,87 @@
       "source_file": "windows/runner/win32_window.h",
       "source_location": "L1",
       "id": "windows_runner_win32_window_h",
-      "community": 66,
+      "community": 67,
       "norm_label": "win32_window.h"
+    },
+    {
+      "label": "LayoutBuilder",
+      "file_type": "code",
+      "source_file": "lib/Screen/dashboard.dart",
+      "source_location": null,
+      "community": 5,
+      "norm_label": "layoutbuilder",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_dashboard_dart_layoutbuilder"
+    },
+    {
+      "label": "Row",
+      "file_type": "code",
+      "source_file": "lib/Screen/dashboard.dart",
+      "source_location": null,
+      "community": 5,
+      "norm_label": "row",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_dashboard_dart_row"
+    },
+    {
+      "label": "_RecentTemuanRow",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
+      "source_location": null,
+      "community": 9,
+      "norm_label": "_recenttemuanrow",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_recenttemuanrow"
+    },
+    {
+      "label": "Material",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
+      "source_location": null,
+      "community": 9,
+      "norm_label": "material",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_material"
+    },
+    {
+      "label": "Row",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
+      "source_location": null,
+      "community": 9,
+      "norm_label": "row",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_row"
+    },
+    {
+      "label": "_Statistic",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
+      "source_location": null,
+      "community": 4,
+      "norm_label": "_statistic",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_statistic"
+    },
+    {
+      "label": "LayoutBuilder",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
+      "source_location": null,
+      "community": 4,
+      "norm_label": "layoutbuilder",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_layoutbuilder"
+    },
+    {
+      "label": "Text",
+      "file_type": "code",
+      "source_file": "lib/widgets/dashboard/dashboard_welcome_card.dart",
+      "source_location": null,
+      "community": 4,
+      "norm_label": "text",
+      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_text"
     },
     {
       "label": "_DashboardInfoSectionState",
       "file_type": "code",
       "source_file": "lib/widgets/dashboard/dashboard_info_section.dart",
       "source_location": null,
-      "community": 32,
+      "community": 24,
       "norm_label": "_dashboardinfosectionstate",
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_info_section_dart_dashboardinfosectionstate"
     },
@@ -7226,7 +7316,7 @@
       "file_type": "code",
       "source_file": "lib/widgets/dashboard/dashboard_info_section.dart",
       "source_location": null,
-      "community": 32,
+      "community": 24,
       "norm_label": "initstate",
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_info_section_dart_initstate"
     },
@@ -7235,7 +7325,7 @@
       "file_type": "code",
       "source_file": "lib/widgets/dashboard/dashboard_info_section.dart",
       "source_location": null,
-      "community": 32,
+      "community": 24,
       "norm_label": "dispose",
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_info_section_dart_dispose"
     },
@@ -7244,7 +7334,7 @@
       "file_type": "code",
       "source_file": "lib/widgets/dashboard/dashboard_info_section.dart",
       "source_location": null,
-      "community": 32,
+      "community": 24,
       "norm_label": "sizedbox",
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_info_section_dart_sizedbox"
     },
@@ -7253,45 +7343,9 @@
       "file_type": "code",
       "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
       "source_location": null,
-      "community": 10,
+      "community": 9,
       "norm_label": "_emptystate",
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_emptystate"
-    },
-    {
-      "label": "_RecentTemuanCard",
-      "file_type": "code",
-      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
-      "source_location": null,
-      "community": 10,
-      "norm_label": "_recenttemuancard",
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_recenttemuancard"
-    },
-    {
-      "label": "Container",
-      "file_type": "code",
-      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
-      "source_location": null,
-      "community": 10,
-      "norm_label": "container",
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_container"
-    },
-    {
-      "label": "_StatCard",
-      "file_type": "code",
-      "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
-      "source_location": null,
-      "community": 4,
-      "norm_label": "_statcard",
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_statcard"
-    },
-    {
-      "label": "Column",
-      "file_type": "code",
-      "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
-      "source_location": null,
-      "community": 4,
-      "norm_label": "column",
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_column"
     },
     {
       "label": "Container",
@@ -7301,24 +7355,6 @@
       "community": 4,
       "norm_label": "container",
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_container"
-    },
-    {
-      "label": "Container",
-      "file_type": "code",
-      "source_file": "lib/widgets/dashboard/dashboard_welcome_card.dart",
-      "source_location": null,
-      "community": 4,
-      "norm_label": "container",
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_container"
-    },
-    {
-      "label": "SizedBox",
-      "file_type": "code",
-      "source_file": "lib/widgets/dashboard/dashboard_welcome_card.dart",
-      "source_location": null,
-      "community": 4,
-      "norm_label": "sizedbox",
-      "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_sizedbox"
     },
     {
       "label": "SnackBar",
@@ -7361,7 +7397,7 @@
       "file_type": "code",
       "source_file": "lib/Screen/daftar_temuan.dart",
       "source_location": null,
-      "community": 9,
+      "community": 10,
       "norm_label": "text",
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_screen_daftar_temuan_dart_text"
     },
@@ -7469,7 +7505,7 @@
       "file_type": "code",
       "source_file": "lib/widgets/foto_picker_widget.dart",
       "source_location": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "text",
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_foto_picker_widget_dart_text"
     },
@@ -7685,7 +7721,7 @@
       "file_type": "code",
       "source_file": "lib/utils/pdf_generator.dart",
       "source_location": null,
-      "community": 10,
+      "community": 9,
       "norm_label": "_risikolabel",
       "id": "d_kuliah_binus_aplikasi_elsafe_lib_utils_pdf_generator_dart_risikolabel"
     },
@@ -7797,7 +7833,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 40,
+      "community": 39,
       "norm_label": "flutter project configuration",
       "id": "flutter_project"
     },
@@ -7810,7 +7846,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 40,
+      "community": 39,
       "norm_label": "elsafe app identity",
       "id": "elsafe_app"
     },
@@ -7823,7 +7859,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 40,
+      "community": 39,
       "norm_label": "flutter dependencies",
       "id": "dependencies"
     },
@@ -7836,7 +7872,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 40,
+      "community": 39,
       "norm_label": "flutter dev dependencies",
       "id": "dev_dependencies"
     },
@@ -7875,7 +7911,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 40,
+      "community": 39,
       "norm_label": "flutter dashboard ui",
       "id": "flutter_dashboard"
     },
@@ -7888,7 +7924,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 40,
+      "community": 39,
       "norm_label": "android app icon set",
       "id": "app_icon_set"
     },
@@ -7901,7 +7937,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "android app icons",
       "id": "android_app_icons"
     },
@@ -7914,7 +7950,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "google logo brand",
       "id": "google_logo"
     },
@@ -7927,7 +7963,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "ios app icon 1024px",
       "id": "ios_app_icons_1024"
     },
@@ -7940,7 +7976,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "ios app icon 20px",
       "id": "ios_app_icon_20"
     },
@@ -7953,7 +7989,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "ios app icon 40px",
       "id": "ios_app_icon_40"
     },
@@ -7966,7 +8002,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "ios app icon 60px",
       "id": "ios_app_icon_60"
     },
@@ -7979,7 +8015,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "ios app icon 76px",
       "id": "ios_app_icon_76"
     },
@@ -7992,7 +8028,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "ios app icons set",
       "id": "ios_app_icons_set"
     },
@@ -8005,7 +8041,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "flutter app screenshot",
       "id": "flutter_01_screenshot"
     },
@@ -8018,7 +8054,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "app branding assets",
       "id": "app_branding"
     },
@@ -8031,7 +8067,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "multi-platform icon assets",
       "id": "multiplatform_icons"
     },
@@ -8044,7 +8080,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 27,
       "norm_label": "google auth integration",
       "id": "auth_integration"
     },
@@ -8057,7 +8093,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 41,
+      "community": 40,
       "norm_label": "elsafe brand identity",
       "id": "elsafe_brand"
     },
@@ -8070,7 +8106,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 41,
+      "community": 40,
       "norm_label": "shield logo design",
       "id": "shield_logo"
     },
@@ -8083,7 +8119,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 41,
+      "community": 40,
       "norm_label": "ios app icons",
       "id": "ios_app_icons"
     },
@@ -8096,7 +8132,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 41,
+      "community": 40,
       "norm_label": "macos app icons",
       "id": "macos_app_icons"
     },
@@ -8109,7 +8145,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 41,
+      "community": 40,
       "norm_label": "ios launch screens",
       "id": "ios_launch_images"
     },
@@ -8122,7 +8158,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 41,
+      "community": 40,
       "norm_label": "web favicon and icons",
       "id": "web_favicon_and_icons"
     }
@@ -11406,26 +11442,6 @@
       "source_location": null,
       "weight": 1.0,
       "source": "lib_screen_dashboard_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_screen_dashboard_dart_layoutbuilder"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/Screen/dashboard.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "lib_screen_dashboard_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_screen_dashboard_dart_row"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/Screen/dashboard.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "lib_screen_dashboard_dart",
       "target": "d_kuliah_binus_aplikasi_elsafe_lib_screen_dashboard_dart_column"
     },
     {
@@ -11517,6 +11533,26 @@
       "weight": 1.0,
       "source": "lib_screen_dashboard_dart",
       "target": "widgets_dashboard_dashboard_info_section_dart"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/Screen/dashboard.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_screen_dashboard_dart",
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_screen_dashboard_dart_layoutbuilder"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/Screen/dashboard.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_screen_dashboard_dart",
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_screen_dashboard_dart_row"
     },
     {
       "relation": "defines",
@@ -16306,7 +16342,27 @@
       "source_location": null,
       "weight": 1.0,
       "source": "lib_widgets_dashboard_dashboard_recent_activity_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_recenttemuanrow"
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_recenttemuancard"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_widgets_dashboard_dashboard_recent_activity_dart",
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_statustag"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_widgets_dashboard_dashboard_recent_activity_dart",
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_neutraltag"
     },
     {
       "relation": "defines",
@@ -16346,6 +16402,26 @@
       "source_location": null,
       "weight": 1.0,
       "source": "lib_widgets_dashboard_dashboard_recent_activity_dart",
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_container"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_widgets_dashboard_dashboard_recent_activity_dart",
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_recenttemuanrow"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_widgets_dashboard_dashboard_recent_activity_dart",
       "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_material"
     },
     {
@@ -16372,26 +16448,6 @@
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "lib_widgets_dashboard_dashboard_recent_activity_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_recenttemuancard"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/widgets/dashboard/dashboard_recent_activity.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "lib_widgets_dashboard_dashboard_recent_activity_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_recent_activity_dart_container"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
       "source_location": null,
       "weight": 1.0,
@@ -16406,7 +16462,7 @@
       "source_location": null,
       "weight": 1.0,
       "source": "lib_widgets_dashboard_dashboard_stats_section_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_statistic"
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_statcard"
     },
     {
       "relation": "defines",
@@ -16426,7 +16482,17 @@
       "source_location": null,
       "weight": 1.0,
       "source": "lib_widgets_dashboard_dashboard_stats_section_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_layoutbuilder"
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_column"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_widgets_dashboard_dashboard_stats_section_dart",
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_sizedbox"
     },
     {
       "relation": "defines",
@@ -16456,7 +16522,7 @@
       "source_location": null,
       "weight": 1.0,
       "source": "lib_widgets_dashboard_dashboard_stats_section_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_sizedbox"
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_statistic"
     },
     {
       "relation": "defines",
@@ -16466,17 +16532,7 @@
       "source_location": null,
       "weight": 1.0,
       "source": "lib_widgets_dashboard_dashboard_stats_section_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_statcard"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/widgets/dashboard/dashboard_stats_section.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "lib_widgets_dashboard_dashboard_stats_section_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_column"
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_stats_section_dart_layoutbuilder"
     },
     {
       "relation": "defines",
@@ -16516,16 +16572,6 @@
       "source_location": null,
       "weight": 1.0,
       "source": "lib_widgets_dashboard_dashboard_welcome_card_dart",
-      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_text"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/widgets/dashboard/dashboard_welcome_card.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "lib_widgets_dashboard_dashboard_welcome_card_dart",
       "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_container"
     },
     {
@@ -16536,7 +16582,27 @@
       "source_location": null,
       "weight": 1.0,
       "source": "lib_widgets_dashboard_dashboard_welcome_card_dart",
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_icon"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/dashboard/dashboard_welcome_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_widgets_dashboard_dashboard_welcome_card_dart",
       "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_sizedbox"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/dashboard/dashboard_welcome_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_widgets_dashboard_dashboard_welcome_card_dart",
+      "target": "d_kuliah_binus_aplikasi_elsafe_lib_widgets_dashboard_dashboard_welcome_card_dart_text"
     },
     {
       "relation": "defines",
@@ -18398,5 +18464,5 @@
       "source_file": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png"
     }
   ],
-  "built_at_commit": "2b8d6abf6e13d6751202344471758620f5fcc2e3"
+  "built_at_commit": "21bb242d7eb8de72e7ea9ef26bc7e32599f3c61d"
 }

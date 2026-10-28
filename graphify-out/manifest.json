@@ -116,8 +116,8 @@
     "hash": "9ab08dcfd2816896dff844af4b8d1f33"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\Screen\\dashboard.dart": {
-    "mtime": 1793160727.083751,
-    "hash": "5d75702ced78d9578a2084837f3b7fa8"
+    "mtime": 1793179769.502133,
+    "hash": "e4076f2613187a007194cdbb8c3f804e"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\Screen\\edit_temuan.dart": {
     "mtime": 1792736518.8969646,
@@ -224,16 +224,16 @@
     "hash": "abfa52794073e394b14521f2a4f52e96"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\dashboard\\dashboard_recent_activity.dart": {
-    "mtime": 1793162209.9381003,
-    "hash": "58f309f3576ca2e196b7787984253af1"
+    "mtime": 1793180180.3977957,
+    "hash": "02a385acec32b1e25d5cc2cdbd83c9de"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\dashboard\\dashboard_stats_section.dart": {
-    "mtime": 1793078896.9177105,
-    "hash": "76dc3f97fc26b51e00f1e86f8e7a3058"
+    "mtime": 1793180180.3525636,
+    "hash": "bbed7e6ce3682677bb297cdffb459986"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\lib\\widgets\\dashboard\\dashboard_welcome_card.dart": {
-    "mtime": 1793078896.9066756,
-    "hash": "e05b18b2bb1a708d71a3b90aeb18efa4"
+    "mtime": 1793179769.5046165,
+    "hash": "867418202dddf651cf8be83b4c902b17"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\linux\\flutter\\generated_plugin_registrant.cc": {
     "mtime": 1784348749.179428,
@@ -274,6 +274,10 @@
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\dashboard-layout-capture.js": {
     "mtime": 1793163015.5380926,
     "hash": "21d15ab540d9d8c6f38ea231b801097d"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\dashboard-tuned-capture.js": {
+    "mtime": 1793180497.1531932,
+    "hash": "d1bed4af91ed3ff7eaf147f816a3e3e3"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\supabase\\functions\\check-reminders\\index.ts": {
     "mtime": 1778330403.017239,
@@ -396,7 +400,7 @@
     "hash": "9e65f4b9beebb674c0dc252f70a5c177"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\graphify-out\\converted\\Nama Unit - Penyulang_7af6b4e0.md": {
-    "mtime": 1793163118.8509102,
+    "mtime": 1793181249.0538769,
     "hash": "1d883e6e953093797e051c3fc1109fda"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\PRODUCT.md": {
@@ -658,6 +662,18 @@
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\dashboard-layout-mobile-light.png": {
     "mtime": 1793163059.9475973,
     "hash": "d421fccf982fb08a59dc9c6bff6912d1"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\dashboard-tuned-desktop.png": {
+    "mtime": 1793180812.4145646,
+    "hash": "f242b1d735754c215e4d54579c00fd6e"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\dashboard-tuned-mobile-dark.png": {
+    "mtime": 1793180815.9685383,
+    "hash": "f8fcc9ec50eb56efe91f483f3c840095"
+  },
+  "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\dashboard-tuned-mobile.png": {
+    "mtime": 1793180813.2519767,
+    "hash": "e4e048b22301912a02bb75df78724573"
   },
   "D:\\Kuliah\\BINUS\\APLIKASI\\elsafe\\output\\playwright\\elsafe-critique-live-desktop.png": {
     "mtime": 1793069118.5671346,
