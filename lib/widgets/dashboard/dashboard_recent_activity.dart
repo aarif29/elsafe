@@ -5,11 +5,13 @@ import '../../config/app_theme.dart';
 class DashboardRecentActivity extends StatelessWidget {
   final List<TemuanModel> recentTemuan;
   final VoidCallback onLihatSemua;
+  final ValueChanged<TemuanModel> onOpenTemuan;
 
   const DashboardRecentActivity({
     super.key,
     required this.recentTemuan,
     required this.onLihatSemua,
+    required this.onOpenTemuan,
   });
 
   @override
@@ -69,7 +71,10 @@ class DashboardRecentActivity extends StatelessWidget {
           )
         else
           for (final temuan in recentTemuan)
-            _RecentTemuanCard(temuan: temuan, onTap: onLihatSemua),
+            _RecentTemuanCard(
+              temuan: temuan,
+              onTap: () => onOpenTemuan(temuan),
+            ),
       ],
     );
   }

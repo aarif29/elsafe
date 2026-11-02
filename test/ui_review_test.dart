@@ -166,6 +166,7 @@ void main() {
                     DashboardRecentActivity(
                       recentTemuan: [finding()],
                       onLihatSemua: () => openedList = true,
+                      onOpenTemuan: (_) {},
                     ),
                   ],
                 ),

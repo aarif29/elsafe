@@ -307,7 +307,7 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
     }
   }
 
-  void _showDetailDialog(TemuanModel temuan) {
+  void showDetailDialog(TemuanModel temuan) {
     showDialog(
       context: context,
       builder:
@@ -665,7 +665,7 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
         final temuan = filtered[index];
         return TemuanListItem(
           temuan: temuan,
-          onTap: () => _showDetailDialog(temuan),
+          onTap: () => showDetailDialog(temuan),
           canModify: !_isAdmin,
           onEdit:
               _isAdmin

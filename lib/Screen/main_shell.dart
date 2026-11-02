@@ -11,6 +11,7 @@ import 'temuan.dart';
 import 'maps_view.dart';
 import '../config/notification_service.dart';
 import '../config/temuan_service.dart';
+import '../config/temuan_model.dart';
 import '../config/ulp_service.dart';
 import '../widgets/panduan_penggunaan.dart';
 import '../widgets/dashboard/dashboard_drawer.dart';
@@ -144,6 +145,10 @@ class _MainShellState extends State<MainShell> {
     if (index == 4) _profileKey.currentState?.loadProfile();
   }
 
+  void _openTemuanDetail(TemuanModel temuan) {
+    _daftarKey.currentState?.showDetailDialog(temuan);
+  }
+
   Future<void> _openTambahTemuan() async {
     final nav = Navigator.of(context);
     final String? tipe = await showModalBottomSheet<String>(
@@ -189,6 +194,7 @@ class _MainShellState extends State<MainShell> {
                 DashboardScreen(
                   key: _dashboardKey,
                   onLihatSemua: () => _onNavTap(1),
+                  onOpenTemuan: _openTemuanDetail,
                 ),
                 DaftarTemuanScreen(key: _daftarKey, onOpenExport: openExport),
                 const MapsViewWidget(),

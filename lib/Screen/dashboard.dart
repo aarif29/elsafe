@@ -10,9 +10,15 @@ import '../widgets/dashboard/dashboard_info_section.dart';
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback? onLihatSemua;
+  final ValueChanged<TemuanModel>? onOpenTemuan;
   final TemuanService? temuanService;
 
-  const DashboardScreen({super.key, this.onLihatSemua, this.temuanService});
+  const DashboardScreen({
+    super.key,
+    this.onLihatSemua,
+    this.onOpenTemuan,
+    this.temuanService,
+  });
 
   @override
   State<DashboardScreen> createState() => DashboardScreenState();
@@ -226,6 +232,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                     DashboardRecentActivity(
                       recentTemuan: _recentTemuan,
                       onLihatSemua: widget.onLihatSemua ?? () {},
+                      onOpenTemuan: widget.onOpenTemuan ?? (_) {},
                     ),
                     const SizedBox(height: 24),
                     const DashboardInfoSection(),

@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:elsafe/Screen/dashboard.dart';
+import 'package:elsafe/Screen/daftar_temuan.dart';
 import 'package:elsafe/config/app_theme.dart';
+import 'package:elsafe/config/temuan_model.dart';
+import 'package:elsafe/widgets/daftar_temuan/temuan_detail_dialog.dart';
 import 'package:elsafe/widgets/dashboard/dashboard_stats_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,18 +17,24 @@ Future<void> pumpDashboard(
   bool dark = false,
   double scale = 1,
   VoidCallback? onOpen,
+  ValueChanged<TemuanModel>? onOpenTemuan,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: dark ? ThemeService.dark() : ThemeService.light(),
       builder:
           (context, child) => MediaQuery(
-            data: MediaQuery.of(
-              context,
-            ).copyWith(textScaler: TextScaler.linear(scale)),
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(scale),
+              disableAnimations: true,
+            ),
             child: child!,
           ),
-      home: DashboardScreen(temuanService: service, onLihatSemua: onOpen),
+      home: DashboardScreen(
+        temuanService: service,
+        onLihatSemua: onOpen,
+        onOpenTemuan: onOpenTemuan,
+      ),
     ),
   );
   await tester.pumpAndSettle();
@@ -133,12 +142,18 @@ void main() {
     );
   }
 
-  testWidgets('Counts, first-three order and list navigation are preserved', (
+  testWidgets('Recent card opens selected finding; Lihat Semua opens list', (
     tester,
   ) async {
     final service = DashboardFixtureService();
     var openedList = 0;
-    await pumpDashboard(tester, service, onOpen: () => openedList++);
+    TemuanModel? openedTemuan;
+    await pumpDashboard(
+      tester,
+      service,
+      onOpen: () => openedList++,
+      onOpenTemuan: (temuan) => openedTemuan = temuan,
+    );
     expect(find.text('4'), findsOneWidget);
     expect(find.text('3'), findsOneWidget);
     expect(find.text(service.findings[3].namaPemilik), findsNothing);
@@ -151,12 +166,61 @@ void main() {
       );
     }
     await tester.tap(find.text('Lihat Semua'));
-    await tester.tap(find.text(service.findings.first.namaPemilik));
-    expect(openedList, 2);
+    expect(openedList, 1);
+    await tester.tap(find.text(service.findings[1].namaPemilik));
+    expect(openedTemuan, same(service.findings[1]));
+    expect(openedList, 1);
     expect(find.text('Open'), findsOneWidget);
     expect(find.text('On Progress'), findsOneWidget);
     expect(find.text('Closed'), findsOneWidget);
   });
+
+  testWidgets(
+    'Dashboard finding opens its detail dialog without leaving dashboard',
+    (tester) async {
+      final service = DashboardFixtureService();
+      final daftarKey = GlobalKey<DaftarTemuanScreenState>();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeService.light(),
+          builder:
+              (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(disableAnimations: true),
+                child: child!,
+              ),
+          home: IndexedStack(
+            index: 0,
+            children: [
+              DashboardScreen(
+                temuanService: service,
+                onLihatSemua: () {},
+                onOpenTemuan:
+                    (temuan) =>
+                        daftarKey.currentState!.showDetailDialog(temuan),
+              ),
+              DaftarTemuanScreen(key: daftarKey),
+            ],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(service.findings[1].namaPemilik));
+      await tester.pumpAndSettle();
+
+      final dialog = tester.widget<TemuanDetailDialog>(
+        find.byType(TemuanDetailDialog),
+      );
+      expect(dialog.temuan, same(service.findings[1]));
+      expect(find.text('Dashboard'), findsOneWidget);
+      expect(find.text('Daftar Temuan'), findsNothing);
+
+      await tester.tap(find.byIcon(Icons.close).last);
+      await tester.pumpAndSettle();
+      expect(find.byType(TemuanDetailDialog), findsNothing);
+      expect(find.text('Dashboard'), findsOneWidget);
+    },
+  );
 
   testWidgets('Missing status remains unknown in the dashboard row', (
     tester,
