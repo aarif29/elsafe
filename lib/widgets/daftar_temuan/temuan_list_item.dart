@@ -87,9 +87,9 @@ class TemuanListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      temuan.lokasi.trim().isEmpty
-                          ? temuan.namaPemilik
-                          : temuan.lokasi,
+                      temuan.namaPemilik.trim().isEmpty
+                          ? 'Pemilik belum tersedia'
+                          : temuan.namaPemilik,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -166,7 +166,7 @@ class TemuanListItem extends StatelessWidget {
 
   String get _metadataLabel {
     final parts = [
-      temuan.namaPemilik,
+      if (temuan.lokasi.trim().isNotEmpty) temuan.lokasi,
       '${temuan.tanggalTemuan.day.toString().padLeft(2, '0')}/${temuan.tanggalTemuan.month.toString().padLeft(2, '0')}/${temuan.tanggalTemuan.year}',
       if (temuan.tipeTemuan?.trim().isNotEmpty == true) temuan.tipeTemuan!,
     ].where((part) => part.trim().isNotEmpty);
