@@ -6,6 +6,7 @@ import '../config/temuan_service.dart';
 import '../config/app_theme.dart';
 import '../config/snackbar.dart';
 import '../config/ulp_service.dart';
+import '../utils/notification_copy.dart';
 import '../widgets/daftar_temuan/temuan_detail_dialog.dart';
 import 'edit_temuan.dart';
 
@@ -302,10 +303,16 @@ class _NotifCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRead = notif['is_read'] == true;
     final title = (notif['title'] as String?)?.trim() ?? '';
-    final body = (notif['body'] as String?)?.trim() ?? '';
+    final type = notif['type'] as String? ?? '';
+    final body = notificationBodyForDisplay(
+      body: (notif['body'] as String?)?.trim() ?? '',
+      type: type,
+      createdAt: notif['created_at']?.toString(),
+      now: DateTime.now(),
+    );
     final createdAt =
         DateTime.tryParse(notif['created_at']?.toString() ?? '')?.toLocal();
-    final isReminder = notif['type'] == 'reminder_h1';
+    final isReminder = type == 'reminder_h1';
     final accent =
         isReminder
             ? (context.isDark
