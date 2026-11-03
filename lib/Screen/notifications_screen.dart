@@ -147,6 +147,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final unread = _notifications.where((n) => n['is_read'] != true).length;
+    final horizontalPadding =
+        MediaQuery.sizeOf(context).width < 600 ? 16.0 : 28.0;
+    final compactActions = MediaQuery.sizeOf(context).width < 420;
 
     return Scaffold(
       appBar: AppBar(
@@ -162,15 +165,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 ),
         actions: [
           if (unread > 0)
-            TextButton.icon(
-              onPressed: _markAllRead,
-              icon: const Icon(Icons.done_all, size: 18),
-              label: const Text('Tandai semua'),
-              style: TextButton.styleFrom(foregroundColor: Colors.blue),
-            ),
+            compactActions
+                ? IconButton(
+                  onPressed: _markAllRead,
+                  icon: const Icon(Icons.done_all_outlined),
+                  tooltip: 'Tandai semua sudah dibaca',
+                )
+                : TextButton.icon(
+                  onPressed: _markAllRead,
+                  icon: const Icon(Icons.done_all_outlined, size: 18),
+                  label: const Text('Tandai semua dibaca'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
           IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
+            icon: const Icon(Icons.refresh_rounded),
+            tooltip: 'Muat ulang notifikasi',
             onPressed: _load,
           ),
         ],
@@ -180,40 +191,102 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ? const Center(child: CircularProgressIndicator())
               : _notifications.isEmpty
               ? _buildEmpty()
-              : RefreshIndicator(
-                onRefresh: _load,
-                child: ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _notifications.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
-                  itemBuilder:
-                      (_, i) => _NotifCard(
-                        notif: _notifications[i],
-                        onTap: () => _onTapNotif(_notifications[i]),
+              : Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 920),
+                  child: RefreshIndicator(
+                    onRefresh: _load,
+                    child: ListView.separated(
+                      padding: EdgeInsets.fromLTRB(
+                        horizontalPadding,
+                        28,
+                        horizontalPadding,
+                        32,
                       ),
+                      itemCount: _notifications.length + 1,
+                      separatorBuilder:
+                          (_, i) => SizedBox(height: i == 0 ? 20 : 10),
+                      itemBuilder:
+                          (_, i) =>
+                              i == 0
+                                  ? _buildSummary(unread)
+                                  : _NotifCard(
+                                    notif: _notifications[i - 1],
+                                    onTap:
+                                        () =>
+                                            _onTapNotif(_notifications[i - 1]),
+                                  ),
+                    ),
+                  ),
                 ),
               ),
     );
   }
 
+  Widget _buildSummary(int unread) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Aktivitas terbaru',
+          style: TextStyle(
+            color: context.textPrimary,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          '$unread belum dibaca dari ${_notifications.length} notifikasi',
+          style: TextStyle(color: context.textSecondary, fontSize: 13),
+        ),
+      ],
+    );
+  }
+
   Widget _buildEmpty() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.notifications_none, size: 72, color: context.textHint),
-          const SizedBox(height: 16),
-          Text(
-            'Belum ada notifikasi',
-            style: TextStyle(color: context.textSecondary, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Notifikasi pengingat temuan akan muncul di sini',
-            style: TextStyle(color: context.textHint, fontSize: 13),
-            textAlign: TextAlign.center,
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                Icons.notifications_none_rounded,
+                size: 30,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Belum ada notifikasi',
+              style: TextStyle(
+                color: context.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Pengingat tindak lanjut temuan akan muncul di sini.',
+              style: TextStyle(
+                color: context.textSecondary,
+                fontSize: 13,
+                height: 1.45,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -228,132 +301,168 @@ class _NotifCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRead = notif['is_read'] == true;
-    final title = notif['title'] as String? ?? '';
-    final body = notif['body'] as String? ?? '';
+    final title = (notif['title'] as String?)?.trim() ?? '';
+    final body = (notif['body'] as String?)?.trim() ?? '';
     final createdAt =
-        notif['created_at'] != null
-            ? DateTime.parse(notif['created_at'] as String).toLocal()
-            : null;
-    final type = notif['type'] as String? ?? '';
+        DateTime.tryParse(notif['created_at']?.toString() ?? '')?.toLocal();
+    final isReminder = notif['type'] == 'reminder_h1';
+    final accent =
+        isReminder
+            ? (context.isDark
+                ? Colors.orange.shade300
+                : Colors.deepOrange.shade700)
+            : Theme.of(context).colorScheme.primary;
+    final hasTemuan = notif['temuan_id'] != null;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        decoration: BoxDecoration(
+    return Material(
+      color: context.surfaceColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(
           color:
               isRead
-                  ? context.cardColor
-                  : Colors.orange.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color:
-                isRead
-                    ? context.borderColor
-                    : Colors.orange.withValues(alpha: 0.4),
-            width: isRead ? 0.5 : 1,
-          ),
+                  ? context.borderColor
+                  : Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.38),
         ),
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Ikon tipe
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: _iconBgColor(type),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(_iconData(type), color: _iconColor(type), size: 20),
-            ),
-            const SizedBox(width: 12),
-
-            // Konten
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: TextStyle(
-                            color: context.textPrimary,
-                            fontWeight:
-                                isRead ? FontWeight.normal : FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        ),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: accent.withValues(
+                        alpha: context.isDark ? 0.16 : 0.10,
                       ),
-                      if (!isRead)
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Colors.orange,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    body,
-                    style: TextStyle(
-                      color: context.textSecondary,
-                      fontSize: 12,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      isReminder
+                          ? Icons.notification_important_outlined
+                          : Icons.notifications_none_rounded,
+                      color: accent,
+                      size: 21,
                     ),
                   ),
-                  if (createdAt != null) ...[
-                    const SizedBox(height: 6),
-                    Row(
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _formatDate(createdAt),
+                          isReminder ? 'Pengingat tindak lanjut' : 'Notifikasi',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: context.textHint,
-                            fontSize: 11,
+                            color: accent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const Spacer(),
+                        const SizedBox(height: 2),
                         Text(
-                          'Tap untuk lihat detail →',
+                          isRead ? 'Sudah dibaca' : 'Belum dibaca',
                           style: TextStyle(
-                            color: Colors.blue.withValues(alpha: 0.7),
+                            color: context.textSecondary,
                             fontSize: 11,
                           ),
                         ),
                       ],
                     ),
-                  ],
+                  ),
+                  if (!isRead)
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 14),
+              Text(
+                title.isEmpty ? 'Pembaruan temuan' : title,
+                style: TextStyle(
+                  color: context.textPrimary,
+                  fontSize: 15,
+                  height: 1.35,
+                  fontWeight: isRead ? FontWeight.w600 : FontWeight.w700,
+                ),
+              ),
+              if (body.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 680),
+                  child: Text(
+                    body,
+                    style: TextStyle(
+                      color: context.textSecondary,
+                      fontSize: 13,
+                      height: 1.45,
+                    ),
+                  ),
+                ),
+              ],
+              if (createdAt != null || hasTemuan) ...[
+                const SizedBox(height: 16),
+                Divider(height: 1, color: context.borderColor),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    if (createdAt != null)
+                      Flexible(
+                        child: Text(
+                          _formatDate(createdAt),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: context.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    if (hasTemuan) ...[
+                      const Spacer(),
+                      Text(
+                        'Buka temuan',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 16,
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  IconData _iconData(String type) {
-    switch (type) {
-      case 'reminder_h1':
-        return Icons.warning_amber_rounded;
-      default:
-        return Icons.notifications;
-    }
-  }
-
-  Color _iconBgColor(String type) => Colors.orange.withValues(alpha: 0.15);
-
-  Color _iconColor(String type) => Colors.orange;
-
   String _formatDate(DateTime dt) {
-    final now = DateTime.now();
-    final diff = now.difference(dt);
+    final diff = DateTime.now().difference(dt);
+    if (diff.isNegative || diff.inMinutes < 1) return 'Baru saja';
     if (diff.inMinutes < 60) return '${diff.inMinutes} menit lalu';
     if (diff.inHours < 24) return '${diff.inHours} jam lalu';
     if (diff.inDays < 7) return '${diff.inDays} hari lalu';
