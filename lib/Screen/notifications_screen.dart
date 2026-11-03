@@ -92,8 +92,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
 
     _isAdmin = await _ulpService.isAdmin();
+    if (!mounted) return;
     if (_isAdmin) {
-      if (!mounted) return;
       showDialog(
         context: context,
         builder:
@@ -107,10 +107,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       return;
     }
 
-    if (!mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => EditTemuanScreen(temuan: temuan)),
+    showDialog(
+      context: context,
+      builder:
+          (_) => TemuanDetailDialog(
+            temuan: temuan,
+            onOpenMaps: _openGoogleMaps,
+            onCopyCoordinates: _copyCoordinates,
+            onEdit: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => EditTemuanScreen(temuan: temuan),
+                ),
+              );
+              if (result == true && mounted) await _load();
+            },
+          ),
     );
   }
 

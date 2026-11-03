@@ -72,6 +72,8 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
           'Status perlu dikonfirmasi', Colors.grey, Icons.help_outline),
     };
     final statusColor = baseColor[context.isDark ? 300 : 800]!;
+    final headerDateColor =
+        context.isDark ? Colors.grey.shade300 : Colors.grey.shade700;
 
     return Dialog(
       backgroundColor: context.surfaceColor,
@@ -89,10 +91,43 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
                 borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(temuan.namaPemilik,
-                        style: TextStyle(color: context.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          temuan.namaPemilik,
+                          style: TextStyle(
+                            color: context.textPrimary,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.event_outlined,
+                              size: 16,
+                              color: headerDateColor,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                'Ditemukan pada ${_formatDate(temuan.tanggalTemuan)}',
+                                style: TextStyle(
+                                  color: headerDateColor,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   IconButton(
                     icon: Icon(Icons.close, color: context.textPrimary),
@@ -125,7 +160,6 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
 
                     // Info dasar
                     _InfoRow(label: '📍 Lokasi', value: temuan.lokasi),
-                    _InfoRow(label: '📅 Tanggal', value: _formatDate(temuan.tanggalTemuan)),
                     _InfoRow(label: '📝 Deskripsi', value: temuan.deskripsiTemuan),
 
                     // Nomor AMS

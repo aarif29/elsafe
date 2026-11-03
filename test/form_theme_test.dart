@@ -97,6 +97,51 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('Detail header shows the date the finding was discovered', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(375, 667);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeService.light(),
+        builder:
+            (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(1.2)),
+              child: child!,
+            ),
+        home: Scaffold(
+          body: TemuanDetailDialog(
+            temuan: TemuanModel(
+              lokasi: 'Lokasi uji',
+              namaPemilik: 'Pak Dadik',
+              tanggalTemuan: DateTime(2026, 10, 23),
+              deskripsiTemuan: 'Deskripsi uji',
+            ),
+            onOpenMaps: (_, __, ___) {},
+            onCopyCoordinates: (_, __) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final owner = find.text('Pak Dadik');
+    final date = find.text('Ditemukan pada 23/10/2026');
+    expect(date, findsOneWidget);
+    expect(tester.getTopLeft(owner).dy, lessThan(tester.getTopLeft(date).dy));
+    expect(
+      tester.getTopLeft(date).dy,
+      lessThan(tester.getTopLeft(find.text('Lokasi uji')).dy),
+    );
+    expect(find.text('23/10/2026'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final editing in [false, true]) {
     testWidgets(
       '${editing ? 'Edit' : 'Create'} form follows the selected theme',
