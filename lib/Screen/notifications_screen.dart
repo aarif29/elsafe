@@ -11,9 +11,7 @@ import '../widgets/daftar_temuan/temuan_detail_dialog.dart';
 import 'edit_temuan.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  final VoidCallback? onBack;
-
-  const NotificationsScreen({super.key, this.onBack});
+  const NotificationsScreen({super.key});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -168,15 +166,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifikasi'),
-        automaticallyImplyLeading: false,
-        leading:
-            widget.onBack == null
-                ? null
-                : IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: widget.onBack,
-                  tooltip: 'Kembali',
-                ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          tooltip: 'Buka menu',
+          onPressed: () => Scaffold.maybeOf(context)?.openDrawer(),
+        ),
         actions: [
           if (unread > 0)
             compactActions

@@ -303,6 +303,11 @@ class ProfileState extends State<Profile> {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          tooltip: 'Buka menu',
+          onPressed: () => Scaffold.maybeOf(context)?.openDrawer(),
+        ),
         title: Text('Profil', style: TextStyle(color: textPrimary)),
         centerTitle: true,
         backgroundColor: surface,

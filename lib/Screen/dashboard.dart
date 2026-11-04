@@ -165,9 +165,10 @@ class DashboardScreenState extends State<DashboardScreen> {
         leading: IconButton(
           icon: const Icon(Icons.menu),
           tooltip: 'Buka menu',
-          onPressed: () => Scaffold.of(context).openDrawer(),
+          onPressed: () => Scaffold.maybeOf(context)?.openDrawer(),
         ),
         title: const Text('Dashboard'),
+        centerTitle: true,
         actions: [
           ValueListenableBuilder<ThemeMode>(
             valueListenable: ThemeService.instance.themeMode,

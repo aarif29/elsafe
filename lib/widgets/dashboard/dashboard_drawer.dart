@@ -160,7 +160,7 @@ class DashboardDrawer extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'made with ♥ by M. Arif Trianto',
+                  'made with ♥',
                   style: TextStyle(color: context.textDisabled, fontSize: 9),
                 ),
               ],
@@ -223,10 +223,10 @@ class DashboardDrawer extends StatelessWidget {
                 Divider(color: context.borderColor),
                 const SizedBox(height: 12),
                 _aboutItem(context, 'Versi', '1.0.0'),
-                _aboutItem(context, 'Developer', 'M. Arif Trianto'),
-                _aboutItem(context, 'Instansi', 'UP3 Malang — K3L'),
+                _aboutItem(context, 'Developer', 'Tim K3L'),
+                _aboutItem(context, 'Instansi', 'PLN UP3 Malang'),
                 _aboutItem(context, 'Tahun', '2026'),
-                _aboutItem(context, 'Platform', 'Android & Web'),
+                _aboutItem(context, 'Platform', 'Web-App'),
               ],
             ),
             actions: [

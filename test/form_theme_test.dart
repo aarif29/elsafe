@@ -1,8 +1,11 @@
 import 'package:elsafe/Screen/edit_temuan.dart';
 import 'package:elsafe/Screen/daftar_temuan.dart';
+import 'package:elsafe/Screen/export_temuan.dart';
+import 'package:elsafe/Screen/notifications_screen.dart';
 import 'package:elsafe/Screen/temuan.dart';
 import 'package:elsafe/config/app_theme.dart';
 import 'package:elsafe/config/temuan_model.dart';
+import 'package:elsafe/widgets/adaptive_shell_scaffold.dart';
 import 'package:elsafe/widgets/tipe_temuan_picker.dart';
 import 'package:elsafe/widgets/daftar_temuan/temuan_detail_dialog.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +24,67 @@ void main() {
     );
   });
   tearDownAll(() => Supabase.instance.dispose());
+
+  testWidgets('Finding tab opens the shared drawer from its app bar', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(375, 812);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AdaptiveShellScaffold(
+          selectedIndex: 1,
+          onDestinationSelected: (_) {},
+          drawer: const Drawer(child: Text('Menu akun')),
+          body: const DaftarTemuanScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Buka menu'));
+    await tester.pumpAndSettle();
+    expect(find.text('Menu akun'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Notification tab opens the drawer without a back button', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AdaptiveShellScaffold(
+          selectedIndex: 3,
+          onDestinationSelected: (_) {},
+          drawer: const Drawer(child: Text('Menu akun')),
+          body: const NotificationsScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Kembali'), findsNothing);
+    await tester.tap(find.byTooltip('Buka menu'));
+    await tester.pumpAndSettle();
+    expect(find.text('Menu akun'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Export page back action closes its shell overlay', (
+    tester,
+  ) async {
+    var backCount = 0;
+    await tester.pumpWidget(
+      MaterialApp(home: ExportTemuanScreen(onBack: () => backCount++)),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Kembali'));
+    expect(backCount, 1);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'Finding screen keeps its results area when the search keyboard is open',

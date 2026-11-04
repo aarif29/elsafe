@@ -966,6 +966,11 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          tooltip: 'Buka menu',
+          onPressed: () => Scaffold.maybeOf(context)?.openDrawer(),
+        ),
         title: const Text(
           'Peta Lokasi Temuan',
           style: TextStyle(
@@ -974,6 +979,7 @@ class _MapsViewWidgetState extends State<MapsViewWidget> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(

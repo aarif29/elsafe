@@ -73,14 +73,6 @@ class _MainShellState extends State<MainShell> {
     setState(() => _showExport = false);
   }
 
-  void backToDashboard() {
-    setState(() {
-      _showPanduan = false;
-      _showExport = false;
-      _navIndex = 0;
-    });
-  }
-
   Future<void> _handleLogout() async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -198,10 +190,10 @@ class _MainShellState extends State<MainShell> {
                 ),
                 DaftarTemuanScreen(key: _daftarKey, onOpenExport: openExport),
                 const MapsViewWidget(),
-                NotificationsScreen(onBack: backToDashboard),
+                const NotificationsScreen(),
                 Profile(key: _profileKey),
                 PanduanPenggunaanScreen(onBack: closePanduan),
-                const ExportTemuanScreen(),
+                ExportTemuanScreen(onBack: closeExport),
               ],
             ),
             floatingActionButton:

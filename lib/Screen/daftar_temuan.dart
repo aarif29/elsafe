@@ -336,7 +336,13 @@ class DaftarTemuanScreenState extends State<DaftarTemuanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          tooltip: 'Buka menu',
+          onPressed: () => Scaffold.maybeOf(context)?.openDrawer(),
+        ),
         title: const Text('Daftar Temuan'),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.file_download_outlined),
