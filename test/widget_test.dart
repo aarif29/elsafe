@@ -27,16 +27,9 @@ void main() {
     );
     expect(find.textContaining('ULP (Unit Layanan Pelanggan)'), findsWidgets);
 
-    await tester.scrollUntilVisible(
-      find.textContaining('KMU (Kecelakaan Masyarakat Umum)'),
-      500,
-    );
+    await tester.scrollUntilVisible(find.textContaining('KMU atau ROW'), 500);
 
-    expect(
-      find.textContaining('KMU (Kecelakaan Masyarakat Umum)'),
-      findsOneWidget,
-    );
-    expect(find.textContaining('ROW (Right of Way)'), findsOneWidget);
+    expect(find.textContaining('KMU atau ROW'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pump();

@@ -148,55 +148,68 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 12,
+                  runSpacing: 4,
                   children: [
-                    Icon(
-                      Icons.health_and_safety_outlined,
-                      color: colorScheme.primary,
-                      size: 18,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.health_and_safety_outlined,
+                          color: colorScheme.primary,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 7),
+                        Text(
+                          'Tips K3',
+                          style: TextStyle(
+                            color: context.textPrimary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 7),
-                    Text(
-                      'Tips K3',
-                      style: TextStyle(
-                        color: context.textPrimary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${_currentIndex + 1}/${DashboardInfoSection._tips.length}',
-                      semanticsLabel:
-                          'Tip ${_currentIndex + 1} dari ${DashboardInfoSection._tips.length}',
-                      style: TextStyle(
-                        color: context.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    _controlButton(
-                      icon: Icons.chevron_left,
-                      tooltip: 'Tip sebelumnya',
-                      onPressed: () => _showTip(_currentIndex - 1),
-                    ),
-                    _controlButton(
-                      icon:
-                          _isPaused
-                              ? Icons.play_arrow_rounded
-                              : Icons.pause_rounded,
-                      tooltip:
-                          _isPaused
-                              ? 'Lanjutkan rotasi tip'
-                              : 'Jeda rotasi tip',
-                      onPressed: _togglePause,
-                    ),
-                    _controlButton(
-                      icon: Icons.chevron_right,
-                      tooltip: 'Tip berikutnya',
-                      onPressed: () => _showTip(_currentIndex + 1),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${_currentIndex + 1}/${DashboardInfoSection._tips.length}',
+                          semanticsLabel:
+                              'Tip ${_currentIndex + 1} dari ${DashboardInfoSection._tips.length}',
+                          style: TextStyle(
+                            color: context.textSecondary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        _controlButton(
+                          icon: Icons.chevron_left,
+                          tooltip: 'Tip sebelumnya',
+                          onPressed: () => _showTip(_currentIndex - 1),
+                        ),
+                        _controlButton(
+                          icon:
+                              _isPaused
+                                  ? Icons.play_arrow_rounded
+                                  : Icons.pause_rounded,
+                          tooltip:
+                              _isPaused
+                                  ? 'Lanjutkan rotasi tip'
+                                  : 'Jeda rotasi tip',
+                          onPressed: _togglePause,
+                        ),
+                        _controlButton(
+                          icon: Icons.chevron_right,
+                          tooltip: 'Tip berikutnya',
+                          onPressed: () => _showTip(_currentIndex + 1),
+                        ),
+                      ],
                     ),
                   ],
                 ),

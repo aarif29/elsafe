@@ -249,16 +249,21 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         await tester.ensureVisible(find.text('Tips K3'));
-        await tester.tap(find.text('Tips K3'));
-        await tester.pumpAndSettle();
+        await tester.tap(find.byTooltip('Jeda rotasi tip'));
+        await tester.pump();
         const tips = [
-          'Tidak ada yang lebih penting dari jiwa manusia.',
-          'Bekerja itu jalan rezeki, berdoa itu sumber rezeki.',
+          'Tidak ada yang lebih penting dari jiwa manusia',
+          'Waspadai jaringan terdampak',
+          'Dokumentasikan dari posisi aman',
+          'Pastikan tindak lanjut tercatat',
           'Zero Harm, Zero Loss. Safety First.',
-          'Zero accident, no tolerance!',
         ];
         for (final tip in tips) {
           expect(find.text(tip), findsOneWidget);
+          if (tip != tips.last) {
+            await tester.tap(find.byTooltip('Tip berikutnya'));
+            await tester.pumpAndSettle();
+          }
         }
         await tester.ensureVisible(find.text(tips.last));
         expect(tester.takeException(), isNull);

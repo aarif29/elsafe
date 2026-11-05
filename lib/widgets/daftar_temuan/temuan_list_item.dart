@@ -246,12 +246,15 @@ class TemuanListItem extends StatelessWidget {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 5),
-        Text(
-          label,
-          style: TextStyle(
-            color: color,
-            fontSize: 11.5,
-            fontWeight: FontWeight.w600,
+        Flexible(
+          child: Text(
+            label,
+            softWrap: true,
+            style: TextStyle(
+              color: color,
+              fontSize: 11.5,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],

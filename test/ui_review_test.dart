@@ -76,7 +76,7 @@ void main() {
     expect(tester.takeException(), isNull);
     final description = tester.getRect(find.text(finding().deskripsiTemuan));
     final status = tester.getRect(find.text('On Progress'));
-    expect(description.top, greaterThanOrEqualTo(status.bottom));
+    expect(status.top, greaterThanOrEqualTo(description.bottom));
   });
 
   testWidgets('Desktop Google login stays bounded and centered', (
