@@ -98,7 +98,8 @@ class _MarkerDetailSheet extends StatelessWidget {
   }
 
   Widget _buildHeader() {
-    final statusColor = (temuan.statusTemuan == 'Open') ? Colors.green : Colors.blueGrey;
+    final statusLabel = temuan.statusTemuan?.trim();
+    final statusColor = statusLabel?.toLowerCase() == 'open' ? Colors.green : Colors.blueGrey;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -135,7 +136,7 @@ class _MarkerDetailSheet extends StatelessWidget {
             if (temuan.levelRisiko != null)
               _badge(temuan.levelRisiko!, pinColor.withValues(alpha: 0.25), pinColor,
                   border: pinColor, icon: Icons.bolt),
-            _badge(temuan.statusTemuan ?? 'Open', statusColor.withValues(alpha: 0.2), statusColor,
+            _badge(statusLabel?.isNotEmpty == true ? statusLabel! : 'Status belum tersedia', statusColor.withValues(alpha: 0.2), statusColor,
                 border: statusColor),
           ],
         ),

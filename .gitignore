@@ -55,3 +55,4 @@ lib/config/firebase_options.dart
 # Graphify (large generated files)
 graphify-out/graph.html
 graphify-out/cache/
+.vercel

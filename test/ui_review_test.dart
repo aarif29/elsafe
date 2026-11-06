@@ -3,6 +3,7 @@ import 'package:elsafe/config/temuan_model.dart';
 import 'package:elsafe/profil/loginscreen.dart';
 import 'package:elsafe/widgets/daftar_temuan/temuan_list_item.dart';
 import 'package:elsafe/widgets/dashboard/dashboard_recent_activity.dart';
+import 'package:elsafe/widgets/dashboard/dashboard_overview.dart';
 import 'package:elsafe/widgets/dashboard/dashboard_stats_section.dart';
 import 'package:elsafe/widgets/dashboard/dashboard_welcome_card.dart';
 import 'package:flutter/material.dart';
@@ -159,9 +160,10 @@ void main() {
                       userName:
                           'Nama Pengguna dengan Nama Lengkap Sangat Panjang',
                     ),
-                    const DashboardStatsSection(
-                      totalTemuan: 12345,
-                      temuanBulanIni: 678,
+                    DashboardStatsSection(
+                      overview: DashboardOverview.fromFindings([
+                        finding(),
+                      ], groupByUlp: true),
                     ),
                     DashboardRecentActivity(
                       recentTemuan: [finding()],
@@ -174,10 +176,9 @@ void main() {
             ),
           ),
         );
-        expect(find.text('12345'), findsOneWidget);
-        expect(find.text('678'), findsOneWidget);
-        await tester.ensureVisible(find.text('Lihat Semua'));
-        await tester.tap(find.text('Lihat Semua'));
+        expect(find.bySemanticsLabel('Temuan Open: 1'), findsOneWidget);
+        await tester.ensureVisible(find.text('Buka daftar'));
+        await tester.tap(find.text('Buka daftar'));
         expect(openedList, isTrue);
         expect(tester.takeException(), isNull);
       },

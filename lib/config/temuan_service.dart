@@ -6,6 +6,8 @@ import 'app_logger.dart';
 import 'temuan_model.dart';
 import 'sosialisasi_model.dart';
 import 'ulp_service.dart';
+import 'ulp_list.dart';
+import 'pagination.dart';
 
 const String _adminReadOnlyMessage = 'Admin hanya dapat melihat data temuan';
 
@@ -27,21 +29,7 @@ class TemuanService {
   }
 
   Future<Map<String, dynamic>?> getCurrentUserProfile() async {
-    try {
-      if (currentUserId == null) return null;
-
-      final response =
-          await _supabase
-              .from('profiles')
-              .select('full_name, nip')
-              .eq('id', currentUserId!)
-              .single();
-
-      return response;
-    } catch (e) {
-      appLog.e('❌ Error get user profile', error: e);
-      return null;
-    }
+    return _ulpService.getCurrentUserProfile();
   }
 
   String get currentUserDisplayName {
@@ -315,7 +303,7 @@ class TemuanService {
         response = await _supabase
             .from('temuan')
             .select('*')
-            .eq('ulp', ulp)
+            .inFilter('ulp', varianUlp(ulp))
             .order('created_at', ascending: false)
             .range(from, to);
       } else {
@@ -365,28 +353,35 @@ class TemuanService {
       final isAdmin = profile?['role'] == 'admin';
       final ulp = profile?['ulp'] as String?;
 
-      late List response;
-      if (isAdmin) {
-        response = await _supabase
-            .from('temuan')
-            .select('*')
-            .order('created_at', ascending: false);
-        appLog.d('✅ Admin: load semua temuan (${response.length})');
-      } else if (ulp != null && ulp.isNotEmpty) {
-        response = await _supabase
-            .from('temuan')
-            .select('*')
-            .eq('ulp', ulp)
-            .order('created_at', ascending: false);
-        appLog.d('✅ User: load temuan ULP=$ulp (${response.length})');
-      } else {
-        response = await _supabase
-            .from('temuan')
-            .select('*')
-            .eq('user_id', currentUserId!)
-            .order('created_at', ascending: false);
-        appLog.d('✅ Fallback: load temuan user_id (${response.length})');
-      }
+      final response = await collectPages<dynamic>(
+        fetchPage: (from, to) async {
+          if (isAdmin) {
+            return await _supabase
+                .from('temuan')
+                .select('*')
+                .order('created_at', ascending: false)
+                .order('id')
+                .range(from, to);
+          }
+          if (ulp != null && ulp.isNotEmpty) {
+            return await _supabase
+                .from('temuan')
+                .select('*')
+                .inFilter('ulp', varianUlp(ulp))
+                .order('created_at', ascending: false)
+                .order('id')
+                .range(from, to);
+          }
+          return await _supabase
+              .from('temuan')
+              .select('*')
+              .eq('user_id', currentUserId!)
+              .order('created_at', ascending: false)
+              .order('id')
+              .range(from, to);
+        },
+      );
+      appLog.d('✅ Load seluruh temuan (${response.length})');
 
       final List<TemuanModel> temuanList =
           response

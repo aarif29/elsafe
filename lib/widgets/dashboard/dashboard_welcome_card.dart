@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../config/app_theme.dart';
 
 class DashboardWelcomeCard extends StatelessWidget {
   final String userName;

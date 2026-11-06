@@ -15,6 +15,8 @@ List<TemuanModel> dashboardExampleFindings() {
       statusTemuan: 'Open',
       tipeTemuan: 'KMU',
       levelRisiko: 'Extreme',
+      ulp: 'Batu',
+      namaPenyulang: 'Batu',
     ),
     TemuanModel(
       id: 'example-2',
@@ -25,6 +27,8 @@ List<TemuanModel> dashboardExampleFindings() {
       statusTemuan: 'On Progress',
       tipeTemuan: 'ROW',
       levelRisiko: 'High',
+      ulp: 'Batu',
+      namaPenyulang: 'Junrejo',
     ),
     TemuanModel(
       id: 'example-3',
@@ -35,6 +39,8 @@ List<TemuanModel> dashboardExampleFindings() {
       statusTemuan: 'Close',
       tipeTemuan: 'KMU',
       levelRisiko: 'Medium',
+      ulp: 'Batu',
+      namaPenyulang: 'Batu',
     ),
     TemuanModel(
       id: 'example-4',
@@ -42,6 +48,7 @@ List<TemuanModel> dashboardExampleFindings() {
       lokasi: 'Jl. Mawar, wilayah ULP',
       tanggalTemuan: DateTime(now.year, now.month, 1),
       deskripsiTemuan: 'Data contoh untuk pemeriksaan tampilan.',
+      ulp: 'Batu',
     ),
   ];
 }
@@ -51,6 +58,7 @@ class DashboardFixtureService implements TemuanService {
   bool fail = false;
   bool throwError = false;
   bool isAdmin = false;
+  String? userUlp = 'Batu';
   Completer<Map<String, dynamic>>? pending;
 
   @override
@@ -60,6 +68,8 @@ class DashboardFixtureService implements TemuanService {
   Future<Map<String, dynamic>?> getCurrentUserProfile() async => {
     'full_name': 'Petugas Contoh',
     'nip': null,
+    'role': isAdmin ? 'admin' : 'user',
+    'ulp': userUlp,
   };
 
   @override

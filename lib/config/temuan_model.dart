@@ -124,7 +124,7 @@ class TemuanModel {
               ? List<String>.from(json['foto_urls'])
               : null,
       nomorAms: json['nomor_ams']?.toString(),
-      statusTemuan: json['status_temuan']?.toString() ?? 'Open',
+      statusTemuan: json['status_temuan']?.toString(),
       tipeTemuan: json['tipe_temuan']?.toString(),
       createdBy: json['created_by']?.toString(),
       createdAt:

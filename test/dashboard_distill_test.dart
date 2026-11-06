@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:elsafe/Screen/dashboard.dart';
 import 'package:elsafe/Screen/daftar_temuan.dart';
 import 'package:elsafe/config/app_theme.dart';
@@ -52,34 +53,31 @@ void main() {
   });
   tearDownAll(() => Supabase.instance.dispose());
 
-  testWidgets('Failed dashboard load does not claim there are no findings', (
-    tester,
-  ) async {
+  testWidgets('failed load does not show a false zero', (tester) async {
     await tester.pumpWidget(
       MaterialApp(theme: ThemeService.light(), home: const DashboardScreen()),
     );
     await tester.pumpAndSettle();
     expect(find.text('Dashboard belum dapat dimuat'), findsOneWidget);
-    expect(find.text('Belum ada temuan'), findsNothing);
-    expect(find.text('0'), findsNothing);
+    expect(find.byType(DashboardStatsSection), findsNothing);
     expect(find.text('Coba lagi'), findsOneWidget);
   });
 
-  testWidgets('Retry replaces initial failure with the existing summary', (
+  testWidgets('retry replaces initial failure with Open summary', (
     tester,
   ) async {
     final service = DashboardFixtureService()..fail = true;
     await pumpDashboard(tester, service);
     expect(find.byType(DashboardStatsSection), findsNothing);
+
     service.fail = false;
     await tester.tap(find.text('Coba lagi'));
     await tester.pumpAndSettle();
     expect(find.text('Dashboard belum dapat dimuat'), findsNothing);
-    expect(find.text('4'), findsOneWidget);
-    expect(find.text('3'), findsOneWidget);
+    expect(find.bySemanticsLabel('Temuan Open: 1'), findsOneWidget);
   });
 
-  testWidgets('Refresh failure identifies retained data and retry recovers', (
+  testWidgets('failed refresh retains last valid summary and retry recovers', (
     tester,
   ) async {
     final service = DashboardFixtureService();
@@ -88,63 +86,58 @@ void main() {
     await tester.tap(find.byTooltip('Refresh'));
     await tester.pumpAndSettle();
     expect(find.text('Pembaruan dashboard gagal'), findsOneWidget);
-    expect(find.text('4'), findsOneWidget);
+    expect(find.bySemanticsLabel('Temuan Open: 1'), findsOneWidget);
     expect(find.textContaining('data terakhir'), findsOneWidget);
+
     service.fail = false;
     service.findings = [];
     await tester.tap(find.text('Coba lagi'));
     await tester.pumpAndSettle();
     expect(find.text('Pembaruan dashboard gagal'), findsNothing);
-    expect(find.text('Belum ada temuan'), findsOneWidget);
-    expect(find.text('0'), findsNWidgets(2));
+    expect(find.bySemanticsLabel('Temuan Open: 0'), findsOneWidget);
+    expect(find.text('Tidak ada temuan Open'), findsOneWidget);
   });
 
-  testWidgets('Thrown load error is recoverable and never becomes empty data', (
-    tester,
-  ) async {
+  testWidgets('thrown load error is recoverable', (tester) async {
     final service = DashboardFixtureService()..throwError = true;
     await pumpDashboard(tester, service);
     expect(find.text('Dashboard belum dapat dimuat'), findsOneWidget);
     expect(find.byType(DashboardStatsSection), findsNothing);
-    expect(find.text('Belum ada temuan'), findsNothing);
   });
 
-  testWidgets(
-    'Late response after leaving dashboard does not update disposed state',
-    (tester) async {
-      final result = Completer<Map<String, dynamic>>();
-      final service = DashboardFixtureService()..pending = result;
-      await tester.pumpWidget(
-        MaterialApp(home: DashboardScreen(temuanService: service)),
-      );
-      await tester.pump();
-      expect(find.byType(LinearProgressIndicator), findsOneWidget);
-      await tester.pumpWidget(const SizedBox());
-      result.complete({'success': false});
-      await tester.pump();
-      expect(tester.takeException(), isNull);
-    },
-  );
+  testWidgets('late response after leaving dashboard does not update state', (
+    tester,
+  ) async {
+    final result = Completer<Map<String, dynamic>>();
+    final service = DashboardFixtureService()..pending = result;
+    await tester.pumpWidget(
+      MaterialApp(home: DashboardScreen(temuanService: service)),
+    );
+    await tester.pump();
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    result.complete({'success': false});
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
 
   for (final admin in [false, true]) {
     testWidgets(
-      'Empty dashboard avoids unavailable create instruction (admin: $admin)',
+      'empty state has no unavailable create prompt (admin: $admin)',
       (tester) async {
         final service =
             DashboardFixtureService()
               ..isAdmin = admin
               ..findings = [];
         await pumpDashboard(tester, service);
-        expect(find.text('Belum ada temuan'), findsOneWidget);
+        expect(find.text('Tidak ada temuan Open'), findsOneWidget);
         expect(find.textContaining('Tap tombol +'), findsNothing);
         expect(find.text('Coba lagi'), findsNothing);
       },
     );
   }
 
-  testWidgets('Recent card opens selected finding; Lihat Semua opens list', (
-    tester,
-  ) async {
+  testWidgets('Open row and Buka daftar keep their navigation', (tester) async {
     final service = DashboardFixtureService();
     var openedList = 0;
     TemuanModel? openedTemuan;
@@ -154,120 +147,77 @@ void main() {
       onOpen: () => openedList++,
       onOpenTemuan: (temuan) => openedTemuan = temuan,
     );
-    expect(find.text('4'), findsOneWidget);
-    expect(find.text('3'), findsOneWidget);
-    expect(find.text(service.findings[3].namaPemilik), findsNothing);
-    for (var i = 0; i < 2; i++) {
-      expect(
-        tester.getTopLeft(find.text(service.findings[i].namaPemilik)).dy,
-        lessThan(
-          tester.getTopLeft(find.text(service.findings[i + 1].namaPemilik)).dy,
-        ),
-      );
-    }
-    await tester.tap(find.text('Lihat Semua'));
+    expect(find.text(service.findings.first.lokasi), findsOneWidget);
+    expect(find.text(service.findings[1].lokasi), findsNothing);
+    await tester.tap(find.text('Buka daftar'));
     expect(openedList, 1);
-    await tester.tap(find.text(service.findings[1].namaPemilik));
-    expect(openedTemuan, same(service.findings[1]));
-    expect(openedList, 1);
-    expect(find.text('Open'), findsOneWidget);
-    expect(find.text('On Progress'), findsOneWidget);
-    expect(find.text('Closed'), findsOneWidget);
+    await tester.tap(find.text(service.findings.first.lokasi));
+    expect(openedTemuan, same(service.findings.first));
   });
 
-  testWidgets(
-    'Dashboard finding opens its detail dialog without leaving dashboard',
-    (tester) async {
-      final service = DashboardFixtureService();
-      final daftarKey = GlobalKey<DaftarTemuanScreenState>();
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeService.light(),
-          builder:
-              (context, child) => MediaQuery(
-                data: MediaQuery.of(context).copyWith(disableAnimations: true),
-                child: child!,
-              ),
-          home: IndexedStack(
-            index: 0,
-            children: [
-              DashboardScreen(
-                temuanService: service,
-                onLihatSemua: () {},
-                onOpenTemuan:
-                    (temuan) =>
-                        daftarKey.currentState!.showDetailDialog(temuan),
-              ),
-              DaftarTemuanScreen(key: daftarKey),
-            ],
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text(service.findings[1].namaPemilik));
-      await tester.pumpAndSettle();
-
-      final dialog = tester.widget<TemuanDetailDialog>(
-        find.byType(TemuanDetailDialog),
-      );
-      expect(dialog.temuan, same(service.findings[1]));
-      expect(find.text('Dashboard'), findsOneWidget);
-      expect(find.text('Daftar Temuan'), findsNothing);
-
-      await tester.tap(find.byIcon(Icons.close).last);
-      await tester.pumpAndSettle();
-      expect(find.byType(TemuanDetailDialog), findsNothing);
-      expect(find.text('Dashboard'), findsOneWidget);
-    },
-  );
-
-  testWidgets('Missing status remains unknown in the dashboard row', (
+  testWidgets('dashboard opens finding detail without leaving dashboard', (
     tester,
   ) async {
     final service = DashboardFixtureService();
-    service.findings = [service.findings.last];
+    final daftarKey = GlobalKey<DaftarTemuanScreenState>();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeService.light(),
+        builder:
+            (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(disableAnimations: true),
+              child: child!,
+            ),
+        home: IndexedStack(
+          index: 0,
+          children: [
+            DashboardScreen(
+              temuanService: service,
+              onOpenTemuan:
+                  (temuan) => daftarKey.currentState!.showDetailDialog(temuan),
+            ),
+            DaftarTemuanScreen(key: daftarKey),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(service.findings.first.lokasi));
+    await tester.pumpAndSettle();
+    final dialog = tester.widget<TemuanDetailDialog>(
+      find.byType(TemuanDetailDialog),
+    );
+    expect(dialog.temuan, same(service.findings.first));
+    expect(find.text('Dashboard'), findsOneWidget);
+    expect(find.text('Daftar Temuan'), findsNothing);
+  });
+
+  testWidgets('missing status does not appear as Open', (tester) async {
+    final service =
+        DashboardFixtureService()..findings = [dashboardExampleFindings().last];
     await pumpDashboard(tester, service);
-    expect(find.text('Status belum tersedia'), findsOneWidget);
-    expect(find.text('Closed'), findsNothing);
-    expect(find.text('Open'), findsNothing);
+    expect(find.bySemanticsLabel('Temuan Open: 0'), findsOneWidget);
+    expect(find.text('Tidak ada temuan Open'), findsOneWidget);
+    expect(find.text(service.findings.first.lokasi), findsNothing);
   });
 
   for (final dark in [false, true]) {
-    testWidgets(
-      'Dashboard and all K3 tips fit narrow enlarged text (dark: $dark)',
-      (tester) async {
-        tester.view.physicalSize = const Size(320, 667);
-        tester.view.devicePixelRatio = 1;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-        await pumpDashboard(
-          tester,
-          DashboardFixtureService(),
-          dark: dark,
-          scale: 1.5,
-        );
-        expect(tester.takeException(), isNull);
-        await tester.ensureVisible(find.text('Tips K3'));
-        await tester.tap(find.byTooltip('Jeda rotasi tip'));
-        await tester.pump();
-        const tips = [
-          'Tidak ada yang lebih penting dari jiwa manusia',
-          'Waspadai jaringan terdampak',
-          'Dokumentasikan dari posisi aman',
-          'Pastikan tindak lanjut tercatat',
-          'Zero Harm, Zero Loss. Safety First.',
-        ];
-        for (final tip in tips) {
-          expect(find.text(tip), findsOneWidget);
-          if (tip != tips.last) {
-            await tester.tap(find.byTooltip('Tip berikutnya'));
-            await tester.pumpAndSettle();
-          }
-        }
-        await tester.ensureVisible(find.text(tips.last));
-        expect(tester.takeException(), isNull);
-      },
-    );
+    testWidgets('dashboard fits narrow enlarged text (dark: $dark)', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(320, 667);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await pumpDashboard(
+        tester,
+        DashboardFixtureService(),
+        dark: dark,
+        scale: 1.5,
+      );
+      await tester.ensureVisible(find.text('Temuan Open per penyulang'));
+      expect(tester.takeException(), isNull);
+    });
   }
 }
