@@ -89,6 +89,10 @@ class _OpenTemuanRow extends StatelessWidget {
         temuan.lokasi.trim().isEmpty
             ? 'Lokasi belum diisi'
             : temuan.lokasi.trim();
+    final title =
+        temuan.deskripsiTemuan.trim().isEmpty
+            ? 'Temuan tanpa deskripsi'
+            : temuan.deskripsiTemuan.trim();
     final area = <String>[
       if (temuan.ulp?.trim().isNotEmpty == true) 'ULP ${temuan.ulp!.trim()}',
       if (temuan.namaPenyulang?.trim().isNotEmpty == true)
@@ -115,7 +119,7 @@ class _OpenTemuanRow extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      location,
+                      title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -127,6 +131,13 @@ class _OpenTemuanRow extends StatelessWidget {
                   ),
                   Icon(Icons.chevron_right, color: context.textSecondary),
                 ],
+              ),
+              const SizedBox(height: 3),
+              Text(
+                location,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: context.textSecondary, fontSize: 12),
               ),
               if (area.isNotEmpty) ...[
                 const SizedBox(height: 3),
