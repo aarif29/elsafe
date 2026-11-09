@@ -90,9 +90,9 @@ class _OpenTemuanRow extends StatelessWidget {
             ? 'Lokasi belum diisi'
             : temuan.lokasi.trim();
     final title =
-        temuan.deskripsiTemuan.trim().isEmpty
-            ? 'Temuan tanpa deskripsi'
-            : temuan.deskripsiTemuan.trim();
+        temuan.namaPemilik.trim().isEmpty
+            ? 'Nama pemilik belum diisi'
+            : temuan.namaPemilik.trim();
     final area = <String>[
       if (temuan.ulp?.trim().isNotEmpty == true) 'ULP ${temuan.ulp!.trim()}',
       if (temuan.namaPenyulang?.trim().isNotEmpty == true)
