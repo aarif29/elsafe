@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../config/temuan_model.dart';
-import '../../config/temuan_types.dart';
+
 import '../../config/app_theme.dart';
 import '../../config/sosialisasi_model.dart';
+import '../../config/temuan_model.dart';
 import '../../config/temuan_service.dart';
+import '../../config/temuan_types.dart';
 import '../foto_grid_widget.dart';
 
 class TemuanDetailDialog extends StatefulWidget {
@@ -32,14 +33,14 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
   @override
   void initState() {
     super.initState();
-    if (widget.temuan.id != null) {
-      _loadSosialisasi();
-    }
+    if (widget.temuan.id != null) _loadSosialisasi();
   }
 
   Future<void> _loadSosialisasi() async {
     setState(() => _isLoadingSosialisasi = true);
-    final result = await _temuanService.getSosialisasiByTemuan(widget.temuan.id!);
+    final result = await _temuanService.getSosialisasiByTemuan(
+      widget.temuan.id!,
+    );
     if (mounted) {
       setState(() {
         _sosialisasiList = result['data'] as List<SosialisasiModel>? ?? [];
@@ -48,48 +49,44 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
     }
   }
 
-  Color _levelRisikoColor(String? level) {
-    switch (level) {
-      case 'Medium': return Colors.amber;
-      case 'High': return Colors.orange;
-      case 'Extreme': return Colors.red;
-      default: return Colors.grey;
-    }
-  }
-
-  String _formatDate(DateTime dt) =>
-      '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
+  String _formatDate(DateTime date) =>
+      '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
 
   @override
   Widget build(BuildContext context) {
     final temuan = widget.temuan;
     final rawStatus = temuan.statusTemuan?.trim();
-    final (status, statusText, baseColor, statusIcon) = switch (rawStatus?.toLowerCase()) {
-      'open' => ('Open', 'Belum Selesai', Colors.red, Icons.lock_open),
-      'on progress' => ('On Progress', 'Sedang Ditindaklanjuti', Colors.orange, Icons.pending_actions),
-      'close' || 'closed' => ('Closed', 'Sudah Selesai', Colors.green, Icons.task_alt),
-      _ => (rawStatus?.isNotEmpty == true ? rawStatus! : 'Status belum tersedia',
-          'Status perlu dikonfirmasi', Colors.grey, Icons.help_outline),
+    final (status, statusText, statusBase) = switch (rawStatus?.toLowerCase()) {
+      'open' => ('Open', 'Belum Selesai', Colors.red),
+      'on progress' => ('On Progress', 'Sedang Ditindaklanjuti', Colors.orange),
+      'close' || 'closed' => ('Closed', 'Sudah Selesai', Colors.green),
+      _ => (
+        rawStatus?.isNotEmpty == true ? rawStatus! : 'Status belum tersedia',
+        'Status perlu dikonfirmasi',
+        Colors.grey,
+      ),
     };
-    final statusColor = baseColor[context.isDark ? 300 : 800]!;
-    final headerDateColor =
-        context.isDark ? Colors.grey.shade300 : Colors.grey.shade700;
+    final riskBase = switch (temuan.levelRisiko?.trim().toLowerCase()) {
+      'medium' => Colors.orange,
+      'high' => Colors.deepOrange,
+      'extreme' => Colors.red,
+      _ => Colors.grey,
+    };
+    final statusColor = statusBase[context.isDark ? 300 : 800]!;
+    final riskColor = riskBase[context.isDark ? 300 : 800]!;
 
     return Dialog(
       backgroundColor: context.surfaceColor,
       insetPadding: const EdgeInsets.all(16),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 500),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      clipBehavior: Clip.antiAlias,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: context.cardColor,
-                borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
-              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 12, 12),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -98,387 +95,211 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          temuan.namaPemilik,
+                          temuan.namaPemilik.trim().isEmpty
+                              ? 'Nama pemilik belum diisi'
+                              : temuan.namaPemilik,
                           style: TextStyle(
                             color: context.textPrimary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.event_outlined,
-                              size: 16,
-                              color: headerDateColor,
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                'Ditemukan pada ${_formatDate(temuan.tanggalTemuan)}',
-                                style: TextStyle(
-                                  color: headerDateColor,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
+                        const SizedBox(height: 4),
+                        Text(
+                          'Ditemukan pada ${_formatDate(temuan.tanggalTemuan)}',
+                          style: TextStyle(
+                            color: context.textSecondary,
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.close, color: context.textPrimary),
+                    tooltip: 'Tutup',
+                    icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
               ),
             ),
-
-            // Content
+            Divider(height: 1, color: context.borderColor),
             Flexible(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Foto temuan
-                    if (temuan.fotoUrls != null && temuan.fotoUrls!.isNotEmpty) ...[
-                      Text('📸 Foto Temuan', style: TextStyle(color: context.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 12),
-                      FotoGridWidget(fotoUrls: temuan.fotoUrls!, isEditable: false),
-                      const SizedBox(height: 20),
-                    ],
-
-                    // Tipe badge
-                    if (temuan.tipeTemuan != null) ...[
-                      _TipeBadgeRow(tipeTemuan: temuan.tipeTemuan!),
-                      const SizedBox(height: 12),
-                    ],
-
-                    // Info dasar
-                    _InfoRow(label: '📍 Lokasi', value: temuan.lokasi),
-                    _InfoRow(label: '📝 Deskripsi', value: temuan.deskripsiTemuan),
-
-                    // Nomor AMS
-                    if (temuan.nomorAms != null && temuan.nomorAms!.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.orange, width: 2),
+                    Wrap(
+                      spacing: 20,
+                      runSpacing: 12,
+                      children: [
+                        _SummaryItem(
+                          label: 'Status temuan',
+                          value: status,
+                          detail: statusText,
+                          color: statusColor,
                         ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(8)),
-                              child: const Icon(Icons.confirmation_number, color: Colors.white, size: 20),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Nomor AMS', style: TextStyle(color: Colors.orange[300], fontSize: 12, fontWeight: FontWeight.w500)),
-                                  const SizedBox(height: 4),
-                                  Text(temuan.nomorAms!, style: TextStyle(color: context.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
-                                ],
-                              ),
-                            ),
-                          ],
+                        _SummaryItem(
+                          label: 'Level risiko',
+                          value:
+                              temuan.levelRisiko?.trim().isNotEmpty == true
+                                  ? temuan.levelRisiko!.trim()
+                                  : 'Belum tersedia',
+                          color: riskColor,
                         ),
+                      ],
+                    ),
+                    if (temuan.fotoUrls != null &&
+                        temuan.fotoUrls!.isNotEmpty) ...[
+                      const _SectionTitle('Foto temuan'),
+                      FotoGridWidget(
+                        fotoUrls: temuan.fotoUrls!,
+                        isEditable: false,
                       ),
                     ],
-
-                    // Penyulang & Section
-                    if (temuan.namaPenyulang != null || temuan.section != null) ...[
-                      const SizedBox(height: 12),
-                      if (temuan.namaPenyulang != null)
-                        _InfoRow(label: '⚡ Penyulang', value: temuan.namaPenyulang!),
-                      if (temuan.section != null)
-                        _InfoRow(label: '🔢 Section', value: 'Section ${temuan.section}'),
-                    ],
-
-                    // Koordinat GPS
-                    if (temuan.latitude != null && temuan.longitude != null) ...[
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: context.cardColor,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.blue, width: 2),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('🗺️ Koordinat GPS', style: TextStyle(color: context.textPrimary, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 8),
-                            Text('${temuan.latitude}, ${temuan.longitude}', style: TextStyle(color: context.textSecondary, fontSize: 14)),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: () {
-                                      widget.onOpenMaps(temuan.latitude!, temuan.longitude!, temuan.lokasi);
-                                      Navigator.pop(context);
-                                    },
-                                    icon: const Icon(Icons.map, size: 18),
-                                    label: const Text('Buka Maps'),
-                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: () => widget.onCopyCoordinates(temuan.latitude!, temuan.longitude!),
-                                    icon: const Icon(Icons.copy, size: 18),
-                                    label: const Text('Copy'),
-                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                    const _SectionTitle('Informasi temuan'),
+                    if (temuan.tipeTemuan != null)
+                      _InfoRow(
+                        'Tipe temuan',
+                        TipeTemuan.label(temuan.tipeTemuan!),
+                      ),
+                    _InfoRow('Lokasi', temuan.lokasi),
+                    _InfoRow('Deskripsi', temuan.deskripsiTemuan),
+                    if (temuan.nomorAms != null && temuan.nomorAms!.isNotEmpty)
+                      _InfoRow('Nomor AMS', temuan.nomorAms!),
+                    if (temuan.namaPenyulang != null)
+                      _InfoRow('Penyulang', temuan.namaPenyulang!),
+                    if (temuan.section != null)
+                      _InfoRow('Section', 'Section ${temuan.section}'),
+                    if (temuan.latitude != null &&
+                        temuan.longitude != null) ...[
+                      const _SectionTitle('Koordinat GPS'),
+                      Text(
+                        '${temuan.latitude}, ${temuan.longitude}',
+                        style: TextStyle(
+                          color: context.textSecondary,
+                          fontSize: 14,
                         ),
                       ),
-                    ],
-
-                    // Status Temuan
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [statusColor.withValues(alpha: 0.2), statusColor.withValues(alpha: 0.05)],
-                          begin: Alignment.topLeft, end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: statusColor, width: 2),
-                      ),
-                      child: Row(
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
-                            child: Icon(statusIcon, color: statusColor, size: 28),
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              widget.onOpenMaps(
+                                temuan.latitude!,
+                                temuan.longitude!,
+                                temuan.lokasi,
+                              );
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(Icons.map_outlined, size: 18),
+                            label: const Text('Buka Maps'),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Status Temuan', style: TextStyle(color: context.textSecondary, fontSize: 12, fontWeight: FontWeight.w500)),
-                                const SizedBox(height: 4),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                      decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),
-                                      child: Text(status.toUpperCase(), style: TextStyle(color: statusColor, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                                    ),
-                                    Text(statusText, style: TextStyle(color: statusColor, fontSize: 13, fontWeight: FontWeight.w600)),
-                                  ],
+                          TextButton.icon(
+                            onPressed:
+                                () => widget.onCopyCoordinates(
+                                  temuan.latitude!,
+                                  temuan.longitude!,
                                 ),
-                              ],
-                            ),
+                            icon: const Icon(Icons.copy_outlined, size: 18),
+                            label: const Text('Copy'),
                           ),
                         ],
                       ),
-                    ),
-
-                    // ===== SECTION: MATRIKS RISIKO =====
+                    ],
                     if (temuan.levelRisiko != null) ...[
-                      const SizedBox(height: 20),
-                      _SectionHeader(label: '🛡️ Matriks Risiko'),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: _levelRisikoColor(temuan.levelRisiko).withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: _levelRisikoColor(temuan.levelRisiko).withValues(alpha: 0.4)),
+                      const _SectionTitle('Matriks risiko'),
+                      _InfoRow('Level risiko', temuan.levelRisiko!),
+                      if (temuan.jarakAktivitas != null)
+                        _InfoRow('Jarak aktivitas', temuan.jarakAktivitas!),
+                      if (temuan.intensitasAktivitas != null)
+                        _InfoRow(
+                          'Intensitas aktivitas',
+                          temuan.intensitasAktivitas!,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.shield, color: _levelRisikoColor(temuan.levelRisiko), size: 20),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Level Risiko: ${temuan.levelRisiko}',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: _levelRisikoColor(temuan.levelRisiko)),
-                                ),
-                              ],
-                            ),
-                            if (temuan.jarakAktivitas != null) ...[
-                              const SizedBox(height: 8),
-                              _MatriksRow('Jarak Aktivitas', temuan.jarakAktivitas!),
-                            ],
-                            if (temuan.intensitasAktivitas != null)
-                              _MatriksRow('Intensitas Aktivitas', temuan.intensitasAktivitas!),
-                            if (temuan.jenisObjek != null)
-                              _MatriksRow('Jenis Objek', temuan.jenisObjek!),
-                            if (temuan.jenisAset != null)
-                              _MatriksRow('Jenis Aset', temuan.jenisAset!),
-                            if (temuan.lokasiObjek != null)
-                              _MatriksRow('Lokasi Objek', temuan.lokasiObjek!),
-                          ],
-                        ),
-                      ),
+                      if (temuan.jenisObjek != null)
+                        _InfoRow('Jenis objek', temuan.jenisObjek!),
+                      if (temuan.jenisAset != null)
+                        _InfoRow('Jenis aset', temuan.jenisAset!),
+                      if (temuan.lokasiObjek != null)
+                        _InfoRow('Lokasi objek', temuan.lokasiObjek!),
                     ],
-
-                    // ===== SECTION: REMINDER =====
                     if (temuan.tglReminder != null) ...[
-                      const SizedBox(height: 20),
-                      _SectionHeader(label: '🔔 Reminder'),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.blue.withValues(alpha: 0.4)),
+                      const _SectionTitle('Reminder'),
+                      _InfoRow('Tanggal', _formatDate(temuan.tglReminder!)),
+                      if (temuan.fotoReminder != null &&
+                          temuan.fotoReminder!.isNotEmpty) ...[
+                        _PhotoLabel('Foto Surat Tanda Terima'),
+                        FotoGridWidget(
+                          fotoUrls: temuan.fotoReminder!,
+                          isEditable: false,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.calendar_today, color: Colors.blue, size: 16),
-                                const SizedBox(width: 8),
-                                Text(_formatDate(temuan.tglReminder!), style: TextStyle(color: context.textPrimary, fontWeight: FontWeight.w600)),
-                              ],
-                            ),
-                            if (temuan.fotoReminder != null && temuan.fotoReminder!.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              Text('Foto Surat Tanda Terima', style: TextStyle(color: context.textSecondary, fontSize: 12)),
-                              const SizedBox(height: 8),
-                              FotoGridWidget(fotoUrls: temuan.fotoReminder!, isEditable: false),
-                            ],
-                          ],
-                        ),
-                      ),
+                      ],
                     ],
-
-                    // ===== SECTION: CLOSING =====
                     if (temuan.jenisClosing != null) ...[
-                      const SizedBox(height: 20),
-                      _SectionHeader(label: '✅ Closing'),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.green.withValues(alpha: 0.4)),
+                      const _SectionTitle('Closing'),
+                      _InfoRow(
+                        'Jenis',
+                        temuan.jenisClosing == 'pfk' ? 'PFK' : 'Preventif',
+                      ),
+                      if (temuan.tglClosing != null)
+                        _InfoRow('Tanggal', _formatDate(temuan.tglClosing!)),
+                      if (temuan.fotoClosing != null &&
+                          temuan.fotoClosing!.isNotEmpty) ...[
+                        _PhotoLabel('Foto Tindaklanjut'),
+                        FotoGridWidget(
+                          fotoUrls: temuan.fotoClosing!,
+                          isEditable: false,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.check_circle, color: Colors.green, size: 16),
-                                const SizedBox(width: 8),
-                                Text(
-                                  temuan.jenisClosing == 'pfk' ? 'PFK' : 'Preventif',
-                                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            if (temuan.tglClosing != null) ...[
-                              const SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  const Icon(Icons.calendar_today, color: Colors.green, size: 14),
-                                  const SizedBox(width: 6),
-                                  Text(_formatDate(temuan.tglClosing!), style: TextStyle(color: context.textPrimary)),
-                                ],
-                              ),
-                            ],
-                            if (temuan.fotoClosing != null && temuan.fotoClosing!.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              Text('Foto Tindaklanjut', style: TextStyle(color: context.textSecondary, fontSize: 12)),
-                              const SizedBox(height: 8),
-                              FotoGridWidget(fotoUrls: temuan.fotoClosing!, isEditable: false),
-                            ],
-                          ],
+                      ],
+                    ],
+                    const _SectionTitle('Sosialisasi'),
+                    if (temuan.jenisClosing == null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          '(Tersedia setelah closing)',
+                          style: TextStyle(
+                            color: context.textSecondary,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
-                    ],
-
-                    // ===== SECTION: SOSIALISASI =====
-                    const SizedBox(height: 20),
-                    _SectionHeader(label: '📢 Sosialisasi'),
-                    if (temuan.jenisClosing == null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        '(Tersedia setelah closing)',
-                        style: TextStyle(
-                          color: context.textHint,
-                          fontSize: 12,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
                     if (_isLoadingSosialisasi)
-                      const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()))
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
                     else if (_sosialisasiList.isEmpty)
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(10)),
-                        child: Text('Belum ada riwayat sosialisasi.', style: TextStyle(color: context.textSecondary), textAlign: TextAlign.center),
+                      Text(
+                        'Belum ada riwayat sosialisasi.',
+                        style: TextStyle(
+                          color: context.textSecondary,
+                          fontSize: 14,
+                        ),
                       )
                     else
-                      ..._sosialisasiList.map((s) => Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.purple.withValues(alpha: 0.06),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.purple.withValues(alpha: 0.3)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.event, color: Colors.purple, size: 16),
-                                const SizedBox(width: 8),
-                                Text(_formatDate(s.tglSosialisasi), style: const TextStyle(color: Colors.purple, fontWeight: FontWeight.w600)),
-                              ],
-                            ),
-                            if (s.fotoUrls != null && s.fotoUrls!.isNotEmpty) ...[
-                              const SizedBox(height: 8),
-                              FotoGridWidget(fotoUrls: s.fotoUrls!, isEditable: false),
-                            ],
-                          ],
-                        ),
-                      )),
-
-                    const SizedBox(height: 8),
+                      for (final s in _sosialisasiList) ...[
+                        _InfoRow('Tanggal', _formatDate(s.tglSosialisasi)),
+                        if (s.fotoUrls != null && s.fotoUrls!.isNotEmpty)
+                          FotoGridWidget(
+                            fotoUrls: s.fotoUrls!,
+                            isEditable: false,
+                          ),
+                      ],
                   ],
                 ),
               ),
             ),
-
-            // Footer
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: context.cardColor,
-                borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(4), bottomRight: Radius.circular(4)),
-              ),
+            Divider(height: 1, color: context.borderColor),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -488,12 +309,12 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
                         Navigator.pop(context);
                         widget.onEdit!();
                       },
-                      icon: const Icon(Icons.edit, size: 16, color: Colors.orange),
-                      label: const Text('Edit', style: TextStyle(color: Colors.orange)),
+                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      label: const Text('Edit'),
                     ),
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Tutup', style: TextStyle(color: Colors.blue)),
+                    child: const Text('Tutup'),
                   ),
                 ],
               ),
@@ -505,84 +326,99 @@ class _TemuanDetailDialogState extends State<TemuanDetailDialog> {
   }
 }
 
-// ====== Helper Widgets ======
-
-class _SectionHeader extends StatelessWidget {
-  final String label;
-  const _SectionHeader({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(label, style: TextStyle(color: context.textPrimary, fontSize: 15, fontWeight: FontWeight.bold));
-  }
-}
-
-class _MatriksRow extends StatelessWidget {
+class _SummaryItem extends StatelessWidget {
   final String label;
   final String value;
-  const _MatriksRow(this.label, this.value);
+  final String? detail;
+  final Color color;
+  const _SummaryItem({
+    required this.label,
+    required this.value,
+    this.detail,
+    required this.color,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 4),
-      child: Row(
-        children: [
-          Text('$label: ', style: TextStyle(color: context.textSecondary, fontSize: 12)),
-          Expanded(child: Text(value, style: TextStyle(color: context.textPrimary, fontSize: 12, fontWeight: FontWeight.w500))),
-        ],
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(label, style: TextStyle(color: context.textSecondary, fontSize: 12)),
+      const SizedBox(height: 4),
+      Text(
+        value,
+        style: TextStyle(
+          color: color,
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+        ),
       ),
-    );
-  }
+      if (detail != null)
+        Text(
+          detail!,
+          style: TextStyle(color: context.textSecondary, fontSize: 12),
+        ),
+    ],
+  );
 }
 
-class _TipeBadgeRow extends StatelessWidget {
-  final String tipeTemuan;
-
-  const _TipeBadgeRow({required this.tipeTemuan});
+class _SectionTitle extends StatelessWidget {
+  final String label;
+  const _SectionTitle(this.label);
 
   @override
-  Widget build(BuildContext context) {
-    final isKmu = tipeTemuan == TipeTemuan.kmu;
-    final color = isKmu ? Colors.red : Colors.green;
-    final icon = isKmu ? Icons.bolt : Icons.nature;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 18),
-          const SizedBox(width: 8),
-          Text(TipeTemuan.label(tipeTemuan), style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: 22, bottom: 10),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Divider(height: 1, color: context.borderColor),
+        const SizedBox(height: 16),
+        Text(
+          label,
+          style: TextStyle(
+            color: context.textPrimary,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
-
-  const _InfoRow({required this.label, required this.value});
+  const _InfoRow(this.label, this.value);
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: TextStyle(color: context.textSecondary, fontSize: 12, fontWeight: FontWeight.w500)),
-          const SizedBox(height: 4),
-          Text(value, style: TextStyle(color: context.textPrimary, fontSize: 14)),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(color: context.textSecondary, fontSize: 12),
+        ),
+        const SizedBox(height: 3),
+        Text(value, style: TextStyle(color: context.textPrimary, fontSize: 14)),
+      ],
+    ),
+  );
+}
+
+class _PhotoLabel extends StatelessWidget {
+  final String label;
+  const _PhotoLabel(this.label);
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text(
+      label,
+      style: TextStyle(color: context.textSecondary, fontSize: 12),
+    ),
+  );
 }

@@ -151,6 +151,8 @@ void main() {
     expect(find.text(service.findings[1].lokasi), findsNothing);
     await tester.tap(find.text('Buka daftar'));
     expect(openedList, 1);
+    await tester.ensureVisible(find.text(service.findings.first.lokasi));
+    await tester.pumpAndSettle();
     await tester.tap(find.text(service.findings.first.lokasi));
     expect(openedTemuan, same(service.findings.first));
   });
@@ -183,6 +185,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.text(service.findings.first.lokasi));
+    await tester.pumpAndSettle();
     await tester.tap(find.text(service.findings.first.lokasi));
     await tester.pumpAndSettle();
     final dialog = tester.widget<TemuanDetailDialog>(
